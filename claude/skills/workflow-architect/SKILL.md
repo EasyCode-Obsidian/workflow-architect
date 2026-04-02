@@ -20,6 +20,9 @@ allowed-tools:
   - Grep
   - Bash(mkdir:*)
   - Bash(git:*)
+  - Bash(bash:*)
+  - Bash(powershell:*)
+  - Bash(curl:*)
   - Agent
   - AskUserQuestion
   - TaskCreate
@@ -295,7 +298,7 @@ Load these on demand, not all at once:
 | [references/phase-2-draft.md](references/phase-2-draft.md) | Entering Phase 2 |
 | [references/phase-3-planning.md](references/phase-3-planning.md) | Entering Phase 3 |
 | [references/phase-4-execution.md](references/phase-4-execution.md) | Entering Phase 4 |
-| [references/deepwiki-integration.md](references/deepwiki-integration.md) | Phase 4 — before coding each phase/task |
+| [references/deepwiki-integration.md](references/deepwiki-integration.md) | All phases — research at decision points and before coding |
 | [references/brainstorm-protocol.md](references/brainstorm-protocol.md) | Every brainstorm trigger point (BS-1 through BS-7) |
 | [references/index.md](references/index.md) | Overview of all references |
 | [bug-fixer/SKILL.md](../workflow-architect-bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review, standalone review |

@@ -22,7 +22,10 @@ Brainstorming is not template-filling — it is a mechanism that forces the mode
 
 **Steps (inline, no Agent calls):**
 
-1. **Research** — Run 1-2 web searches for relevant external facts. Output `🔍 Research Findings` block.
+1. **Research** — Run 1-2 web searches for relevant external facts.
+   **DeepWiki enhancement (BS-2/3/4 only):** If the decision involves specific library/framework capabilities, additionally run 1 DeepWiki `ask` query to verify actual API support — this provides authoritative documentation that WebSearch often cannot match:
+   `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "<specific capability question>"`
+   Output `🔍 Research Findings` block (label DeepWiki results as `📚 DeepWiki` to distinguish from WebSearch).
    - If searches return 0 results: retry with broader keywords; if still 0, label as `⚠️ AI Inference`
 2. **Multi-Perspective Self-Evaluation** — Review from 6 role perspectives (User/Dev/Architect/Security/Ops/Maintainer) inline. Each role produces 1-2 sentences. Output `🧠 Multi-Perspective` block.
 3. **Self-Interrogation + Synthesis** — Select recommendation, raise 3 sharp challenges against it, respond. If a challenge reveals a genuine problem, change the recommendation. Output `💭 Self-Interrogation` and `✅ Decision` blocks.
@@ -126,9 +129,9 @@ This step breaks the limitation of reasoning purely from training data, constrai
 <!-- 在产出任何方案之前，必须先用 web search 获取外部事实，打破模型仅靠训练数据推理的局限。 -->
 
 **Rules:**
-- For BS-2 (Architecture): Search "<project type> architecture best practices <current year>", known architecture anti-patterns
-- For BS-3 (Tech Stack): Search latest versions, known issues, community reviews, and benchmark comparisons for each candidate technology
-- For BS-4 (Algorithm): Search real-world performance data and applicable scenario case studies for relevant algorithms
+- For BS-2 (Architecture): Search "<project type> architecture best practices <current year>", known architecture anti-patterns. Query DeepWiki for candidate framework's architectural capabilities.
+- For BS-3 (Tech Stack): Search latest versions, known issues, community reviews, and benchmark comparisons for each candidate technology. Query DeepWiki for each candidate's actual API documentation to verify capabilities beyond marketing claims.
+- For BS-4 (Algorithm): Search real-world performance data and applicable scenario case studies for relevant algorithms. If a specific library implements the algorithm, query DeepWiki for implementation details.
 - For BS-7 (Error Recovery): Search the error message itself; look for known solutions
 - For BS-1/5/6: Search common pitfalls and best practices in the project's domain
 

@@ -112,6 +112,14 @@
    - Rank hypotheses by likelihood, with reasoning
    - Identify what would CHANGE in the architecture if each hypothesis is wrong
 
+   **B.5. RESEARCH (conditional) — Validate hypotheses with external data:**
+   - **TRIGGER when** the current question targets categories 5 (Tech Stack), 6 (Integration), or 7 (NFRs), OR when the domain is unfamiliar:
+     - Run 1 WebSearch query to validate your leading hypothesis: `"{technology/pattern} {specific concern} best practices {current year}"`
+     - If the project involves known libraries/frameworks: optionally run 1 DeepWiki `ask` query to verify capability assumptions:
+       `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "Does <library> support <hypothesized capability>?"`
+     - Integrate findings into hypothesis ranking. If research contradicts leading hypothesis, demote it.
+   - **SKIP when** the question is purely about business logic, user preferences, or subjective choices (categories 1-4, 8-10 typically)
+
    **C. CHALLENGE — Self-interrogate before asking:**
    - "What assumption am I making that the user hasn't confirmed?"
    - "The user hasn't mentioned {X} — is it because it's irrelevant, or because they haven't thought of it?"
@@ -154,6 +162,13 @@
      If yes: add follow-up questions with elevated priority. Track: "Opened by answer about {topic}: {new area}"
    - **HYPOTHESIS UPDATE:** Were any of your PQCP hypotheses wrong?
      If yes: note what you learned and adjust your mental model for subsequent questions.
+   - **FACT-CHECK (conditional):** If the user's answer includes a specific technology claim or performance assertion:
+     - Run 1 WebSearch to verify: `"{claimed technology} {claimed capability} {current year}"`
+     - If the user named a specific library/framework not yet researched: optionally query DeepWiki:
+       `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "Does <library> actually support <claimed feature>?"`
+     - If fact-check contradicts the user's claim: flag it diplomatically:
+       "I looked into {X} and found that {actual situation}. Would you like to reconsider, or do you have specific context I'm missing?"
+     - **SKIP when** the answer is about preferences, team composition, timelines, or other non-verifiable statements
    - **MODEL UPDATE:** How does this answer change your understanding of the overall project shape?
      Update your internal summary of the emerging project before selecting the next question.
 

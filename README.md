@@ -35,7 +35,7 @@ Workflow Architect 解决这些问题：
 - **四阶段治理工作流** — 需求 → 草案 → 计划 → 执行，每个阶段都有准入/准出门控
 - **头脑风暴双层协议** — Lightweight（自动，~2K tokens）+ Full Mode（按需，3 Agent + 审计，~30K tokens）
 - **三级计划层次** — 项目总体计划 → 阶段计划 → 任务详情，全部落盘持久化
-- **DeepWiki 三级研究** — 编码前自动查询 GitHub 仓库文档，确保 API 最佳实践
+- **DeepWiki 全阶段研究** — 全阶段可用的 GitHub 仓库文档查询（Phase 1-3 轻量验证，Phase 4 三级强制协议），确保每次写代码前获取 API 最佳实践
 - **3-Strike 容错机制** — 三次尝试逐步升级策略，失败后多种恢复选项
 - **外挂技能生态** — Bug Fixer（7 维度代码审查）+ Issue Changer（变更请求管理）
 - **会话恢复** — 所有状态持久化到 `.workflow/state.json`，中断后可无损恢复
@@ -371,6 +371,7 @@ Workflow Architect 解决这些问题：
 |------|------|------|
 | SYNTHESIZE | 综合已有信息 | 更新对项目的整体理解 |
 | HYPOTHESIZE | 生成 2-3 个假设 | 预测可能的答案并推理 |
+| RESEARCH | WebSearch + DeepWiki 验证 | 用外部数据验证假设（技术问题时自动触发） |
 | CHALLENGE | 自我质疑 | 识别盲点和错误假设 |
 
 **对比传统访谈：**
@@ -674,15 +675,16 @@ Project Surgeon 将引导你完成四个阶段：
 
 ### DeepWiki 集成
 
-Phase 4 编码时通过 DeepWiki 查询 GitHub 仓库文档，三级研究协议：
+全阶段可用的 GitHub 仓库文档查询协议，确保技术决策和编码都有权威文档支撑：
 
-| 级别 | 时机 | 目的 |
-|------|------|------|
-| Tier 1 | 阶段开始前 | 批量查询本阶段涉及的所有库/框架 |
-| Tier 2 | 任务开始前 | 精确查询本任务涉及的 API |
-| Tier 3 | 编码过程中 | 遇到不确定的 API 用法时即时查询 |
+| 阶段 | 使用强度 | 用途 |
+|------|---------|------|
+| Phase 1 | 轻量 | PQCP 中验证技术假设、PARP 中事实核查用户声明 |
+| Phase 2 | 中等 | BS-2/3/4 头脑风暴研究中验证框架能力和 API 文档 |
+| Phase 3 | 轻量 | 确认依赖映射、验证 API 范围 |
+| Phase 4 | 完整三级 | Tier 1 批量查询 → Tier 2 精确查询 → Tier 3 编码时强制查询 |
 
-脚本通过 HTTP 直接调用 DeepWiki MCP 端点，无需安装 MCP 配置。
+Phase 4 Tier 3 为**强制触发**：写调用任何库/框架 API 的代码前、配置库选项前、实现库错误处理前，必须先查询 DeepWiki。脚本通过 HTTP 直接调用 DeepWiki MCP 端点，无需安装 MCP 配置。
 
 ### 上下文管理
 

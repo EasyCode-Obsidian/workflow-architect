@@ -153,30 +153,51 @@ Priority for next question:
 At the start of CONTEXT phase, assess your familiarity with the domain:
 
 ```
-FAMILIAR (no research needed):
+FAMILIAR (light verification research):
   - Standard web applications (CRUD, auth, forms)
   - Common CLI tools
   - Standard API patterns
   - Well-known domains (e-commerce, blog, task management)
+  → Even familiar domains evolve. Run at least 1 WebSearch to check
+    for recent changes, new best practices, or deprecated patterns:
+    "{domain} best practices {current year}"
 
-SOMEWHAT FAMILIAR (light research):
+SOMEWHAT FAMILIAR (moderate research):
   - Domain-specific applications (healthcare, finance, education)
   - Specialized architectures (real-time, distributed, ML pipeline)
   - Niche frameworks or ecosystems
 
-UNFAMILIAR (research required):
+UNFAMILIAR (thorough research required):
   - Highly specialized domains (bioinformatics, aerospace, legal compliance)
   - Novel technology combinations
   - Industry-specific regulations or standards
 ```
 
-For SOMEWHAT FAMILIAR and UNFAMILIAR:
+For ALL familiarity levels:
 ```
-□ Run 1-2 web search tool queries:
+□ FAMILIAR — Run 1 WebSearch query:
+  - "{domain} best practices {current year}" or "{domain} common pitfalls"
+  □ Integrate any surprises into hypothesis tree
+
+□ SOMEWHAT FAMILIAR — Run 2-3 queries:
   - "{domain} software architecture best practices"
   - "{domain} common requirements and challenges"
-□ Integrate findings into initial hypothesis tree
-□ Note where your knowledge has gaps — these become high-priority questions
+  □ If key libraries/frameworks are known: run 1 DeepWiki structure query:
+    bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh structure "owner/repo"
+  □ Integrate findings into initial hypothesis tree
+  □ Note where your knowledge has gaps — these become high-priority questions
+
+□ UNFAMILIAR — Run 3-4 queries:
+  - "{domain} software architecture best practices"
+  - "{domain} common requirements and challenges"
+  - "{domain} regulatory compliance requirements" (if applicable)
+  □ Run DeepWiki structure query for each major library/framework:
+    bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh structure "owner/repo"
+  □ Optionally run DeepWiki ask for specific capability questions:
+    bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" \
+      "What are the main capabilities and limitations?"
+  □ Integrate findings into initial hypothesis tree
+  □ Flag all knowledge gaps as HIGH-PRIORITY questions
 ```
 
 ---

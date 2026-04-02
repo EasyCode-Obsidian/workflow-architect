@@ -111,7 +111,7 @@ Use `assets/templates/phase-plan.md` as the template. Fill in:
 3. **Prerequisites** — what must be true before this phase starts
    - May reference completion of prior phases
    - May reference external dependencies (e.g., "test suite must be passing after Phase 2")
-4. **Libraries & Dependencies** — list all external libraries/frameworks relevant to this phase:
+4. **Libraries & Dependencies** — (**MUST**) list ALL external libraries/frameworks relevant to this phase:
    - Map each to its GitHub `owner/repo` identifier
    - Note what each library is used for in this phase
    - This inventory drives DeepWiki Tier 1 batch research in Phase 4
@@ -177,7 +177,7 @@ Use `assets/templates/task-plan.md` as the template. Fill in:
    - **Modify:** exact file paths to modify with line ranges if known
    - **Delete:** exact file paths to delete (if cleaning up dead code, deprecated configs)
    - **Test:** test file paths to create or modify
-5. **Dependencies section:**
+5. **Dependencies section:** (**MUST** — this mapping drives DeepWiki research in all subsequent phases)
    - Map each external library/framework used in this task to its GitHub `owner/repo`
    - Include a brief note on what the library is used for in this task
    - This mapping is consumed by DeepWiki research during Phase 4 execution

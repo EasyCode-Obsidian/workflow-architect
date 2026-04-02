@@ -106,6 +106,32 @@ Execute before EACH question (Deep Mode) or every 3rd question (Quick Mode).
 □ This analysis determines how to frame the question
 ```
 
+#### Step B.5: RESEARCH (conditional) — 调研验证
+
+```
+□ TRIGGER when the current question targets technical topics
+  (architecture, tech stack, integration, performance, security)
+  OR when the domain is unfamiliar:
+
+  Deep Mode — execute for ALL technical questions:
+    □ Run 1 WebSearch to validate leading hypothesis:
+      "{technology/pattern} {specific concern} best practices {current year}"
+    □ If project involves known libraries/frameworks: optionally run 1 DeepWiki ask:
+      bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" \
+        "Does <library> support <hypothesized capability>?"
+    □ Integrate findings into hypothesis ranking
+    □ If research contradicts leading hypothesis: demote it
+
+  Quick Mode — execute ONLY for high-impact technical questions:
+    □ Run 1 WebSearch if the question is about core architecture or primary framework
+    □ Skip DeepWiki in Quick Mode (not worth the latency)
+
+□ SKIP when the question is purely about:
+  - Business goals, user preferences, team composition
+  - Timelines, budgets, subjective design choices
+  - Topics where external research adds no value
+```
+
 #### Step C: CHALLENGE — 质疑
 
 ```
@@ -169,6 +195,20 @@ Execute after EACH answer:
   - If confirmed: increase confidence in related hypotheses
   - If rejected: note what was wrong, adjust mental model
   - "I assumed {X} but learned {Y}. This changes my understanding of {Z}."
+
+□ FACT-CHECK (conditional): If the user's answer includes a specific technology
+  claim or performance assertion:
+  - Run 1 WebSearch to verify:
+    "{claimed technology} {claimed capability} {current year}"
+  - If the user named a specific library/framework not yet researched:
+    optionally query DeepWiki:
+    bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" \
+      "Does <library> actually support <claimed feature>?"
+  - If fact-check contradicts the user's claim: flag diplomatically:
+    "I looked into {X} and found that {actual situation}.
+     Would you like to reconsider, or do you have specific context I'm missing?"
+  - SKIP when the answer is about preferences, team composition,
+    timelines, or other non-verifiable statements
 
 □ CONVERGENCE CHECK: Are we approaching sufficient coverage?
   (See Convergence Detection below)

@@ -51,10 +51,20 @@ FOR each phase P in project-plan (in order):
             If step involves a command: run it and verify output
             If step involves file creation: create file with specified content
             If step involves file modification: edit as specified
-            If step involves API usage with uncertainty:
-                === DEEPWIKI TIER 3: CODING RESEARCH ===
-                Query DeepWiki for precise API details (see DeepWiki Integration below)
-                === END TIER 3 ===
+            === DEEPWIKI TIER 3: CODING RESEARCH (MANDATORY) ===
+            Before writing code that calls ANY library/framework API:
+              1. Identify the specific API call, config option, or error pattern
+              2. Run: bash <script> ask "owner/repo" "Exact parameters, return type, and error behavior for <API call>?"
+              3. Use the response to write correct code on the first attempt
+            Before configuring ANY library/framework options:
+              1. Run: bash <script> ask "owner/repo" "What are the valid options and defaults for <config>?"
+            Before implementing library-specific error handling:
+              1. Run: bash <script> ask "owner/repo" "What errors can <API call> throw and how to handle them?"
+            MAY skip ONLY when ALL of the following are true:
+              - The exact same API was already queried in Tier 2 for this task
+              - AND Tier 2 answer included specific parameters, return type, and error behavior
+              - AND no version or configuration difference exists between Tier 2 context and current code
+            === END TIER 3 ===
 
         Run verification checks from task plan
         If verification passes:
@@ -151,13 +161,25 @@ Triggered at the start of each task, before executing steps.
 4. For integration tasks: use cross-repo queries
 5. Max 5 queries per task
 
-### Tier 3: During Coding (precise)
+### Tier 3: During Coding (MANDATORY)
 
-Triggered during step execution when encountering API uncertainty.
+Triggered during step execution before writing code that interacts with external libraries/frameworks.
 
+**MUST trigger (any one of these conditions):**
+- About to write code that calls ANY library/framework API
+- About to configure ANY library/framework options
+- About to implement error handling for library-specific errors
+
+**Query format:**
 1. Ask precise questions: exact parameters, return types, error behavior
-2. Frame questions around the code being written
+2. Frame questions around the specific code being written:
+   `bash <script> ask "owner/repo" "Exact parameters, return type, and error behavior for <API call>?"`
 3. No caching — results feed directly into code
+
+**MAY skip ONLY when ALL of the following are true:**
+- The exact same API call was already queried in Tier 2 for this task
+- AND the Tier 2 answer included the specific parameters, return type, and error behavior needed
+- AND no version or configuration difference exists between the Tier 2 context and current code context
 
 ### Script Invocation
 

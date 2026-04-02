@@ -39,7 +39,9 @@ Content depth should scale with project complexity.
 
 **Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1:
 
-1. **Research** — Run 1-2 WebSearch queries about architecture patterns for this project type. Output `🔍 Research Findings` block.
+1. **Research** — Run 2-3 WebSearch queries about architecture patterns for this project type. If candidate frameworks/libraries are known from Phase 1, additionally query DeepWiki to verify their architectural capabilities:
+   `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What architecture patterns does <framework> best support? Any known limitations for <project type>?"`
+   Output `🔍 Research Findings` block (include both WebSearch and DeepWiki results, label DeepWiki as `📚 DeepWiki`).
 2. **Multi-Perspective Self-Evaluation** — Review from 6 roles (User/Dev/Architect/Security/Ops/Maintainer). Each role: 1-2 sentences. Output `🧠 Multi-Perspective` block.
 3. **Self-Interrogation + Synthesis** — Select recommendation, raise 3 sharp challenges, respond. Output `💭 Self-Interrogation` and `✅ Decision` blocks.
 
@@ -71,7 +73,8 @@ Section 2 content (write ONLY after BS-2 completes):
 
 **STOP. Do NOT produce ANY Section 3 content yet.**
 
-**Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on tech stack decisions.
+**Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on tech stack decisions. For each candidate technology, include at least 1 DeepWiki `ask` query to verify actual API capabilities — WebSearch returns marketing pages, DeepWiki returns documentation:
+   `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What are the main capabilities and limitations of <library> v<latest>?"`
 
 **User-preference shortcut:** For user-specified tech choices (language, framework, database, etc.), use **validation focus** — validate with research, do NOT generate alternatives. For unspecified choices, evaluate options through multi-perspective self-reflection.
 
@@ -98,7 +101,8 @@ Section 3 content (write ONLY after BS-3 completes):
 
 **STOP. Do NOT produce ANY Section 4 content yet.**
 
-**Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on algorithm choices and design patterns.
+**Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on algorithm choices and design patterns. If the algorithm or design strategy involves a specific library (e.g., search engine, ML framework, caching library), query DeepWiki for implementation-level details:
+   `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What algorithms/patterns does <library> provide for <use case>?"`
 
 **User-preference shortcut:** If user specified algorithm or design preferences, use **validation focus**.
 

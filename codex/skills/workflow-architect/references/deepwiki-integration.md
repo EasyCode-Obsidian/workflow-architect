@@ -1,8 +1,8 @@
 # DeepWiki Integration — API 研究协议
 
-> Phase 4 execution enhancement: 3-tier research protocol using DeepWiki to query GitHub repository documentation before and during coding.
+> Cross-phase research protocol using DeepWiki to query GitHub repository documentation. Available in ALL phases with varying intensity: light research in Phases 1-3, full 3-tier protocol in Phase 4.
 
-<!-- 在 Phase 4 编码前和编码中，通过 DeepWiki 三级研究协议查询 GitHub 仓库文档，确保 API 使用最佳实践。 -->
+<!-- 跨阶段研究协议，通过 DeepWiki 查询 GitHub 仓库文档。所有阶段可用：Phase 1-3 轻量研究，Phase 4 完整三级协议。 -->
 
 ---
 
@@ -28,6 +28,24 @@ Two scripts are provided for cross-platform support:
 ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh    # Unix/macOS (bash + curl)
 ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1   # Windows (PowerShell + Invoke-WebRequest)
 ```
+
+### Cross-Phase Usage — 跨阶段使用
+
+<!-- DeepWiki 在所有阶段可用，但使用方式和强度不同。 -->
+
+| Phase | Usage Level | Typical Operations | Purpose |
+|-------|------------|-------------------|---------|
+| Phase 1 | Light | `structure`, targeted `ask` | Verify library capabilities when discussing tech choices during PQCP |
+| Phase 2 | Moderate | `ask` during BS-2/3/4 research | Validate tech stack decisions with actual API documentation |
+| Phase 3 | Light | `structure`, `ask` | Confirm dependency-to-repo mappings, verify API scope for task planning |
+| Phase 4 | Full (3-Tier) | Batch `structure` + `ask`, per-task `ask`, coding-time `ask` | Comprehensive API research before and during coding |
+
+**Phase 1-3 rules:**
+- Do NOT run batch Tier 1 queries outside Phase 4 — those are Phase 4 only
+- Each DeepWiki query MUST be tied to a specific decision point or planning need
+- Max 2 DeepWiki queries per brainstorm trigger point (BS-2/3/4)
+- Max 1 DeepWiki query per PQCP cycle
+- Cache is NOT maintained for Phase 1-3 queries (they are one-off contextual lookups)
 
 **Auto-detect platform:** Use `.ps1` on Windows (`OS` = `Windows_NT`), `.sh` otherwise.
 
@@ -163,11 +181,15 @@ Cache: .workflow/deepwiki-cache/phase-N-research.md
 
 **Purpose:** Get precise API signatures, parameter details, edge case handling.
 
-**Trigger conditions (any one):**
-- About to use an API method for the first time
-- Unsure about parameter types, return values, or error behavior
-- Implementing error handling for a library-specific error type
-- Configuring library options with multiple valid approaches
+**Trigger conditions — MUST trigger (any one):**
+- About to write code that calls ANY library/framework API
+- About to configure ANY library/framework options
+- About to implement error handling for library-specific errors
+
+**MAY skip ONLY when ALL of the following are true:**
+- The exact same API call was already queried in Tier 2 for this task
+- AND the Tier 2 answer included the specific parameters, return type, and error behavior needed
+- AND no version or configuration difference exists between the Tier 2 context and current code context
 
 **Protocol:**
 
@@ -320,7 +342,8 @@ On Phase 4 session resume, if `.workflow/deepwiki-cache/phase-N-research.md` exi
 
 ## Constraints — 约束条件
 
-- **DO NOT** use DeepWiki in Phases 1-3. It is exclusively a Phase 4 coding tool.
+- **DeepWiki is available in ALL phases.** Usage intensity differs by phase (see Cross-Phase Usage above). Phases 1-3 use targeted queries at decision points. Phase 4 uses the full 3-Tier protocol.
+- **DO NOT** run batch Tier 1 queries in Phases 1-3. Batch research is Phase 4 only.
 - **DO NOT** ask more than 5 questions per task at Tier 2. If you need more, your task granularity may be too coarse.
 - **DO NOT** ask vague questions. Every query should be specific and actionable.
 - **DO** check Tier 1 cache before making Tier 2/3 queries.

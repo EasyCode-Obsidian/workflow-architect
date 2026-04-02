@@ -26,6 +26,9 @@ allowed-tools:
   - Grep
   - Bash(mkdir:*)
   - Bash(git:*)
+  - Bash(bash:*)
+  - Bash(powershell:*)
+  - Bash(curl:*)
   - Bash(find:*)
   - Bash(wc:*)
   - Bash(npm:*)

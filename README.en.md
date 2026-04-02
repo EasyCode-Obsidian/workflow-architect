@@ -35,7 +35,7 @@ Workflow Architect solves these:
 - **4-Phase Governed Workflow** — Requirements → Draft → Planning → Execution, with entry/exit gates at each phase
 - **Two-Tier Brainstorm Protocol** — Lightweight (automatic, ~2K tokens) + Full Mode (on-demand, 3 Agents + Audit, ~30K tokens)
 - **3-Level Plan Hierarchy** — Project plan → Phase plans → Task details, all persisted to disk
-- **DeepWiki 3-Tier Research** — Auto-queries GitHub repo docs before coding for API best practices
+- **DeepWiki Cross-Phase Research** — GitHub repo doc queries available in ALL phases (light validation in Phase 1-3, mandatory 3-tier protocol in Phase 4), ensuring API best practices before every line of code
 - **3-Strike Fault Tolerance** — Progressively escalating fix strategies with multiple recovery options
 - **Add-on Skill Ecosystem** — Bug Fixer (7-dimension code review) + Issue Changer (change request management)
 - **Session Resume** — All state persisted to `.workflow/state.json`, lossless recovery after interruption
@@ -371,6 +371,7 @@ A standalone deep requirements interview skill using the **Pre-Question Cognitiv
 |------|--------|---------|
 | SYNTHESIZE | Integrate all known information | Update overall project understanding |
 | HYPOTHESIZE | Generate 2-3 hypotheses | Predict likely answers with reasoning |
+| RESEARCH | WebSearch + DeepWiki validation | Validate hypotheses with external data (auto-triggers for tech questions) |
 | CHALLENGE | Self-interrogate | Identify blind spots and wrong assumptions |
 
 **Compared to Traditional Interviews:**
@@ -677,15 +678,16 @@ All workflow state is persisted to `.workflow/state.json`, including:
 
 ### DeepWiki Integration
 
-During Phase 4 coding, queries GitHub repository documentation via DeepWiki using a 3-tier research protocol:
+Cross-phase GitHub repository documentation queries ensuring technical decisions and code are backed by authoritative docs:
 
-| Tier | When | Purpose |
-|------|------|---------|
-| Tier 1 | Before each phase | Batch query all libraries/frameworks in the phase |
-| Tier 2 | Before each task | Precise query for task-specific APIs |
-| Tier 3 | During coding | Real-time queries for uncertain API usage |
+| Phase | Intensity | Purpose |
+|-------|----------|---------|
+| Phase 1 | Light | Validate tech hypotheses during PQCP, fact-check user claims in PARP |
+| Phase 2 | Moderate | Verify framework capabilities and API docs during BS-2/3/4 brainstorm research |
+| Phase 3 | Light | Confirm dependency mappings, verify API scope |
+| Phase 4 | Full 3-Tier | Tier 1 batch queries → Tier 2 precise queries → Tier 3 mandatory coding-time queries |
 
-Scripts call DeepWiki's HTTP MCP endpoint directly — no MCP configuration needed.
+Phase 4 Tier 3 is **mandatory**: before writing code that calls ANY library/framework API, before configuring library options, before implementing library-specific error handling — DeepWiki must be queried first. Scripts call DeepWiki's HTTP MCP endpoint directly — no MCP configuration needed.
 
 ### Context Management
 
