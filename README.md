@@ -257,6 +257,36 @@ Workflow Architect 解决这些问题：
 
 ---
 
+## Project Surgeon — 已有项目接管
+
+```
+调用方式: /project-surgeon [项目路径，或 '.' 表示当前目录]
+```
+
+专为**已有项目**设计的系统化分析、审查和改进技能。与 Workflow Architect（从零创建项目）互补。
+
+**四阶段工作流：**
+
+| 阶段 | 目的 | 核心交付物 |
+|------|------|-----------|
+| Phase 1: 分析 | 自动扫描项目结构、技术栈、依赖健康、架构模式 | `.project-surgeon/analysis-report.md` |
+| Phase 2: 审查 | 复用 Bug Fixer 7 维度协议做全面代码审查 | `.project-surgeon/review-report.md` |
+| Phase 3: 计划 | 按风险/优先级生成三级改进计划 | `.project-surgeon/project-plan.md` + phases/ |
+| Phase 4: 执行 | 逐任务执行改进，含 Preservation Gate 保护 | 改进后的代码 |
+
+**Preservation Gate（独有安全机制）：**
+
+每个任务执行前后对比测试套件结果，新增失败自动回滚。确保改进过程不破坏现有功能。
+
+**使用外挂技能：**
+
+```
+/project-surgeon:bug-fixer src/              # 审查 src 目录的代码
+/project-surgeon:issue-changer 加一个缓存层   # 提交变更请求
+```
+
+---
+
 ## 目录结构
 
 ```
@@ -266,7 +296,13 @@ workflow-architect/                         # 仓库根目录
 ├── LICENSE                                 # 许可证
 ├── claude/                                 # Claude Code 版本
 │   └── skills/
-│       └── workflow-architect/             # Claude Code Skill（含专有 frontmatter）
+│       ├── workflow-architect/             # Claude Code Skill（含专有 frontmatter）
+│       │   ├── SKILL.md
+│       │   ├── assets/
+│       │   ├── bug-fixer/
+│       │   ├── issue-changer/
+│       │   └── references/
+│       └── project-surgeon/               # 已有项目接管 Skill
 │           ├── SKILL.md
 │           ├── assets/
 │           ├── bug-fixer/
@@ -274,7 +310,13 @@ workflow-architect/                         # 仓库根目录
 │           └── references/
 └── codex/                                  # OpenAI Codex CLI 版本
     └── skills/
-        └── workflow-architect/             # Codex Skill（通用 frontmatter）
+        ├── workflow-architect/             # Codex Skill（通用 frontmatter）
+        │   ├── SKILL.md
+        │   ├── assets/
+        │   ├── bug-fixer/
+        │   ├── issue-changer/
+        │   └── references/
+        └── project-surgeon/               # 已有项目接管 Skill
             ├── SKILL.md
             ├── assets/
             ├── bug-fixer/
@@ -309,10 +351,11 @@ workflow-architect/                         # 仓库根目录
    git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/workflow-architect-repo
 2. 将 Claude Code 版技能复制到 skills 目录：
    cp -r /tmp/workflow-architect-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
+   cp -r /tmp/workflow-architect-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
 3. 清理临时目录：
    rm -rf /tmp/workflow-architect-repo
-4. 验证安装：确认 ~/.claude/skills/workflow-architect/SKILL.md 文件存在
-5. Windows 用户路径为：%USERPROFILE%\.claude\skills\workflow-architect
+4. 验证安装：确认 ~/.claude/skills/workflow-architect/SKILL.md 和 ~/.claude/skills/project-surgeon/SKILL.md 文件存在
+5. Windows 用户路径为：%USERPROFILE%\.claude\skills\
 ```
 
 #### 手动安装
@@ -321,6 +364,7 @@ workflow-architect/                         # 仓库根目录
 ```bash
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
+cp -r /tmp/wa-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
 rm -rf /tmp/wa-repo
 ```
 
@@ -328,6 +372,7 @@ rm -rf /tmp/wa-repo
 ```powershell
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon" "$env:USERPROFILE\.claude\skills\project-surgeon"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -336,6 +381,7 @@ Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```bash
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills-repos/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
 ```
 
 安装后重启 Claude Code 即可生效。
@@ -352,6 +398,7 @@ ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect
 ```bash
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/codex/skills/workflow-architect ~/.codex/skills/workflow-architect
+cp -r /tmp/wa-repo/codex/skills/project-surgeon ~/.codex/skills/project-surgeon
 rm -rf /tmp/wa-repo
 ```
 
@@ -359,6 +406,7 @@ rm -rf /tmp/wa-repo
 ```powershell
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect" "$env:USERPROFILE\.codex\skills\workflow-architect"
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon" "$env:USERPROFILE\.codex\skills\project-surgeon"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -381,23 +429,39 @@ Workflow Architect 将引导你完成四个阶段：
 3. **计划落盘** — 生成详细的三级执行计划
 4. **逐步执行** — 按计划编码，每个任务完成后提交
 
+### 接管已有项目
+
+```
+/project-surgeon .
+```
+
+Project Surgeon 将引导你完成四个阶段：
+
+1. **项目分析** — 自动扫描技术栈、架构、依赖健康
+2. **代码审查** — 7 维度系统化审查，输出审查报告
+3. **改进计划** — 按风险优先级生成三级执行计划
+4. **改进执行** — 逐任务执行，Preservation Gate 保护现有功能
+
 ### 使用外挂技能
 
 ```
 /workflow-architect:bug-fixer src/          # 审查 src 目录的代码
 /workflow-architect:bug-fixer "登录失败"    # 追踪特定 Bug
 /workflow-architect:issue-changer 加一个消息通知系统   # 提交变更请求
+/project-surgeon:bug-fixer src/             # 在接管项目中审查代码
+/project-surgeon:issue-changer 加一个缓存层  # 在接管项目中提交变更
 ```
 
 ### 会话恢复
 
-中途退出后，再次调用 `/workflow-architect` 即可恢复：
+中途退出后，再次调用对应技能即可恢复：
 
 ```
-/workflow-architect
+/workflow-architect    # 恢复从零创建的项目
+/project-surgeon       # 恢复接管的项目
 ```
 
-系统会自动检测 `.workflow/state.json`，显示当前进度，询问是恢复还是重新开始。
+系统会自动检测状态文件（`.workflow/state.json` 或 `.project-surgeon/state.json`），显示当前进度，询问是恢复还是重新开始。
 
 ---
 

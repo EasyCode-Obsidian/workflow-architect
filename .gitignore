@@ -1,6 +1,9 @@
 # Workflow runtime directory (generated per-project)
 .workflow/
 
+# Project Surgeon runtime directory (generated per-project)
+.project-surgeon/
+
 # OS files
 .DS_Store
 Thumbs.db

@@ -257,6 +257,36 @@ Invocation: /workflow-architect:issue-changer [change description]
 
 ---
 
+## Project Surgeon — Existing Project Takeover
+
+```
+Invocation: /project-surgeon [project path, or '.' for current directory]
+```
+
+Designed for **existing projects** — systematic analysis, review, and improvement. Complementary to Workflow Architect (which creates projects from scratch).
+
+**Four-Phase Workflow:**
+
+| Phase | Purpose | Key Deliverable |
+|-------|---------|----------------|
+| Phase 1: Analysis | Auto-scan project structure, tech stack, dependency health, architecture patterns | `.project-surgeon/analysis-report.md` |
+| Phase 2: Review | Full code audit using Bug Fixer's 7-dimension protocol | `.project-surgeon/review-report.md` |
+| Phase 3: Planning | Generate three-level improvement plans by risk/priority | `.project-surgeon/project-plan.md` + phases/ |
+| Phase 4: Execution | Execute improvements task by task with Preservation Gate protection | Improved code |
+
+**Preservation Gate (unique safety mechanism):**
+
+Compares test suite results before and after each task — auto-reverts on new test failures. Ensures improvements don't break existing functionality.
+
+**Using Add-on Skills:**
+
+```
+/project-surgeon:bug-fixer src/              # Review code in src directory
+/project-surgeon:issue-changer add a caching layer   # Submit change request
+```
+
+---
+
 ## Directory Structure
 
 ```
@@ -266,7 +296,13 @@ workflow-architect/                         # Repository root
 ├── LICENSE                                 # License
 ├── claude/                                 # Claude Code version
 │   └── skills/
-│       └── workflow-architect/             # Claude Code Skill (with platform-specific frontmatter)
+│       ├── workflow-architect/             # Claude Code Skill (with platform-specific frontmatter)
+│       │   ├── SKILL.md
+│       │   ├── assets/
+│       │   ├── bug-fixer/
+│       │   ├── issue-changer/
+│       │   └── references/
+│       └── project-surgeon/               # Existing project takeover Skill
 │           ├── SKILL.md
 │           ├── assets/
 │           ├── bug-fixer/
@@ -274,7 +310,13 @@ workflow-architect/                         # Repository root
 │           └── references/
 └── codex/                                  # OpenAI Codex CLI version
     └── skills/
-        └── workflow-architect/             # Codex Skill (generic frontmatter)
+        ├── workflow-architect/             # Codex Skill (generic frontmatter)
+        │   ├── SKILL.md
+        │   ├── assets/
+        │   ├── bug-fixer/
+        │   ├── issue-changer/
+        │   └── references/
+        └── project-surgeon/               # Existing project takeover Skill
             ├── SKILL.md
             ├── assets/
             ├── bug-fixer/
@@ -307,12 +349,13 @@ Repository: https://github.com/EasyCode-Obsidian/workflow-architect
 Steps:
 1. Clone the repository to a temp directory:
    git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/workflow-architect-repo
-2. Copy the Claude Code skill into the skills directory:
+2. Copy the Claude Code skills into the skills directory:
    cp -r /tmp/workflow-architect-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
+   cp -r /tmp/workflow-architect-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
 3. Clean up:
    rm -rf /tmp/workflow-architect-repo
-4. Verify: confirm ~/.claude/skills/workflow-architect/SKILL.md exists
-5. Windows path: %USERPROFILE%\.claude\skills\workflow-architect
+4. Verify: confirm ~/.claude/skills/workflow-architect/SKILL.md and ~/.claude/skills/project-surgeon/SKILL.md exist
+5. Windows path: %USERPROFILE%\.claude\skills\
 ```
 
 #### Manual Installation
@@ -321,6 +364,7 @@ Steps:
 ```bash
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
+cp -r /tmp/wa-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
 rm -rf /tmp/wa-repo
 ```
 
@@ -328,6 +372,7 @@ rm -rf /tmp/wa-repo
 ```powershell
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon" "$env:USERPROFILE\.claude\skills\project-surgeon"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -336,6 +381,7 @@ Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```bash
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills-repos/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
 ```
 
 Restart Claude Code after installation.
@@ -352,6 +398,7 @@ Restart Claude Code after installation.
 ```bash
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/codex/skills/workflow-architect ~/.codex/skills/workflow-architect
+cp -r /tmp/wa-repo/codex/skills/project-surgeon ~/.codex/skills/project-surgeon
 rm -rf /tmp/wa-repo
 ```
 
@@ -359,6 +406,7 @@ rm -rf /tmp/wa-repo
 ```powershell
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect" "$env:USERPROFILE\.codex\skills\workflow-architect"
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon" "$env:USERPROFILE\.codex\skills\project-surgeon"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -381,12 +429,27 @@ Workflow Architect will guide you through four phases:
 3. **Planning** — Generate detailed three-level execution plans
 4. **Execution** — Code per plan, committing after each task
 
+### Take Over an Existing Project
+
+```
+/project-surgeon .
+```
+
+Project Surgeon will guide you through four phases:
+
+1. **Analysis** — Auto-scan tech stack, architecture, dependency health
+2. **Review** — 7-dimension systematic code audit, output review report
+3. **Planning** — Generate three-level improvement plans by risk/priority
+4. **Execution** — Execute improvements task by task, Preservation Gate protects existing functionality
+
 ### Use Add-on Skills
 
 ```
 /workflow-architect:bug-fixer src/              # Review code in src directory
 /workflow-architect:bug-fixer "login failure"    # Track a specific bug
 /workflow-architect:issue-changer add a notification system   # Submit change request
+/project-surgeon:bug-fixer src/                 # Review code in takeover project
+/project-surgeon:issue-changer add a caching layer  # Submit change in takeover project
 ```
 
 ### Session Resume
@@ -394,10 +457,11 @@ Workflow Architect will guide you through four phases:
 After exiting mid-workflow, invoke again to resume:
 
 ```
-/workflow-architect
+/workflow-architect    # Resume a project created from scratch
+/project-surgeon       # Resume a takeover project
 ```
 
-The system auto-detects `.workflow/state.json`, displays current progress, and asks whether to resume or restart.
+The system auto-detects state files (`.workflow/state.json` or `.project-surgeon/state.json`), displays current progress, and asks whether to resume or restart.
 
 ---
 
