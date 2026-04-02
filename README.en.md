@@ -287,6 +287,36 @@ Compares test suite results before and after each task — auto-reverts on new t
 
 ---
 
+## Lite Versions — Small Model Optimization
+
+```
+Invocation: /workflow-architect-lite [project idea]
+Invocation: /project-surgeon-lite [project path]
+```
+
+Streamlined versions designed for **smaller models** (Haiku, GPT-4o-mini) or **fast workflows**, merging 4 phases into 2 and removing high-overhead features.
+
+**Full vs Lite comparison:**
+
+| Feature | Full | Lite |
+|---------|------|------|
+| Phases | 4 (separate gates) | 2 (Understand → Execute) |
+| Brainstorm | 2-tier protocol, 7 triggers | 3-question inline self-check |
+| DeepWiki | 3-tier research protocol | Removed (WebSearch fallback) |
+| Plan hierarchy | 3 levels (project → phase → task) | Flat: plan.md + task-NN.md |
+| Error recovery | 3-Strike + 5 options | 1-Strike: try once → ask user |
+| Review dimensions (PS) | 7 dimensions, 3-tier scan | 4 dimensions, Grep + Read top 20 |
+| Preservation Gate | Auto-revert + ID tracking | Compare pass counts, user decides |
+| File size | ~3,700-5,100 lines | ~500-600 lines (~85% reduction) |
+| Working directory | `.workflow/` `.project-surgeon/` | `.workflow-lite/` `.project-surgeon-lite/` |
+
+**When to use Lite:**
+- Using smaller models or fast mode
+- Small project scope (< 10 features / < 15 tasks)
+- Prioritizing speed over depth of analysis
+
+---
+
 ## Directory Structure
 
 ```
@@ -313,8 +343,16 @@ workflow-architect/                         # Repository root
 │       ├── project-surgeon-bug-fixer/     # Project Surgeon Bug Fixer
 │       │   ├── SKILL.md
 │       │   └── references/
-│       └── project-surgeon-issue-changer/ # Project Surgeon Issue Changer
+│       ├── project-surgeon-issue-changer/ # Project Surgeon Issue Changer
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── workflow-architect-lite/       # Lite version (small model optimized)
+│       │   ├── SKILL.md
+│       │   ├── assets/templates/
+│       │   └── references/
+│       └── project-surgeon-lite/         # Lite version (small model optimized)
 │           ├── SKILL.md
+│           ├── assets/templates/
 │           └── references/
 └── codex/                                  # OpenAI Codex CLI version
     └── skills/
@@ -335,8 +373,16 @@ workflow-architect/                         # Repository root
         ├── project-surgeon-bug-fixer/
         │   ├── SKILL.md
         │   └── references/
-        └── project-surgeon-issue-changer/
+        ├── project-surgeon-issue-changer/
+        │   ├── SKILL.md
+        │   └── references/
+        ├── workflow-architect-lite/
+        │   ├── SKILL.md
+        │   ├── assets/templates/
+        │   └── references/
+        └── project-surgeon-lite/
             ├── SKILL.md
+            ├── assets/templates/
             └── references/
 ```
 
@@ -381,6 +427,9 @@ Steps:
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
 cp -r /tmp/wa-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
+# Lite version (optional)
+cp -r /tmp/wa-repo/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
+cp -r /tmp/wa-repo/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 rm -rf /tmp/wa-repo
 ```
 
@@ -389,6 +438,9 @@ rm -rf /tmp/wa-repo
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon" "$env:USERPROFILE\.claude\skills\project-surgeon"
+# Lite version (optional)
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect-lite" "$env:USERPROFILE\.claude\skills\workflow-architect-lite"
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon-lite" "$env:USERPROFILE\.claude\skills\project-surgeon-lite"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -398,6 +450,9 @@ Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills-repos/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
+# Lite version (optional)
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 ```
 
 Restart Claude Code after installation.
@@ -415,6 +470,9 @@ Restart Claude Code after installation.
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/codex/skills/workflow-architect ~/.codex/skills/workflow-architect
 cp -r /tmp/wa-repo/codex/skills/project-surgeon ~/.codex/skills/project-surgeon
+# Lite version (optional)
+cp -r /tmp/wa-repo/codex/skills/workflow-architect-lite ~/.codex/skills/workflow-architect-lite
+cp -r /tmp/wa-repo/codex/skills/project-surgeon-lite ~/.codex/skills/project-surgeon-lite
 rm -rf /tmp/wa-repo
 ```
 
@@ -423,6 +481,9 @@ rm -rf /tmp/wa-repo
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect" "$env:USERPROFILE\.codex\skills\workflow-architect"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon" "$env:USERPROFILE\.codex\skills\project-surgeon"
+# Lite version (optional)
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect-lite" "$env:USERPROFILE\.codex\skills\workflow-architect-lite"
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon-lite" "$env:USERPROFILE\.codex\skills\project-surgeon-lite"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -457,6 +518,13 @@ Project Surgeon will guide you through four phases:
 2. **Review** — 7-dimension systematic code audit, output review report
 3. **Planning** — Generate three-level improvement plans by risk/priority
 4. **Execution** — Execute improvements task by task, Preservation Gate protects existing functionality
+
+### Lite Version Quick Start
+
+```
+/workflow-architect-lite Build a REST API for a todo app
+/project-surgeon-lite .
+```
 
 ### Use Add-on Skills
 

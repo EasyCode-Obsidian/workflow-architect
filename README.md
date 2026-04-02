@@ -287,6 +287,36 @@ Workflow Architect 解决这些问题：
 
 ---
 
+## Lite 版本 — 小模型优化
+
+```
+调用方式: /workflow-architect-lite [项目想法]
+调用方式: /project-surgeon-lite [项目路径]
+```
+
+专为**小模型**（Haiku、GPT-4o-mini）或**快速工作流**设计的精简版，将 4 阶段合并为 2 阶段，去除高开销特性。
+
+**完整版 vs Lite 版对比：**
+
+| 特性 | 完整版 | Lite 版 |
+|------|--------|---------|
+| 阶段数 | 4 (分离门控) | 2 (Understand → Execute) |
+| Brainstorm | 双层协议, 7 触发点 | 3 问内联自检 |
+| DeepWiki | 三级研究协议 | 移除 (WebSearch 替代) |
+| 计划层级 | 3 级 (project → phase → task) | 扁平: plan.md + task-NN.md |
+| 错误恢复 | 3-Strike + 5 选项 | 1-Strike: 试一次 → 问用户 |
+| 审查维度 (PS) | 7 维度, 3 层扫描 | 4 维度, Grep + Read top 20 |
+| Preservation Gate | 自动回滚 + ID 跟踪 | 对比通过数, 用户决定 |
+| 文件规模 | ~3,700-5,100 行 | ~500-600 行 (~85% 缩减) |
+| 工作目录 | `.workflow/` `.project-surgeon/` | `.workflow-lite/` `.project-surgeon-lite/` |
+
+**何时用 Lite 版：**
+- 使用小模型或快速模式
+- 项目规模小（< 10 个特性 / < 15 个任务）
+- 追求速度而非深度分析
+
+---
+
 ## 目录结构
 
 ```
@@ -313,8 +343,16 @@ workflow-architect/                         # 仓库根目录
 │       ├── project-surgeon-bug-fixer/     # Project Surgeon Bug Fixer
 │       │   ├── SKILL.md
 │       │   └── references/
-│       └── project-surgeon-issue-changer/ # Project Surgeon Issue Changer
+│       ├── project-surgeon-issue-changer/ # Project Surgeon Issue Changer
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── workflow-architect-lite/       # Lite 版（小模型优化）
+│       │   ├── SKILL.md
+│       │   ├── assets/templates/
+│       │   └── references/
+│       └── project-surgeon-lite/         # Lite 版（小模型优化）
 │           ├── SKILL.md
+│           ├── assets/templates/
 │           └── references/
 └── codex/                                  # OpenAI Codex CLI 版本
     └── skills/
@@ -335,8 +373,16 @@ workflow-architect/                         # 仓库根目录
         ├── project-surgeon-bug-fixer/
         │   ├── SKILL.md
         │   └── references/
-        └── project-surgeon-issue-changer/
+        ├── project-surgeon-issue-changer/
+        │   ├── SKILL.md
+        │   └── references/
+        ├── workflow-architect-lite/
+        │   ├── SKILL.md
+        │   ├── assets/templates/
+        │   └── references/
+        └── project-surgeon-lite/
             ├── SKILL.md
+            ├── assets/templates/
             └── references/
 ```
 
@@ -381,6 +427,9 @@ workflow-architect/                         # 仓库根目录
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
 cp -r /tmp/wa-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
+# Lite 版（可选）
+cp -r /tmp/wa-repo/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
+cp -r /tmp/wa-repo/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 rm -rf /tmp/wa-repo
 ```
 
@@ -389,6 +438,9 @@ rm -rf /tmp/wa-repo
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon" "$env:USERPROFILE\.claude\skills\project-surgeon"
+# Lite 版（可选）
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect-lite" "$env:USERPROFILE\.claude\skills\workflow-architect-lite"
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon-lite" "$env:USERPROFILE\.claude\skills\project-surgeon-lite"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -398,6 +450,9 @@ Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills-repos/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon ~/.claude/skills/project-surgeon
+# Lite 版（可选）
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 ```
 
 安装后重启 Claude Code 即可生效。
@@ -415,6 +470,9 @@ ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon ~/
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
 cp -r /tmp/wa-repo/codex/skills/workflow-architect ~/.codex/skills/workflow-architect
 cp -r /tmp/wa-repo/codex/skills/project-surgeon ~/.codex/skills/project-surgeon
+# Lite 版（可选）
+cp -r /tmp/wa-repo/codex/skills/workflow-architect-lite ~/.codex/skills/workflow-architect-lite
+cp -r /tmp/wa-repo/codex/skills/project-surgeon-lite ~/.codex/skills/project-surgeon-lite
 rm -rf /tmp/wa-repo
 ```
 
@@ -423,6 +481,9 @@ rm -rf /tmp/wa-repo
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect" "$env:USERPROFILE\.codex\skills\workflow-architect"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon" "$env:USERPROFILE\.codex\skills\project-surgeon"
+# Lite 版（可选）
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect-lite" "$env:USERPROFILE\.codex\skills\workflow-architect-lite"
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon-lite" "$env:USERPROFILE\.codex\skills\project-surgeon-lite"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 

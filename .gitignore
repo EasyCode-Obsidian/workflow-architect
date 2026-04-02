@@ -1,8 +1,10 @@
 # Workflow runtime directory (generated per-project)
 .workflow/
+.workflow-lite/
 
 # Project Surgeon runtime directory (generated per-project)
 .project-surgeon/
+.project-surgeon-lite/
 
 # OS files
 .DS_Store
