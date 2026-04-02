@@ -6,7 +6,7 @@
 
 ---
 
-> 一个为 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 设计的高级技能（Skill），将 AI 编程助手升级为**高级软件架构师**。通过严格的四阶段工作流（需求收集 → 草案产出 → 执行计划 → 计划执行），引导项目从模糊想法走向完整、可运行的代码实现。
+> 一个为 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 和 [OpenAI Codex CLI](https://github.com/openai/codex) 设计的高级技能（Skill），将 AI 编程助手升级为**高级软件架构师**。通过严格的四阶段工作流（需求收集 → 草案产出 → 执行计划 → 计划执行），引导项目从模糊想法走向完整、可运行的代码实现。
 
 ## 为什么需要 Workflow Architect？
 
@@ -264,50 +264,39 @@ workflow-architect/                         # 仓库根目录
 ├── README.md                               # 本文档（中文）
 ├── README.en.md                            # English version
 ├── LICENSE                                 # 许可证
-└── skills/
-    └── workflow-architect/                 # 技能目录（Claude Code 识别此路径）
-        ├── SKILL.md                        # 主技能定义（入口）
-        ├── assets/
-        │   ├── scripts/
-        │   │   ├── deepwiki.sh             # DeepWiki 查询脚本 (Unix/macOS)
-        │   │   └── deepwiki.ps1            # DeepWiki 查询脚本 (Windows)
-        │   └── templates/
-        │       ├── project-plan.md         # Level 1 计划模板
-        │       ├── phase-plan.md           # Level 2 计划模板
-        │       └── task-plan.md            # Level 3 计划模板
-        ├── bug-fixer/
-        │   ├── SKILL.md                    # Bug Fixer 技能定义
-        │   └── references/
-        │       ├── review-protocol.md      # 7 维度审查协议
-        │       ├── fix-protocol.md         # 修复执行协议
-        │       └── index.md               # 参考文件索引
-        ├── issue-changer/
-        │   ├── SKILL.md                    # Issue Changer 技能定义
-        │   └── references/
-        │       ├── impact-analysis.md      # 影响分析协议
-        │       ├── mid-workflow-protocol.md # 执行中变更协议
-        │       ├── post-completion-protocol.md # 完成后变更协议
-        │       └── index.md               # 参考文件索引
-        └── references/
-            ├── brainstorm-protocol.md      # 头脑风暴完整协议
-            ├── phase-1-requirements.md     # Phase 1 详细参考
-            ├── phase-2-draft.md            # Phase 2 详细参考
-            ├── phase-3-planning.md         # Phase 3 详细参考
-            ├── phase-4-execution.md        # Phase 4 详细参考
-            ├── deepwiki-integration.md     # DeepWiki 集成协议
-            ├── state-management.md         # 状态管理规范
-            └── index.md                   # 参考文件索引
+├── claude/                                 # Claude Code 版本
+│   └── skills/
+│       └── workflow-architect/             # Claude Code Skill（含专有 frontmatter）
+│           ├── SKILL.md
+│           ├── assets/
+│           ├── bug-fixer/
+│           ├── issue-changer/
+│           └── references/
+└── codex/                                  # OpenAI Codex CLI 版本
+    └── skills/
+        └── workflow-architect/             # Codex Skill（通用 frontmatter）
+            ├── SKILL.md
+            ├── assets/
+            ├── bug-fixer/
+            ├── issue-changer/
+            └── references/
 ```
+
+两个版本的技能内容完全一致，仅在以下方面有差异：
+- **frontmatter 字段**：Claude Code 版包含 `allowed-tools`、`when_to_use` 等专有字段；Codex 版仅保留 `name` + `description`
+- **工具引用**：Claude Code 版引用 `AskUserQuestion`、`TaskCreate` 等专有工具名；Codex 版使用通用描述
 
 ---
 
 ## 安装
 
-### 前提条件
+### Claude Code 安装
+
+#### 前提条件
 
 - 已安装 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)（CLI、桌面应用、VS Code 扩展 或 JetBrains 扩展均可）
 
-### 一键安装
+#### 一键安装
 
 在 Claude Code 中直接发送以下提示词即可安装：
 
@@ -318,42 +307,62 @@ workflow-architect/                         # 仓库根目录
 安装步骤：
 1. 克隆仓库到临时目录：
    git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/workflow-architect-repo
-2. 将 skills 目录下的技能复制到 Claude Code skills 目录：
-   cp -r /tmp/workflow-architect-repo/skills/workflow-architect ~/.claude/skills/workflow-architect
+2. 将 Claude Code 版技能复制到 skills 目录：
+   cp -r /tmp/workflow-architect-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
 3. 清理临时目录：
    rm -rf /tmp/workflow-architect-repo
 4. 验证安装：确认 ~/.claude/skills/workflow-architect/SKILL.md 文件存在
 5. Windows 用户路径为：%USERPROFILE%\.claude\skills\workflow-architect
 ```
 
-### 手动安装
+#### 手动安装
 
 **macOS / Linux:**
 ```bash
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
-cp -r /tmp/wa-repo/skills/workflow-architect ~/.claude/skills/workflow-architect
+cp -r /tmp/wa-repo/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
 rm -rf /tmp/wa-repo
 ```
 
 **Windows (PowerShell):**
 ```powershell
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
-Copy-Item -Recurse "$env:TEMP\wa-repo\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
 **ccw / npx 安装（推荐）：**
 
-如果你使用 `ccw` 或 `npx @anthropic-ai/claude-code`，仓库已按照标准 `skills/` 目录结构组织，直接克隆到 skills 根目录即可被自动发现：
-
 ```bash
-# 克隆整个仓库到 skills 父目录
 git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills-repos/workflow-architect
-# 创建符号链接让 Claude Code 识别
-ln -s ~/.claude/skills-repos/workflow-architect/skills/workflow-architect ~/.claude/skills/workflow-architect
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect ~/.claude/skills/workflow-architect
 ```
 
 安装后重启 Claude Code 即可生效。
+
+### OpenAI Codex CLI 安装
+
+#### 前提条件
+
+- 已安装 [Codex CLI](https://github.com/openai/codex)
+
+#### 手动安装
+
+**macOS / Linux:**
+```bash
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
+cp -r /tmp/wa-repo/codex/skills/workflow-architect ~/.codex/skills/workflow-architect
+rm -rf /tmp/wa-repo
+```
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect" "$env:USERPROFILE\.codex\skills\workflow-architect"
+Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
+```
+
+安装后重启 Codex CLI 即可生效。
 
 ---
 
