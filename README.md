@@ -2,7 +2,7 @@
 
 **Senior Architect Workflow — 从想法到完整实现的四阶段治理运行时**
 
-[English Version](README.en.md)
+[English Version](README.en.md) [前排友链：Linux.do](https://linux.do/)
 
 ---
 
