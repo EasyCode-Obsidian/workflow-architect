@@ -233,8 +233,8 @@ Two companion skills extend the core workflow with specialized capabilities.
 
 | Skill | Purpose | Integration Points |
 |-------|---------|-------------------|
-| [Bug Fixer](bug-fixer/SKILL.md) | 7-dimension code review + bug fix | Phase 2 (protocol reuse), Phase 4 (3-Strike Option E, milestone review) |
-| [Issue Changer](issue-changer/SKILL.md) | Change request management | Phase 4 mid-execution changes, post-completion changes |
+| [Bug Fixer](../project-surgeon-bug-fixer/SKILL.md) | 7-dimension code review + bug fix | Phase 2 (protocol reuse), Phase 4 (3-Strike Option E, milestone review) |
+| [Issue Changer](../project-surgeon-issue-changer/SKILL.md) | Change request management | Phase 4 mid-execution changes, post-completion changes |
 
 ## State Management — 状态管理
 
@@ -287,5 +287,5 @@ Load these on demand, not all at once:
 | [references/deepwiki-integration.md](references/deepwiki-integration.md) | Phase 4 — before coding each phase/task |
 | [references/brainstorm-protocol.md](references/brainstorm-protocol.md) | Every brainstorm trigger point (BS-1 through BS-7) |
 | [references/index.md](references/index.md) | Overview of all references |
-| [bug-fixer/SKILL.md](bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review |
-| [issue-changer/SKILL.md](issue-changer/SKILL.md) | Mid-execution change request, post-completion changes |
+| [Bug Fixer](../project-surgeon-bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review |
+| [Issue Changer](../project-surgeon-issue-changer/SKILL.md) | Mid-execution change request, post-completion changes |

@@ -79,7 +79,7 @@ FOR each phase P in project-plan (in order):
       (B) Review what was built (show key files)
       (C) Course correction — modify plans for remaining phases
       (D) Pause execution (can resume later)
-      (E) Run code review — invoke Bug Fixer to audit this phase's deliverables before continuing (see [Bug Fixer](../bug-fixer/SKILL.md))
+      (E) Run code review — invoke Bug Fixer to audit this phase's deliverables before continuing (see [Bug Fixer](../../workflow-architect-bug-fixer/SKILL.md))
 
     If user chooses (C): enter Course Correction protocol (see below)
     If user chooses (D): mark execution as "paused" in state.json, stop
@@ -311,7 +311,7 @@ If all 3 strikes fail:
    - **(B) Provide your own fix** — user provides guidance directly
    - **(C) Skip this task and continue** — mark task as error, move to next task
    - **(D) Abort execution entirely** — stop all execution
-   - **(E) Run Bug Fixer deep review** — invoke `workflow-architect:bug-fixer` for systematic 7-dimension code review that may discover root causes beyond the immediate error (see [Bug Fixer](../bug-fixer/SKILL.md))
+   - **(E) Run Bug Fixer deep review** — invoke `workflow-architect-bug-fixer` for systematic 7-dimension code review that may discover root causes beyond the immediate error (see [Bug Fixer](../../workflow-architect-bug-fixer/SKILL.md))
 4. Wait for user input before continuing
 5. Reset strike counter for next issue
 
@@ -374,7 +374,7 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 
 <!-- 调用 Bug Fixer 外挂技能进行系统化 7 维度代码审查。 -->
 
-1. Invoke `workflow-architect:bug-fixer` in Integrated Mode
+1. Invoke `workflow-architect-bug-fixer` in Integrated Mode
 2. Bug Fixer reads state.json, error_log, and current task context
 3. Bug Fixer performs 7-dimension review on the failing task's files and related code
 4. If Bug Fixer identifies and fixes the root cause: reset strike counter, resume execution
@@ -386,13 +386,13 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 
 <!-- 当用户在执行期间发送变更请求时的处理协议。 -->
 
-During Phase 4 execution, users may interrupt with change requests — new requirements, feature modifications, or scope changes. These are handled by the `workflow-architect:issue-changer` add-on skill.
+During Phase 4 execution, users may interrupt with change requests — new requirements, feature modifications, or scope changes. These are handled by the `workflow-architect-issue-changer` add-on skill.
 
 ### Detection
 
 Change requests can be detected in two ways:
 
-1. **Explicit invocation:** User types `/workflow-architect:issue-changer` with a description
+1. **Explicit invocation:** User types `/workflow-architect-issue-changer` with a description
 2. **Auto-detection:** User sends a message with change intent during execution (e.g., "I want to add...", "Can we change...", "我想改一下...")
 
 ### Routing
@@ -413,7 +413,7 @@ When a change request is detected during execution:
 | **Scope** | Within existing plan scope | Outside existing plan scope |
 | **Example** | "Move DB setup before API task" | "Add a notification system" |
 
-See [Issue Changer](../issue-changer/SKILL.md) for full protocol details.
+See [Issue Changer](../../workflow-architect-issue-changer/SKILL.md) for full protocol details.
 
 ## Progress Tracking — 进度追踪
 

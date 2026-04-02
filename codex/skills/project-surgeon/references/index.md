@@ -22,7 +22,7 @@
 
 | Skill | Invocation | Integration Points |
 |-------|-----------|-------------------|
-| [Bug Fixer](../bug-fixer/SKILL.md) | `project-surgeon:bug-fixer` | Phase 4 3-Strike Option E, milestone code review |
-| [Issue Changer](../issue-changer/SKILL.md) | `project-surgeon:issue-changer` | Mid-execution change requests, post-completion changes |
+| [Bug Fixer](../../project-surgeon-bug-fixer/SKILL.md) | `project-surgeon-bug-fixer` | Phase 4 3-Strike Option E, milestone code review |
+| [Issue Changer](../../project-surgeon-issue-changer/SKILL.md) | `project-surgeon-issue-changer` | Mid-execution change requests, post-completion changes |
 
 Each add-on skill has its own `references/` directory. See their respective `references/index.md` for sub-references.

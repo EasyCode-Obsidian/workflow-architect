@@ -428,7 +428,7 @@ Array of error entries. Each entry records a single strike attempt during error 
 
 ### bug_fixer — Bug 修复状态
 
-Added by the `project-surgeon:bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
+Added by the `project-surgeon-bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -454,7 +454,7 @@ Added by the `project-surgeon:bug-fixer` add-on skill. Initialized on first Bug 
 
 ### change_requests — 变更请求状态
 
-Added by the `project-surgeon:issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
+Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -661,7 +661,7 @@ Unlike workflow-architect's draft cache (which is a resume artifact), the review
 
 ### Field: `bug_fixer`
 
-Added by the `project-surgeon:bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
+Added by the `project-surgeon-bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
 
 **Persistence rules:**
 1. Create `bug_fixer` field on first Bug Fixer invocation if it does not exist
@@ -680,7 +680,7 @@ A state.json from version `"1.0"` (without `bug_fixer` field) remains valid. The
 
 ### Field: `change_requests`
 
-Added by the `project-surgeon:issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
+Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
 
 **Persistence rules:**
 1. Create `change_requests` array on first Issue Changer invocation if it does not exist

@@ -203,7 +203,7 @@ Workflow Architect 解决这些问题：
 ### Bug Fixer — 代码审查与 Bug 修复
 
 ```
-调用方式: /workflow-architect:bug-fixer [目标文件/目录/Bug描述]
+调用方式: /workflow-architect-bug-fixer [目标文件/目录/Bug描述]
 ```
 
 **7 维度审查协议：**
@@ -229,7 +229,7 @@ Workflow Architect 解决这些问题：
 ### Issue Changer — 变更请求管理
 
 ```
-调用方式: /workflow-architect:issue-changer [变更描述]
+调用方式: /workflow-architect-issue-changer [变更描述]
 ```
 
 **两种工作模式：**
@@ -281,8 +281,8 @@ Workflow Architect 解决这些问题：
 **使用外挂技能：**
 
 ```
-/project-surgeon:bug-fixer src/              # 审查 src 目录的代码
-/project-surgeon:issue-changer 加一个缓存层   # 提交变更请求
+/project-surgeon-bug-fixer src/              # 审查 src 目录的代码
+/project-surgeon-issue-changer 加一个缓存层   # 提交变更请求
 ```
 
 ---
@@ -299,28 +299,44 @@ workflow-architect/                         # 仓库根目录
 │       ├── workflow-architect/             # Claude Code Skill（含专有 frontmatter）
 │       │   ├── SKILL.md
 │       │   ├── assets/
-│       │   ├── bug-fixer/
-│       │   ├── issue-changer/
 │       │   └── references/
-│       └── project-surgeon/               # 已有项目接管 Skill
+│       ├── workflow-architect-bug-fixer/   # Bug Fixer 独立技能
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── workflow-architect-issue-changer/ # Issue Changer 独立技能
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── project-surgeon/               # 已有项目接管 Skill
+│       │   ├── SKILL.md
+│       │   ├── assets/
+│       │   └── references/
+│       ├── project-surgeon-bug-fixer/     # Project Surgeon Bug Fixer
+│       │   ├── SKILL.md
+│       │   └── references/
+│       └── project-surgeon-issue-changer/ # Project Surgeon Issue Changer
 │           ├── SKILL.md
-│           ├── assets/
-│           ├── bug-fixer/
-│           ├── issue-changer/
 │           └── references/
 └── codex/                                  # OpenAI Codex CLI 版本
     └── skills/
         ├── workflow-architect/             # Codex Skill（通用 frontmatter）
         │   ├── SKILL.md
         │   ├── assets/
-        │   ├── bug-fixer/
-        │   ├── issue-changer/
         │   └── references/
-        └── project-surgeon/               # 已有项目接管 Skill
+        ├── workflow-architect-bug-fixer/
+        │   ├── SKILL.md
+        │   └── references/
+        ├── workflow-architect-issue-changer/
+        │   ├── SKILL.md
+        │   └── references/
+        ├── project-surgeon/               # 已有项目接管 Skill
+        │   ├── SKILL.md
+        │   ├── assets/
+        │   └── references/
+        ├── project-surgeon-bug-fixer/
+        │   ├── SKILL.md
+        │   └── references/
+        └── project-surgeon-issue-changer/
             ├── SKILL.md
-            ├── assets/
-            ├── bug-fixer/
-            ├── issue-changer/
             └── references/
 ```
 
@@ -445,11 +461,11 @@ Project Surgeon 将引导你完成四个阶段：
 ### 使用外挂技能
 
 ```
-/workflow-architect:bug-fixer src/          # 审查 src 目录的代码
-/workflow-architect:bug-fixer "登录失败"    # 追踪特定 Bug
-/workflow-architect:issue-changer 加一个消息通知系统   # 提交变更请求
-/project-surgeon:bug-fixer src/             # 在接管项目中审查代码
-/project-surgeon:issue-changer 加一个缓存层  # 在接管项目中提交变更
+/workflow-architect-bug-fixer src/          # 审查 src 目录的代码
+/workflow-architect-bug-fixer "登录失败"    # 追踪特定 Bug
+/workflow-architect-issue-changer 加一个消息通知系统   # 提交变更请求
+/project-surgeon-bug-fixer src/             # 在接管项目中审查代码
+/project-surgeon-issue-changer 加一个缓存层  # 在接管项目中提交变更
 ```
 
 ### 会话恢复

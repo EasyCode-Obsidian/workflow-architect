@@ -203,7 +203,7 @@ Upgraded execution when user requests it (e.g., `/brainstorm`). Cost: ~30,000-40
 ### Bug Fixer — Code Review & Bug Fix
 
 ```
-Invocation: /workflow-architect:bug-fixer [target file/directory/bug description]
+Invocation: /workflow-architect-bug-fixer [target file/directory/bug description]
 ```
 
 **7-Dimension Review Protocol:**
@@ -229,7 +229,7 @@ Invocation: /workflow-architect:bug-fixer [target file/directory/bug description
 ### Issue Changer — Change Request Management
 
 ```
-Invocation: /workflow-architect:issue-changer [change description]
+Invocation: /workflow-architect-issue-changer [change description]
 ```
 
 **Two Operating Modes:**
@@ -281,8 +281,8 @@ Compares test suite results before and after each task — auto-reverts on new t
 **Using Add-on Skills:**
 
 ```
-/project-surgeon:bug-fixer src/              # Review code in src directory
-/project-surgeon:issue-changer add a caching layer   # Submit change request
+/project-surgeon-bug-fixer src/              # Review code in src directory
+/project-surgeon-issue-changer add a caching layer   # Submit change request
 ```
 
 ---
@@ -299,28 +299,44 @@ workflow-architect/                         # Repository root
 │       ├── workflow-architect/             # Claude Code Skill (with platform-specific frontmatter)
 │       │   ├── SKILL.md
 │       │   ├── assets/
-│       │   ├── bug-fixer/
-│       │   ├── issue-changer/
 │       │   └── references/
-│       └── project-surgeon/               # Existing project takeover Skill
+│       ├── workflow-architect-bug-fixer/   # Bug Fixer standalone skill
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── workflow-architect-issue-changer/ # Issue Changer standalone skill
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── project-surgeon/               # Existing project takeover Skill
+│       │   ├── SKILL.md
+│       │   ├── assets/
+│       │   └── references/
+│       ├── project-surgeon-bug-fixer/     # Project Surgeon Bug Fixer
+│       │   ├── SKILL.md
+│       │   └── references/
+│       └── project-surgeon-issue-changer/ # Project Surgeon Issue Changer
 │           ├── SKILL.md
-│           ├── assets/
-│           ├── bug-fixer/
-│           ├── issue-changer/
 │           └── references/
 └── codex/                                  # OpenAI Codex CLI version
     └── skills/
         ├── workflow-architect/             # Codex Skill (generic frontmatter)
         │   ├── SKILL.md
         │   ├── assets/
-        │   ├── bug-fixer/
-        │   ├── issue-changer/
         │   └── references/
-        └── project-surgeon/               # Existing project takeover Skill
+        ├── workflow-architect-bug-fixer/
+        │   ├── SKILL.md
+        │   └── references/
+        ├── workflow-architect-issue-changer/
+        │   ├── SKILL.md
+        │   └── references/
+        ├── project-surgeon/               # Existing project takeover Skill
+        │   ├── SKILL.md
+        │   ├── assets/
+        │   └── references/
+        ├── project-surgeon-bug-fixer/
+        │   ├── SKILL.md
+        │   └── references/
+        └── project-surgeon-issue-changer/
             ├── SKILL.md
-            ├── assets/
-            ├── bug-fixer/
-            ├── issue-changer/
             └── references/
 ```
 
@@ -445,11 +461,11 @@ Project Surgeon will guide you through four phases:
 ### Use Add-on Skills
 
 ```
-/workflow-architect:bug-fixer src/              # Review code in src directory
-/workflow-architect:bug-fixer "login failure"    # Track a specific bug
-/workflow-architect:issue-changer add a notification system   # Submit change request
-/project-surgeon:bug-fixer src/                 # Review code in takeover project
-/project-surgeon:issue-changer add a caching layer  # Submit change in takeover project
+/workflow-architect-bug-fixer src/              # Review code in src directory
+/workflow-architect-bug-fixer "login failure"    # Track a specific bug
+/workflow-architect-issue-changer add a notification system   # Submit change request
+/project-surgeon-bug-fixer src/                 # Review code in takeover project
+/project-surgeon-issue-changer add a caching layer  # Submit change in takeover project
 ```
 
 ### Session Resume

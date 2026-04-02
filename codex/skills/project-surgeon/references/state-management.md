@@ -428,7 +428,7 @@ Array of error entries. Each entry records a single strike attempt during error 
 
 ### bug_fixer — Bug 修复状态
 
-Added by the `project-surgeon:bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
+Added by the `project-surgeon-bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -454,7 +454,7 @@ Added by the `project-surgeon:bug-fixer` add-on skill. Initialized on first Bug 
 
 ### change_requests — 变更请求状态
 
-Added by the `project-surgeon:issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
+Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -586,7 +586,7 @@ Brainstorm intermediate results are persisted to disk for traceability and conte
 │   ├── bs-1.md        # Analysis completeness check results
 │   ├── bs-2.md        # Review methodology brainstorm results
 │   ├── bs-3.md        # Task decomposition review results
-│   └── bs-7-N.md      # Error recovery brainstorms
+│   └── bs-7-N.md      # Error recovery brainstorm (N = occurrence count)
 ```
 
 **Note:** Unlike workflow-architect (which has bs-1 through bs-6 plus bs-7), project-surgeon only has bs-1, bs-2, bs-3, and bs-7. There are no bs-4, bs-5, or bs-6 artifact files.
@@ -661,7 +661,7 @@ Unlike workflow-architect's draft cache (which is a resume artifact), the review
 
 ### Field: `bug_fixer`
 
-Added by the `project-surgeon:bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
+Added by the `project-surgeon-bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
 
 **Persistence rules:**
 1. Create `bug_fixer` field on first Bug Fixer invocation if it does not exist
@@ -680,7 +680,7 @@ A state.json from version `"1.0"` (without `bug_fixer` field) remains valid. The
 
 ### Field: `change_requests`
 
-Added by the `project-surgeon:issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
+Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
 
 **Persistence rules:**
 1. Create `change_requests` array on first Issue Changer invocation if it does not exist

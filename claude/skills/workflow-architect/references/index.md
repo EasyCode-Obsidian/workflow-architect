@@ -21,8 +21,8 @@
 
 | Skill | Entry Point | When to Load |
 |-------|------------|-------------|
-| [Bug Fixer](../bug-fixer/SKILL.md) | `/workflow-architect:bug-fixer` | 3-Strike Option E, milestone code review, standalone code audit |
-| [Issue Changer](../issue-changer/SKILL.md) | `/workflow-architect:issue-changer` | Mid-execution change requests, post-completion changes |
+| [Bug Fixer](../../workflow-architect-bug-fixer/SKILL.md) | `/workflow-architect-bug-fixer` | 3-Strike Option E, milestone code review, standalone code audit |
+| [Issue Changer](../../workflow-architect-issue-changer/SKILL.md) | `/workflow-architect-issue-changer` | Mid-execution change requests, post-completion changes |
 
 Each add-on skill has its own `references/` directory. See their respective `references/index.md` for sub-references.
 

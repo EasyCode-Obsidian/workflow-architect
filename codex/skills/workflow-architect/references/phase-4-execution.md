@@ -20,8 +20,8 @@
    - **Unix/macOS:** `${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh` — verify it exists and is executable
    - **Windows:** `${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1` — verify it exists
    - **Auto-detect:** Check if running on Windows (presence of `COMSPEC` env var or `OS` = `Windows_NT`). Use `.ps1` on Windows, `.sh` otherwise.
-   - If neither script is found, log a warning — DeepWiki research will fall back to web search.
-6. Create task tracking entries for ALL pending tasks across ALL phases
+   - If neither script is found, log a warning — DeepWiki research will fall back to WebSearch.
+6. Create TaskCreate entries for ALL pending tasks across ALL phases
    - This provides real-time visibility to the user
    - Format: `[Phase N] Task NN: <name>`
 
@@ -40,7 +40,7 @@ FOR each phase P in project-plan (in order):
     FOR each task T in phase P (in order):
         Read .workflow/phases/phase-P/tasks/task-TT-<name>.md
         Mark task as in_progress in state.json
-        Mark the corresponding task entry as in_progress
+        Mark corresponding TaskCreate entry as in_progress
 
         === DEEPWIKI TIER 2: TASK RESEARCH ===
         Run DeepWiki task-level focused research (see DeepWiki Integration below)
@@ -59,7 +59,7 @@ FOR each phase P in project-plan (in order):
         Run verification checks from task plan
         If verification passes:
             Mark task completed in state.json
-            Mark the task entry as completed
+            Mark TaskCreate entry as completed
             Git commit with pre-written message from task plan
             Output progress: [Phase X/Y] [Task A/B] Completed: <name> | Overall: C/D (E%)
 
@@ -70,7 +70,7 @@ FOR each phase P in project-plan (in order):
     Output: "Phase P completed. Moving to Phase P+1."
 
     === MILESTONE CHECKPOINT ===
-    Present milestone review to user:
+    Present milestone review to user via AskUserQuestion:
     - Summary of what was built in this phase
     - Files created/modified count
     - Any errors encountered and how they were resolved
@@ -79,7 +79,7 @@ FOR each phase P in project-plan (in order):
       (B) Review what was built (show key files)
       (C) Course correction — modify plans for remaining phases
       (D) Pause execution (can resume later)
-      (E) Run code review — invoke Bug Fixer to audit this phase's deliverables before continuing (see [Bug Fixer](../bug-fixer/SKILL.md))
+      (E) Run code review — invoke Bug Fixer to audit this phase's deliverables before continuing (see [Bug Fixer](../../workflow-architect-bug-fixer/SKILL.md))
 
     If user chooses (C): enter Course Correction protocol (see below)
     If user chooses (D): mark execution as "paused" in state.json, stop
@@ -189,7 +189,7 @@ powershell -File ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1 structure "expr
 
 If DeepWiki is unavailable (sustained 429 after retries, network error):
 1. Use `read_wiki_contents` (not rate-limited) + analyze directly
-2. Fall back to web search
+2. Fall back to WebSearch
 3. Fall back to model knowledge with `⚠️ Based on model knowledge` disclaimer
 
 ---
@@ -235,7 +235,7 @@ When returning to Phase 4 after course correction:
 2. Identify which tasks are affected by the plan changes:
    - Tasks in modified phases: re-execute from the first modified task
    - Tasks in unmodified phases: keep as completed
-3. Re-create task tracking entries for remaining tasks
+3. Re-create TaskCreate entries for remaining tasks
 4. Display resume summary and continue
 
 ## Plan Following — 计划遵循
@@ -306,12 +306,12 @@ If all 3 strikes fail:
    - Which phase/task/step failed
    - All 3 attempted resolutions (one sentence each)
    - Root cause hypothesis
-3. Offer options to the user:
+3. Offer options via `AskUserQuestion`:
    - **(A) Run BS-7 deep analysis** — AI runs a full 7-step brainstorm to find a fix (takes longer but produces high-quality options)
    - **(B) Provide your own fix** — user provides guidance directly
    - **(C) Skip this task and continue** — mark task as error, move to next task
    - **(D) Abort execution entirely** — stop all execution
-   - **(E) Run Bug Fixer deep review** — invoke `bug-fixer` for systematic 7-dimension code review that may discover root causes beyond the immediate error (see [Bug Fixer](../bug-fixer/SKILL.md))
+   - **(E) Run Bug Fixer deep review** — invoke `workflow-architect-bug-fixer` for systematic 7-dimension code review that may discover root causes beyond the immediate error (see [Bug Fixer](../../workflow-architect-bug-fixer/SKILL.md))
 4. Wait for user input before continuing
 5. Reset strike counter for next issue
 
@@ -327,7 +327,7 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 
 **Inline execution checklist:**
 
-1. **Step 1 — Forced Research:** Run at least 2 web searches about the specific error type and technology involved. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
+1. **Step 1 — Forced Research:** Run at least 2 WebSearch queries about the specific error type and technology involved. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
 2. **Step 2 — Independent Agents:** Launch 3 parallel Agents to propose genuinely different fix approaches (not variations of the same fix). Each agent gets the full error context (phase, task, step, all 3 strike attempts, error messages). Output the `🏗️ Independent Proposals Generated` block.
 3. **Step 3 — Quality Gate:** Run the divergence check on the 3 proposals. Output the `🔬 Divergence Check` block. If FAIL, regenerate (max 5 rounds).
 4. **Step 4 — Multi-Perspective:** Evaluate from Developer + Architect + Ops perspectives: "Why did this fail? Will this fix introduce new problems?" Output the `🧠 Multi-Perspective Evaluation` block.
@@ -374,7 +374,7 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 
 <!-- 调用 Bug Fixer 外挂技能进行系统化 7 维度代码审查。 -->
 
-1. Invoke `bug-fixer` in Integrated Mode
+1. Invoke `workflow-architect-bug-fixer` in Integrated Mode
 2. Bug Fixer reads state.json, error_log, and current task context
 3. Bug Fixer performs 7-dimension review on the failing task's files and related code
 4. If Bug Fixer identifies and fixes the root cause: reset strike counter, resume execution
@@ -386,13 +386,13 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 
 <!-- 当用户在执行期间发送变更请求时的处理协议。 -->
 
-During Phase 4 execution, users may interrupt with change requests — new requirements, feature modifications, or scope changes. These are handled by the `issue-changer` add-on skill.
+During Phase 4 execution, users may interrupt with change requests — new requirements, feature modifications, or scope changes. These are handled by the `workflow-architect-issue-changer` add-on skill.
 
 ### Detection
 
 Change requests can be detected in two ways:
 
-1. **Explicit invocation:** User invokes `issue-changer` with a description
+1. **Explicit invocation:** User types `/workflow-architect-issue-changer` with a description
 2. **Auto-detection:** User sends a message with change intent during execution (e.g., "I want to add...", "Can we change...", "我想改一下...")
 
 ### Routing
@@ -413,7 +413,7 @@ When a change request is detected during execution:
 | **Scope** | Within existing plan scope | Outside existing plan scope |
 | **Example** | "Move DB setup before API task" | "Add a notification system" |
 
-See [Issue Changer](../issue-changer/SKILL.md) for full protocol details.
+See [Issue Changer](../../workflow-architect-issue-changer/SKILL.md) for full protocol details.
 
 ## Progress Tracking — 进度追踪
 
@@ -458,9 +458,9 @@ Tasks: A/A completed
 ═══════════════════════════════════
 ```
 
-### Task Entry Integration
+### TaskCreate Integration
 
-- Create one task entry per Level 3 task at execution start
+- Create one TaskCreate entry per Level 3 task at execution start
 - Use format: `[P<N>-T<NN>] <task name>`
 - Update to `in_progress` when starting each task
 - Update to `completed` when task passes verification
@@ -591,20 +591,20 @@ When context pressure is detected (conversation getting very long):
 3. **Inform the user:** "Context window is reaching capacity. Recommend starting a new session to continue. All progress is saved in state.json."
 4. The next session will resume cleanly via the Session Resume protocol
 
-### Strategy 4: Task Entry Batching — 任务条目分批创建
+### Strategy 4: TaskCreate Batching — 任务条目分批创建
 
-For 50+ tasks, do NOT create all task entries upfront:
+For 50+ tasks, do NOT create all TaskCreate entries upfront:
 
 1. Create entries only for the **current phase's tasks** at phase entry
 2. Mark completed tasks as done
-3. At next phase entry: create that phase's task entries
+3. At next phase entry: create that phase's TaskCreate entries
 4. Show overall progress as: `Overall: C/D tasks (E%) — current phase: Phase N`
 
 ### Thresholds — 阈值
 
 | Metric | Threshold | Action |
 |--------|-----------|--------|
-| Total tasks | > 50 | Enable Strategy 4 (batched task entries) |
+| Total tasks | > 50 | Enable Strategy 4 (batched TaskCreate) |
 | Phases | > 8 | Enable Strategy 1 (lazy loading) |
 | Tasks in single phase | > 15 | Consider splitting phase in Phase 3 |
 | Consecutive sessions | > 5 | Verify state.json integrity at resume |

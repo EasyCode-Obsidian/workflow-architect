@@ -189,8 +189,8 @@ They can be invoked standalone or are automatically suggested at specific workfl
 
 | Skill | Purpose | Standalone |
 |-------|---------|------------|
-| [Bug Fixer](bug-fixer/SKILL.md) | 7-dimension code review + bug fix | Yes |
-| [Issue Changer](issue-changer/SKILL.md) | Change request management (mid-execution & post-completion) | No (requires `.workflow/`) |
+| [Bug Fixer](../workflow-architect-bug-fixer/SKILL.md) | 7-dimension code review + bug fix | Yes |
+| [Issue Changer](../workflow-architect-issue-changer/SKILL.md) | Change request management (mid-execution & post-completion) | No (requires `.workflow/`) |
 
 ### Bug Fixer Integration Points
 
@@ -274,5 +274,5 @@ Load these on demand, not all at once:
 | [references/deepwiki-integration.md](references/deepwiki-integration.md) | Phase 4 — before coding each phase/task |
 | [references/brainstorm-protocol.md](references/brainstorm-protocol.md) | Every brainstorm trigger point (BS-1 through BS-7) |
 | [references/index.md](references/index.md) | Overview of all references |
-| [bug-fixer/SKILL.md](bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review, standalone review |
-| [issue-changer/SKILL.md](issue-changer/SKILL.md) | Mid-execution change request, post-completion changes |
+| [bug-fixer/SKILL.md](../workflow-architect-bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review, standalone review |
+| [issue-changer/SKILL.md](../workflow-architect-issue-changer/SKILL.md) | Mid-execution change request, post-completion changes |

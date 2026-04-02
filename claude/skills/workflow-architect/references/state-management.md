@@ -369,7 +369,7 @@ BS-4 Decision: <summary>
 
 ### Field: `bug_fixer`
 
-Added by the `workflow-architect:bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
+Added by the `workflow-architect-bug-fixer` add-on skill. Initialized on first Bug Fixer invocation (not at state.json creation).
 
 **Persistence rules:**
 1. Create `bug_fixer` field on first Bug Fixer invocation if it does not exist
@@ -397,7 +397,7 @@ A state.json from version `"1.0"` (without `bug_fixer` field) remains valid. The
 
 ### Field: `change_requests`
 
-Added by the `workflow-architect:issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
+Added by the `workflow-architect-issue-changer` add-on skill. Initialized on first Issue Changer invocation (not at state.json creation).
 
 **Persistence rules:**
 1. Create `change_requests` array on first Issue Changer invocation if it does not exist
