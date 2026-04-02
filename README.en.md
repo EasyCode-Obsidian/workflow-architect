@@ -260,41 +260,43 @@ Invocation: /workflow-architect:issue-changer [change description]
 ## Directory Structure
 
 ```
-workflow-architect/
-├── SKILL.md                            # Main skill definition (entry point)
-├── README.md                           # Chinese documentation
-├── README.en.md                        # This file
-├── LICENSE                             # License
-├── assets/
-│   ├── scripts/
-│   │   ├── deepwiki.sh                 # DeepWiki query script (Unix/macOS)
-│   │   └── deepwiki.ps1               # DeepWiki query script (Windows)
-│   └── templates/
-│       ├── project-plan.md             # Level 1 plan template
-│       ├── phase-plan.md              # Level 2 plan template
-│       └── task-plan.md               # Level 3 plan template
-├── bug-fixer/
-│   ├── SKILL.md                        # Bug Fixer skill definition
-│   └── references/
-│       ├── review-protocol.md          # 7-dimension review protocol
-│       ├── fix-protocol.md            # Fix execution protocol
-│       └── index.md                   # Reference index
-├── issue-changer/
-│   ├── SKILL.md                        # Issue Changer skill definition
-│   └── references/
-│       ├── impact-analysis.md          # Impact analysis protocol
-│       ├── mid-workflow-protocol.md    # Mid-workflow change protocol
-│       ├── post-completion-protocol.md # Post-completion change protocol
-│       └── index.md                   # Reference index
-└── references/
-    ├── brainstorm-protocol.md          # Full brainstorm protocol
-    ├── phase-1-requirements.md         # Phase 1 detailed reference
-    ├── phase-2-draft.md               # Phase 2 detailed reference
-    ├── phase-3-planning.md            # Phase 3 detailed reference
-    ├── phase-4-execution.md           # Phase 4 detailed reference
-    ├── deepwiki-integration.md        # DeepWiki integration protocol
-    ├── state-management.md            # State management specification
-    └── index.md                       # Reference index
+workflow-architect/                         # Repository root
+├── README.md                               # Chinese documentation
+├── README.en.md                            # This file
+├── LICENSE                                 # License
+└── skills/
+    └── workflow-architect/                 # Skill directory (Claude Code discovers this path)
+        ├── SKILL.md                        # Main skill definition (entry point)
+        ├── assets/
+        │   ├── scripts/
+        │   │   ├── deepwiki.sh             # DeepWiki query script (Unix/macOS)
+        │   │   └── deepwiki.ps1            # DeepWiki query script (Windows)
+        │   └── templates/
+        │       ├── project-plan.md         # Level 1 plan template
+        │       ├── phase-plan.md           # Level 2 plan template
+        │       └── task-plan.md            # Level 3 plan template
+        ├── bug-fixer/
+        │   ├── SKILL.md                    # Bug Fixer skill definition
+        │   └── references/
+        │       ├── review-protocol.md      # 7-dimension review protocol
+        │       ├── fix-protocol.md         # Fix execution protocol
+        │       └── index.md               # Reference index
+        ├── issue-changer/
+        │   ├── SKILL.md                    # Issue Changer skill definition
+        │   └── references/
+        │       ├── impact-analysis.md      # Impact analysis protocol
+        │       ├── mid-workflow-protocol.md # Mid-workflow change protocol
+        │       ├── post-completion-protocol.md # Post-completion change protocol
+        │       └── index.md               # Reference index
+        └── references/
+            ├── brainstorm-protocol.md      # Full brainstorm protocol
+            ├── phase-1-requirements.md     # Phase 1 detailed reference
+            ├── phase-2-draft.md            # Phase 2 detailed reference
+            ├── phase-3-planning.md         # Phase 3 detailed reference
+            ├── phase-4-execution.md        # Phase 4 detailed reference
+            ├── deepwiki-integration.md     # DeepWiki integration protocol
+            ├── state-management.md         # State management specification
+            └── index.md                   # Reference index
 ```
 
 ---
@@ -312,25 +314,43 @@ Send the following prompt directly in Claude Code to install:
 ```
 Please install a Claude Code Skill for me.
 Repository: https://github.com/EasyCode-Obsidian/workflow-architect
-Installation: Clone the repository to Claude Code's skills directory.
 
 Steps:
-1. Clone to skills directory:
-   git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills/workflow-architect
-2. Verify: confirm ~/.claude/skills/workflow-architect/SKILL.md exists
-3. Windows path: %USERPROFILE%\.claude\skills\workflow-architect
+1. Clone the repository to a temp directory:
+   git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/workflow-architect-repo
+2. Copy the skill into Claude Code's skills directory:
+   cp -r /tmp/workflow-architect-repo/skills/workflow-architect ~/.claude/skills/workflow-architect
+3. Clean up:
+   rm -rf /tmp/workflow-architect-repo
+4. Verify: confirm ~/.claude/skills/workflow-architect/SKILL.md exists
+5. Windows path: %USERPROFILE%\.claude\skills\workflow-architect
 ```
 
 ### Manual Installation
 
 **macOS / Linux:**
 ```bash
-git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills/workflow-architect
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
+cp -r /tmp/wa-repo/skills/workflow-architect ~/.claude/skills/workflow-architect
+rm -rf /tmp/wa-repo
 ```
 
-**Windows:**
+**Windows (PowerShell):**
 ```powershell
-git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:USERPROFILE\.claude\skills\workflow-architect"
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
+Copy-Item -Recurse "$env:TEMP\wa-repo\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
+Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
+```
+
+**ccw / npx install (recommended):**
+
+The repository follows the standard `skills/` directory convention for ccw and `npx @anthropic-ai/claude-code`. Clone and symlink:
+
+```bash
+# Clone to a skills repo directory
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills-repos/workflow-architect
+# Symlink for Claude Code discovery
+ln -s ~/.claude/skills-repos/workflow-architect/skills/workflow-architect ~/.claude/skills/workflow-architect
 ```
 
 Restart Claude Code after installation.

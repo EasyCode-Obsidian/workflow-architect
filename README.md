@@ -260,41 +260,43 @@ Workflow Architect 解决这些问题：
 ## 目录结构
 
 ```
-workflow-architect/
-├── SKILL.md                            # 主技能定义（入口）
-├── README.md                           # 本文档
-├── README.en.md                        # English version
-├── LICENSE                             # 许可证
-├── assets/
-│   ├── scripts/
-│   │   ├── deepwiki.sh                 # DeepWiki 查询脚本 (Unix/macOS)
-│   │   └── deepwiki.ps1               # DeepWiki 查询脚本 (Windows)
-│   └── templates/
-│       ├── project-plan.md             # Level 1 计划模板
-│       ├── phase-plan.md              # Level 2 计划模板
-│       └── task-plan.md               # Level 3 计划模板
-├── bug-fixer/
-│   ├── SKILL.md                        # Bug Fixer 技能定义
-│   └── references/
-│       ├── review-protocol.md          # 7 维度审查协议
-│       ├── fix-protocol.md            # 修复执行协议
-│       └── index.md                   # 参考文件索引
-├── issue-changer/
-│   ├── SKILL.md                        # Issue Changer 技能定义
-│   └── references/
-│       ├── impact-analysis.md          # 影响分析协议
-│       ├── mid-workflow-protocol.md    # 执行中变更协议
-│       ├── post-completion-protocol.md # 完成后变更协议
-│       └── index.md                   # 参考文件索引
-└── references/
-    ├── brainstorm-protocol.md          # 头脑风暴完整协议
-    ├── phase-1-requirements.md         # Phase 1 详细参考
-    ├── phase-2-draft.md               # Phase 2 详细参考
-    ├── phase-3-planning.md            # Phase 3 详细参考
-    ├── phase-4-execution.md           # Phase 4 详细参考
-    ├── deepwiki-integration.md        # DeepWiki 集成协议
-    ├── state-management.md            # 状态管理规范
-    └── index.md                       # 参考文件索引
+workflow-architect/                         # 仓库根目录
+├── README.md                               # 本文档（中文）
+├── README.en.md                            # English version
+├── LICENSE                                 # 许可证
+└── skills/
+    └── workflow-architect/                 # 技能目录（Claude Code 识别此路径）
+        ├── SKILL.md                        # 主技能定义（入口）
+        ├── assets/
+        │   ├── scripts/
+        │   │   ├── deepwiki.sh             # DeepWiki 查询脚本 (Unix/macOS)
+        │   │   └── deepwiki.ps1            # DeepWiki 查询脚本 (Windows)
+        │   └── templates/
+        │       ├── project-plan.md         # Level 1 计划模板
+        │       ├── phase-plan.md           # Level 2 计划模板
+        │       └── task-plan.md            # Level 3 计划模板
+        ├── bug-fixer/
+        │   ├── SKILL.md                    # Bug Fixer 技能定义
+        │   └── references/
+        │       ├── review-protocol.md      # 7 维度审查协议
+        │       ├── fix-protocol.md         # 修复执行协议
+        │       └── index.md               # 参考文件索引
+        ├── issue-changer/
+        │   ├── SKILL.md                    # Issue Changer 技能定义
+        │   └── references/
+        │       ├── impact-analysis.md      # 影响分析协议
+        │       ├── mid-workflow-protocol.md # 执行中变更协议
+        │       ├── post-completion-protocol.md # 完成后变更协议
+        │       └── index.md               # 参考文件索引
+        └── references/
+            ├── brainstorm-protocol.md      # 头脑风暴完整协议
+            ├── phase-1-requirements.md     # Phase 1 详细参考
+            ├── phase-2-draft.md            # Phase 2 详细参考
+            ├── phase-3-planning.md         # Phase 3 详细参考
+            ├── phase-4-execution.md        # Phase 4 详细参考
+            ├── deepwiki-integration.md     # DeepWiki 集成协议
+            ├── state-management.md         # 状态管理规范
+            └── index.md                   # 参考文件索引
 ```
 
 ---
@@ -312,25 +314,43 @@ workflow-architect/
 ```
 请帮我安装 Claude Code Skill。
 仓库地址：https://github.com/EasyCode-Obsidian/workflow-architect
-安装方式：将仓库克隆到 Claude Code 的 skills 目录下。
 
-具体步骤：
-1. 克隆仓库到技能目录：
-   git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills/workflow-architect
-2. 验证安装：确认 ~/.claude/skills/workflow-architect/SKILL.md 文件存在
-3. Windows 用户路径为：%USERPROFILE%\.claude\skills\workflow-architect
+安装步骤：
+1. 克隆仓库到临时目录：
+   git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/workflow-architect-repo
+2. 将 skills 目录下的技能复制到 Claude Code skills 目录：
+   cp -r /tmp/workflow-architect-repo/skills/workflow-architect ~/.claude/skills/workflow-architect
+3. 清理临时目录：
+   rm -rf /tmp/workflow-architect-repo
+4. 验证安装：确认 ~/.claude/skills/workflow-architect/SKILL.md 文件存在
+5. Windows 用户路径为：%USERPROFILE%\.claude\skills\workflow-architect
 ```
 
 ### 手动安装
 
 **macOS / Linux:**
 ```bash
-git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills/workflow-architect
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git /tmp/wa-repo
+cp -r /tmp/wa-repo/skills/workflow-architect ~/.claude/skills/workflow-architect
+rm -rf /tmp/wa-repo
 ```
 
-**Windows:**
+**Windows (PowerShell):**
 ```powershell
-git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:USERPROFILE\.claude\skills\workflow-architect"
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git "$env:TEMP\wa-repo"
+Copy-Item -Recurse "$env:TEMP\wa-repo\skills\workflow-architect" "$env:USERPROFILE\.claude\skills\workflow-architect"
+Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
+```
+
+**ccw / npx 安装（推荐）：**
+
+如果你使用 `ccw` 或 `npx @anthropic-ai/claude-code`，仓库已按照标准 `skills/` 目录结构组织，直接克隆到 skills 根目录即可被自动发现：
+
+```bash
+# 克隆整个仓库到 skills 父目录
+git clone https://github.com/EasyCode-Obsidian/workflow-architect.git ~/.claude/skills-repos/workflow-architect
+# 创建符号链接让 Claude Code 识别
+ln -s ~/.claude/skills-repos/workflow-architect/skills/workflow-architect ~/.claude/skills/workflow-architect
 ```
 
 安装后重启 Claude Code 即可生效。
