@@ -317,6 +317,45 @@ Streamlined versions designed for **smaller models** (Haiku, GPT-4o-mini) or **f
 
 ---
 
+## Code Reviewer — 10-Dimension × 4-Role Fused Code Review
+
+```
+Invocation: /code-reviewer [target file/directory]
+Invocation: /code-reviewer --diff          # only review git-changed files
+Invocation: /code-reviewer [target] --full  # Full Audit mode
+```
+
+A standalone **read-only** code review skill that fuses 10 audit dimensions with 4 expert role perspectives. Never modifies project code.
+
+**10 Audit Dimensions:**
+
+| ID | Dimension | Source |
+|----|-----------|--------|
+| D1-D7 | Security, Logic, Concurrency, Performance, Error Handling, Dependencies, Consistency | Inherited from Bug Fixer |
+| D8 | Architecture Quality | New: module boundaries, coupling, layer violations |
+| D9 | Test Quality | New: coverage gaps, flaky tests, mock overuse |
+| D10 | Documentation & CI/CD | New: README, CI config, Dockerfile quality |
+
+**4 Review Roles:**
+
+| Role | PRIMARY Dimensions | Perspective |
+|------|-------------------|-------------|
+| Developer | D2, D3, D5, D7 | Does the code work correctly, handle errors, follow conventions? |
+| Security Expert | D1, D6 (CVEs) | Can the code be exploited? Is user data safe? |
+| Architect | D4, D7, D8 | Is the structure sound, maintainable, scalable? |
+| Ops/SRE | D6 (freshness), D10 | Is it deployable, monitorable, operable? |
+
+**Two Modes:**
+
+| Mode | Roles | Dimension Depth | Scenario |
+|------|-------|----------------|----------|
+| Quick Scan (default) | 3 (no Ops/SRE) | PRIMARY only | Daily review |
+| Full Audit (`--full`) | 4 (all) | PRIMARY + SECONDARY | Comprehensive audit, report written to `.review/report.md` |
+
+**Cross-Role Deduplication:** When multiple roles flag the same location, findings are auto-merged — keeping the highest severity and all role tags.
+
+---
+
 ## Directory Structure
 
 ```
@@ -350,7 +389,11 @@ workflow-architect/                         # Repository root
 │       │   ├── SKILL.md
 │       │   ├── assets/templates/
 │       │   └── references/
-│       └── project-surgeon-lite/         # Lite version (small model optimized)
+│       ├── project-surgeon-lite/         # Lite version (small model optimized)
+│       │   ├── SKILL.md
+│       │   ├── assets/templates/
+│       │   └── references/
+│       └── code-reviewer/               # 10-dimension × 4-role code review
 │           ├── SKILL.md
 │           ├── assets/templates/
 │           └── references/
@@ -381,6 +424,10 @@ workflow-architect/                         # Repository root
         │   ├── assets/templates/
         │   └── references/
         └── project-surgeon-lite/
+            ├── SKILL.md
+            ├── assets/templates/
+            └── references/
+        └── code-reviewer/
             ├── SKILL.md
             ├── assets/templates/
             └── references/
@@ -430,6 +477,8 @@ cp -r /tmp/wa-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeo
 # Lite version (optional)
 cp -r /tmp/wa-repo/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
 cp -r /tmp/wa-repo/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
+# Code Reviewer (optional)
+cp -r /tmp/wa-repo/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
 rm -rf /tmp/wa-repo
 ```
 
@@ -441,6 +490,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon" "$env:USERP
 # Lite version (optional)
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect-lite" "$env:USERPROFILE\.claude\skills\workflow-architect-lite"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon-lite" "$env:USERPROFILE\.claude\skills\project-surgeon-lite"
+# Code Reviewer (optional)
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\code-reviewer" "$env:USERPROFILE\.claude\skills\code-reviewer"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -453,6 +504,8 @@ ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon ~/
 # Lite version (optional)
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
+# Code Reviewer (optional)
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
 ```
 
 Restart Claude Code after installation.
@@ -473,6 +526,8 @@ cp -r /tmp/wa-repo/codex/skills/project-surgeon ~/.codex/skills/project-surgeon
 # Lite version (optional)
 cp -r /tmp/wa-repo/codex/skills/workflow-architect-lite ~/.codex/skills/workflow-architect-lite
 cp -r /tmp/wa-repo/codex/skills/project-surgeon-lite ~/.codex/skills/project-surgeon-lite
+# Code Reviewer (optional)
+cp -r /tmp/wa-repo/codex/skills/code-reviewer ~/.codex/skills/code-reviewer
 rm -rf /tmp/wa-repo
 ```
 
@@ -484,6 +539,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon" "$env:USERPR
 # Lite version (optional)
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect-lite" "$env:USERPROFILE\.codex\skills\workflow-architect-lite"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon-lite" "$env:USERPROFILE\.codex\skills\project-surgeon-lite"
+# Code Reviewer (optional)
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\code-reviewer" "$env:USERPROFILE\.codex\skills\code-reviewer"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -534,6 +591,9 @@ Project Surgeon will guide you through four phases:
 /workflow-architect-issue-changer add a notification system   # Submit change request
 /project-surgeon-bug-fixer src/                 # Review code in takeover project
 /project-surgeon-issue-changer add a caching layer  # Submit change in takeover project
+/code-reviewer src/                                # Quick Scan review src directory
+/code-reviewer --diff                              # Review only git-changed files
+/code-reviewer . --full                            # Full Audit comprehensive review
 ```
 
 ### Session Resume

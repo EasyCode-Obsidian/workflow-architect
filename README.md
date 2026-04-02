@@ -317,6 +317,45 @@ Workflow Architect 解决这些问题：
 
 ---
 
+## Code Reviewer — 10 维度 × 4 角色融合代码审查
+
+```
+调用方式: /code-reviewer [目标文件/目录]
+调用方式: /code-reviewer --diff          # 仅审查 git 变更文件
+调用方式: /code-reviewer [目标] --full    # 完整审计模式
+```
+
+独立的**只读**代码审查技能，融合 10 个审查维度与 4 个专家角色视角。永不修改项目代码。
+
+**10 审查维度：**
+
+| ID | 维度 | 来源 |
+|----|------|------|
+| D1-D7 | 安全、逻辑、并发、性能、错误处理、依赖、一致性 | 继承自 Bug Fixer |
+| D8 | 架构质量 | 新增：模块边界、耦合度、分层违规 |
+| D9 | 测试质量 | 新增：覆盖缺口、脆弱测试、Mock 滥用 |
+| D10 | 文档与 CI/CD | 新增：README、CI 配置、Dockerfile 质量 |
+
+**4 审查角色：**
+
+| 角色 | 主要维度 (PRIMARY) | 关注视角 |
+|------|-------------------|---------|
+| Developer | D2, D3, D5, D7 | 代码是否正确、是否处理错误、是否遵循约定 |
+| Security Expert | D1, D6 (CVEs) | 是否可被攻击、用户数据是否安全 |
+| Architect | D4, D7, D8 | 结构是否合理、是否可维护可扩展 |
+| Ops/SRE | D6 (freshness), D10 | 是否可部署、可监控、可运维 |
+
+**两种模式：**
+
+| 模式 | 角色数 | 维度深度 | 场景 |
+|------|--------|---------|------|
+| Quick Scan（默认） | 3（不含 Ops/SRE） | 仅 PRIMARY | 日常审查 |
+| Full Audit（`--full`） | 4（全部） | PRIMARY + SECONDARY | 全面审计，报告写入 `.review/report.md` |
+
+**跨角色去重：** 多个角色标记同一位置时自动合并，保留最高严重度和所有角色标签。
+
+---
+
 ## 目录结构
 
 ```
@@ -350,7 +389,11 @@ workflow-architect/                         # 仓库根目录
 │       │   ├── SKILL.md
 │       │   ├── assets/templates/
 │       │   └── references/
-│       └── project-surgeon-lite/         # Lite 版（小模型优化）
+│       ├── project-surgeon-lite/         # Lite 版（小模型优化）
+│       │   ├── SKILL.md
+│       │   ├── assets/templates/
+│       │   └── references/
+│       └── code-reviewer/               # 10维度×4角色代码审查
 │           ├── SKILL.md
 │           ├── assets/templates/
 │           └── references/
@@ -381,6 +424,10 @@ workflow-architect/                         # 仓库根目录
         │   ├── assets/templates/
         │   └── references/
         └── project-surgeon-lite/
+            ├── SKILL.md
+            ├── assets/templates/
+            └── references/
+        └── code-reviewer/
             ├── SKILL.md
             ├── assets/templates/
             └── references/
@@ -430,6 +477,8 @@ cp -r /tmp/wa-repo/claude/skills/project-surgeon ~/.claude/skills/project-surgeo
 # Lite 版（可选）
 cp -r /tmp/wa-repo/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
 cp -r /tmp/wa-repo/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
+# Code Reviewer（可选）
+cp -r /tmp/wa-repo/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
 rm -rf /tmp/wa-repo
 ```
 
@@ -441,6 +490,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon" "$env:USERP
 # Lite 版（可选）
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect-lite" "$env:USERPROFILE\.claude\skills\workflow-architect-lite"
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon-lite" "$env:USERPROFILE\.claude\skills\project-surgeon-lite"
+# Code Reviewer（可选）
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\code-reviewer" "$env:USERPROFILE\.claude\skills\code-reviewer"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -453,6 +504,8 @@ ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon ~/
 # Lite 版（可选）
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect-lite ~/.claude/skills/workflow-architect-lite
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
+# Code Reviewer（可选）
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
 ```
 
 安装后重启 Claude Code 即可生效。
@@ -473,6 +526,8 @@ cp -r /tmp/wa-repo/codex/skills/project-surgeon ~/.codex/skills/project-surgeon
 # Lite 版（可选）
 cp -r /tmp/wa-repo/codex/skills/workflow-architect-lite ~/.codex/skills/workflow-architect-lite
 cp -r /tmp/wa-repo/codex/skills/project-surgeon-lite ~/.codex/skills/project-surgeon-lite
+# Code Reviewer（可选）
+cp -r /tmp/wa-repo/codex/skills/code-reviewer ~/.codex/skills/code-reviewer
 rm -rf /tmp/wa-repo
 ```
 
@@ -484,6 +539,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon" "$env:USERPR
 # Lite 版（可选）
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect-lite" "$env:USERPROFILE\.codex\skills\workflow-architect-lite"
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon-lite" "$env:USERPROFILE\.codex\skills\project-surgeon-lite"
+# Code Reviewer（可选）
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\code-reviewer" "$env:USERPROFILE\.codex\skills\code-reviewer"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -527,6 +584,9 @@ Project Surgeon 将引导你完成四个阶段：
 /workflow-architect-issue-changer 加一个消息通知系统   # 提交变更请求
 /project-surgeon-bug-fixer src/             # 在接管项目中审查代码
 /project-surgeon-issue-changer 加一个缓存层  # 在接管项目中提交变更
+/code-reviewer src/                        # Quick Scan 审查 src 目录
+/code-reviewer --diff                      # 仅审查 git 变更文件
+/code-reviewer . --full                    # Full Audit 全面审计
 ```
 
 ### 会话恢复

@@ -6,6 +6,9 @@
 .project-surgeon/
 .project-surgeon-lite/
 
+# Code Reviewer runtime directory (generated per-project)
+.review/
+
 # OS files
 .DS_Store
 Thumbs.db
