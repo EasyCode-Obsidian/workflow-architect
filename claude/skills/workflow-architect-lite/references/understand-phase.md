@@ -23,6 +23,11 @@ Rules:
 - □ Infer answers from context when obvious (e.g., user already stated the tech stack)
 - □ Stop asking when all 5 areas are clear. Do NOT exceed 5 questions.
 - □ If the user's initial message already covers most areas, ask only 1-2 clarifying questions.
+- □ **Think before asking:** Before each question, briefly consider what you already know.
+  Show your reasoning in the question: "Since you want {X}, I'm guessing {Y}. Is that right?"
+  Frame questions as hypothesis validation, not open-ended exploration.
+- □ **Reflect after each answer:** Does this change anything you assumed earlier?
+  If it contradicts a previous answer, flag it immediately.
 
 ## Step 2: Present Proposal
 

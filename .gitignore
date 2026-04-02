@@ -9,6 +9,9 @@
 # Code Reviewer runtime directory (generated per-project)
 .review/
 
+# Deep Interview runtime directory (generated per-project)
+.deep-interview/
+
 # OS files
 .DS_Store
 Thumbs.db

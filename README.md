@@ -356,6 +356,42 @@ Workflow Architect 解决这些问题：
 
 ---
 
+## Deep Interview — PQCP 驱动的深度需求访谈
+
+```
+调用方式: /deep-interview [项目想法/功能描述]
+调用方式: /deep-interview [主题] --deep    # 深度模式
+```
+
+独立的深度需求访谈技能，使用 **Pre-Question Cognitive Protocol (PQCP)** 在每个问题之前进行深度分析。
+
+**核心创新 — PQCP 三步循环：**
+
+| 步骤 | 动作 | 目的 |
+|------|------|------|
+| SYNTHESIZE | 综合已有信息 | 更新对项目的整体理解 |
+| HYPOTHESIZE | 生成 2-3 个假设 | 预测可能的答案并推理 |
+| CHALLENGE | 自我质疑 | 识别盲点和错误假设 |
+
+**对比传统访谈：**
+
+| 方面 | 传统访谈 | PQCP 访谈 |
+|------|---------|----------|
+| 提问方式 | "你想用什么技术栈？" | "基于你要做看板应用，我推断需要实时更新，倾向 React + WebSocket。你觉得？" |
+| 上下文利用 | 独立的模板问题 | 每个问题基于所有已知信息的综合分析 |
+| 答案后处理 | 更新覆盖率 | 矛盾检测 + 新维度识别 + 假设修正 |
+
+**两种模式：**
+
+| 模式 | PQCP 频率 | 问题数 | 输出 |
+|------|----------|--------|------|
+| Quick（默认） | 每 3 个问题一次 | 5-15 | 仅对话 |
+| Deep（`--deep`） | 每个问题 | 10-50+ | `.deep-interview/requirements.md` |
+
+**同时增强了现有技能的 Phase 1：** workflow-architect 和 project-surgeon 的访谈/目标收集阶段也已集成 PQCP 协议。
+
+---
+
 ## 目录结构
 
 ```
@@ -397,6 +433,10 @@ workflow-architect/                         # 仓库根目录
 │           ├── SKILL.md
 │           ├── assets/templates/
 │           └── references/
+│       └── deep-interview/              # PQCP 深度需求访谈
+│           ├── SKILL.md
+│           ├── assets/templates/
+│           └── references/
 └── codex/                                  # OpenAI Codex CLI 版本
     └── skills/
         ├── workflow-architect/             # Codex Skill（通用 frontmatter）
@@ -428,6 +468,10 @@ workflow-architect/                         # 仓库根目录
             ├── assets/templates/
             └── references/
         └── code-reviewer/
+            ├── SKILL.md
+            ├── assets/templates/
+            └── references/
+        └── deep-interview/
             ├── SKILL.md
             ├── assets/templates/
             └── references/
@@ -479,6 +523,8 @@ cp -r /tmp/wa-repo/claude/skills/workflow-architect-lite ~/.claude/skills/workfl
 cp -r /tmp/wa-repo/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 # Code Reviewer（可选）
 cp -r /tmp/wa-repo/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
+# Deep Interview（可选）
+cp -r /tmp/wa-repo/claude/skills/deep-interview ~/.claude/skills/deep-interview
 rm -rf /tmp/wa-repo
 ```
 
@@ -492,6 +538,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect-lite" "$e
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon-lite" "$env:USERPROFILE\.claude\skills\project-surgeon-lite"
 # Code Reviewer（可选）
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\code-reviewer" "$env:USERPROFILE\.claude\skills\code-reviewer"
+# Deep Interview（可选）
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\deep-interview" "$env:USERPROFILE\.claude\skills\deep-interview"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -506,6 +554,8 @@ ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 # Code Reviewer（可选）
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
+# Deep Interview（可选）
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/deep-interview ~/.claude/skills/deep-interview
 ```
 
 安装后重启 Claude Code 即可生效。
@@ -528,6 +578,8 @@ cp -r /tmp/wa-repo/codex/skills/workflow-architect-lite ~/.codex/skills/workflow
 cp -r /tmp/wa-repo/codex/skills/project-surgeon-lite ~/.codex/skills/project-surgeon-lite
 # Code Reviewer（可选）
 cp -r /tmp/wa-repo/codex/skills/code-reviewer ~/.codex/skills/code-reviewer
+# Deep Interview（可选）
+cp -r /tmp/wa-repo/codex/skills/deep-interview ~/.codex/skills/deep-interview
 rm -rf /tmp/wa-repo
 ```
 
@@ -541,6 +593,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect-lite" "$en
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon-lite" "$env:USERPROFILE\.codex\skills\project-surgeon-lite"
 # Code Reviewer（可选）
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\code-reviewer" "$env:USERPROFILE\.codex\skills\code-reviewer"
+# Deep Interview（可选）
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\deep-interview" "$env:USERPROFILE\.codex\skills\deep-interview"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -587,6 +641,8 @@ Project Surgeon 将引导你完成四个阶段：
 /code-reviewer src/                        # Quick Scan 审查 src 目录
 /code-reviewer --diff                      # 仅审查 git 变更文件
 /code-reviewer . --full                    # Full Audit 全面审计
+/deep-interview 一个任务管理应用             # Quick 模式需求访谈
+/deep-interview 分布式消息队列 --deep       # Deep 模式深度访谈
 ```
 
 ### 会话恢复

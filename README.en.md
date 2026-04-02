@@ -356,6 +356,42 @@ A standalone **read-only** code review skill that fuses 10 audit dimensions with
 
 ---
 
+## Deep Interview — PQCP-Driven Deep Requirements Interview
+
+```
+Invocation: /deep-interview [project idea / feature description]
+Invocation: /deep-interview [topic] --deep    # Deep mode
+```
+
+A standalone deep requirements interview skill using the **Pre-Question Cognitive Protocol (PQCP)** to analyze deeply before each question.
+
+**Core Innovation — PQCP Three-Step Loop:**
+
+| Step | Action | Purpose |
+|------|--------|---------|
+| SYNTHESIZE | Integrate all known information | Update overall project understanding |
+| HYPOTHESIZE | Generate 2-3 hypotheses | Predict likely answers with reasoning |
+| CHALLENGE | Self-interrogate | Identify blind spots and wrong assumptions |
+
+**Compared to Traditional Interviews:**
+
+| Aspect | Traditional | PQCP Interview |
+|--------|------------|----------------|
+| Question style | "What tech stack do you want?" | "Since you're building a kanban app, I infer real-time updates are needed. I'd suggest React + WebSocket. What do you think?" |
+| Context usage | Independent template questions | Each question based on synthesis of all known info |
+| Post-answer | Update coverage | Contradiction detection + new dimension discovery + hypothesis revision |
+
+**Two Modes:**
+
+| Mode | PQCP Frequency | Questions | Output |
+|------|---------------|-----------|--------|
+| Quick (default) | Every 3 questions | 5-15 | Conversation only |
+| Deep (`--deep`) | Every question | 10-50+ | `.deep-interview/requirements.md` |
+
+**Existing skills also enhanced:** workflow-architect and project-surgeon Phase 1 interview/goal-collection now integrate PQCP protocol.
+
+---
+
 ## Directory Structure
 
 ```
@@ -394,6 +430,10 @@ workflow-architect/                         # Repository root
 │       │   ├── assets/templates/
 │       │   └── references/
 │       └── code-reviewer/               # 10-dimension × 4-role code review
+│           ├── SKILL.md
+│           ├── assets/templates/
+│           └── references/
+│       └── deep-interview/              # PQCP deep requirements interview
 │           ├── SKILL.md
 │           ├── assets/templates/
 │           └── references/
@@ -479,6 +519,8 @@ cp -r /tmp/wa-repo/claude/skills/workflow-architect-lite ~/.claude/skills/workfl
 cp -r /tmp/wa-repo/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 # Code Reviewer (optional)
 cp -r /tmp/wa-repo/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
+# Deep Interview (optional)
+cp -r /tmp/wa-repo/claude/skills/deep-interview ~/.claude/skills/deep-interview
 rm -rf /tmp/wa-repo
 ```
 
@@ -492,6 +534,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\workflow-architect-lite" "$e
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\project-surgeon-lite" "$env:USERPROFILE\.claude\skills\project-surgeon-lite"
 # Code Reviewer (optional)
 Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\code-reviewer" "$env:USERPROFILE\.claude\skills\code-reviewer"
+# Deep Interview (optional)
+Copy-Item -Recurse "$env:TEMP\wa-repo\claude\skills\deep-interview" "$env:USERPROFILE\.claude\skills\deep-interview"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -506,6 +550,8 @@ ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/workflow-architect
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/project-surgeon-lite ~/.claude/skills/project-surgeon-lite
 # Code Reviewer (optional)
 ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/code-reviewer ~/.claude/skills/code-reviewer
+# Deep Interview (optional)
+ln -s ~/.claude/skills-repos/workflow-architect/claude/skills/deep-interview ~/.claude/skills/deep-interview
 ```
 
 Restart Claude Code after installation.
@@ -528,6 +574,8 @@ cp -r /tmp/wa-repo/codex/skills/workflow-architect-lite ~/.codex/skills/workflow
 cp -r /tmp/wa-repo/codex/skills/project-surgeon-lite ~/.codex/skills/project-surgeon-lite
 # Code Reviewer (optional)
 cp -r /tmp/wa-repo/codex/skills/code-reviewer ~/.codex/skills/code-reviewer
+# Deep Interview (optional)
+cp -r /tmp/wa-repo/codex/skills/deep-interview ~/.codex/skills/deep-interview
 rm -rf /tmp/wa-repo
 ```
 
@@ -541,6 +589,8 @@ Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\workflow-architect-lite" "$en
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\project-surgeon-lite" "$env:USERPROFILE\.codex\skills\project-surgeon-lite"
 # Code Reviewer (optional)
 Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\code-reviewer" "$env:USERPROFILE\.codex\skills\code-reviewer"
+# Deep Interview (optional)
+Copy-Item -Recurse "$env:TEMP\wa-repo\codex\skills\deep-interview" "$env:USERPROFILE\.codex\skills\deep-interview"
 Remove-Item -Recurse -Force "$env:TEMP\wa-repo"
 ```
 
@@ -594,6 +644,8 @@ Project Surgeon will guide you through four phases:
 /code-reviewer src/                                # Quick Scan review src directory
 /code-reviewer --diff                              # Review only git-changed files
 /code-reviewer . --full                            # Full Audit comprehensive review
+/deep-interview a task management app               # Quick mode requirements interview
+/deep-interview distributed message queue --deep    # Deep mode interview
 ```
 
 ### Session Resume

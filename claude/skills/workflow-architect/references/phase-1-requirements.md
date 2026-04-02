@@ -100,12 +100,35 @@
    - Within that category, pick the question with highest `(Impact × Uncertainty)` score
    - Prefer mandatory categories before desirable ones
 
-3. **Provide recommended answer.** Every question SHOULD include:
+3. **Pre-Question Cognitive Protocol (PQCP).** Before formulating EACH question, execute these 3 steps internally:
+
+   **A. SYNTHESIZE — Build current understanding:**
+   - Summarize all `requirements.answers` collected so far
+   - Identify the emerging project shape (what kind of project is forming?)
+   - Note which categories have clear interconnections (e.g., "user mentioned real-time sync in scope, which implies WebSocket in tech stack")
+
+   **B. HYPOTHESIZE — Generate likely answers for the next topic:**
+   - Based on the emerging project shape, predict 2-3 plausible answers
+   - Rank hypotheses by likelihood, with reasoning
+   - Identify what would CHANGE in the architecture if each hypothesis is wrong
+
+   **C. CHALLENGE — Self-interrogate before asking:**
+   - "What assumption am I making that the user hasn't confirmed?"
+   - "The user hasn't mentioned {X} — is it because it's irrelevant, or because they haven't thought of it?"
+   - "If I were a different stakeholder (end-user / PM / security / ops), what would I care about?"
+
+   **When presenting the question:**
+   - Show your current understanding briefly: "Based on what you've shared about {A}, I'm thinking {B}..."
+   - Present your leading hypothesis as the recommended option with your reasoning chain
+   - Frame the question as hypothesis validation: "Does that match your thinking?" not open-ended "What do you want?"
+   - The user should be able to see AND CORRECT your reasoning, not just answer a generic question
+
+4. **Provide recommended answer.** Every question SHOULD include:
    - A "Recommended" option with 1-2 sentence reasoning (if inferable from context)
    - 2-4 concrete options when applicable (use AskUserQuestion's `options` field)
    - An open "Other" option is always available automatically
 
-4. **Coverage-driven depth.** Question count is NOT fixed — it is driven entirely by coverage sufficiency:
+5. **Coverage-driven depth.** Question count is NOT fixed — it is driven entirely by coverage sufficiency:
    - The ONLY goal is to collect enough information to make sound architectural decisions
    - Keep asking as long as mandatory categories have NOT reached "clear"
    - Keep asking as long as fewer than 3 desirable categories have reached "partial"
@@ -124,14 +147,24 @@
    - Persist updated coverage_map and new answer to state.json
    - If a single answer covers multiple categories, update all relevant ones
 
-6. **Follow-up intelligence.** If an answer reveals new complexity:
+6. **Post-Answer Reflection.** After receiving EACH answer, execute these checks:
+   - **CONTRADICTION CHECK:** Does this answer conflict with any previous answer in `requirements.answers`?
+     If yes: flag it immediately to the user and ask them to resolve before continuing.
+   - **NEW DIMENSION CHECK:** Does this answer open a new area of questioning not in the original 10 categories?
+     If yes: add follow-up questions with elevated priority. Track: "Opened by answer about {topic}: {new area}"
+   - **HYPOTHESIS UPDATE:** Were any of your PQCP hypotheses wrong?
+     If yes: note what you learned and adjust your mental model for subsequent questions.
+   - **MODEL UPDATE:** How does this answer change your understanding of the overall project shape?
+     Update your internal summary of the emerging project before selecting the next question.
+
+7. **Follow-up intelligence.** If an answer reveals new complexity:
    - Add follow-up questions to the queue
    - Re-prioritize based on new information
    - There is NO hard question limit — pursue every thread until coverage is sufficient
 
-7. **Never repeat.** Do not ask a question whose answer is already in `requirements.answers`.
+8. **Never repeat.** Do not ask a question whose answer is already in `requirements.answers`.
 
-8. **Context awareness.** If the skill was invoked in a non-empty project directory:
+9. **Context awareness.** If the skill was invoked in a non-empty project directory:
    - Read existing project files (package.json, go.mod, Cargo.toml, etc.)
    - Pre-fill coverage_map categories that can be inferred
    - Mark inferred categories as "partial" and confirm with user

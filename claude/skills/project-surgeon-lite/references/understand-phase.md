@@ -88,6 +88,9 @@ Display to the user:
 
 ## Step 4: Collect User Goal
 
+Before presenting options, share your hypothesis:
+"Based on the scan, I think the priority should be {X} because {Y findings dominate}."
+
 Ask the user via AskUserQuestion:
 
 - **(A) Fix problems** — focus on HIGH findings first

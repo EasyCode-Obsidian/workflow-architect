@@ -445,6 +445,19 @@ Display a condensed summary (NOT the full report) to the user:
 
 #### 5.3 Collect User Objective
 
+**Pre-Question Analysis (PQCP-lite):** Before presenting the goal options, synthesize your findings into a hypothesis:
+
+```
+□ Based on the analysis findings, form a hypothesis about what the user likely wants:
+  - If HIGH security findings dominate → hypothesis: "Fix specific problems (security-focused)"
+  - If architecture issues dominate → hypothesis: "Comprehensive refactoring"
+  - If dependencies are severely outdated → hypothesis: "Modernize"
+  - If code quality is generally good → hypothesis: "Add new features"
+□ Present your hypothesis alongside the options:
+  "Based on the analysis, I noticed {key findings}. I suspect your priority is {hypothesis}
+   because {reasoning}. But here are all the options:"
+```
+
 Use `AskUserQuestion` to ask the user their objective:
 
 ```
@@ -466,6 +479,12 @@ What would you like to do with this project?
 (E) Custom — 自定义目标
     Describe your own objective in detail.
 ```
+
+**If user chooses (E) Custom:** Do NOT accept the first description at face value. Probe deeper:
+- "Can you elaborate on WHY this is the priority? What triggered this need?"
+- "How does this relate to the issues found in the analysis?"
+- "What would success look like specifically?"
+This ensures custom goals are well-understood before proceeding to planning.
 
 Record the user's choice (and any elaboration for option E) to `analysis.user_objective` in state.json:
 

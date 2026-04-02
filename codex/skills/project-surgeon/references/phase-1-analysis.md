@@ -248,7 +248,7 @@ Run the ecosystem-appropriate audit tool:
 | Java (Maven) | `mvn dependency-check:check 2>/dev/null` |
 | .NET | `dotnet list package --vulnerable --format json 2>/dev/null` |
 
-**Fallback** (if audit tool not installed): Use a web search tool to check the top 5 critical dependencies (by import frequency from Step 2) for known CVEs.
+**Fallback** (if audit tool not installed): Use WebSearch to check the top 5 critical dependencies (by import frequency from Step 2) for known CVEs.
 
 #### 3.3 Outdated Major Version Detection
 
@@ -445,7 +445,20 @@ Display a condensed summary (NOT the full report) to the user:
 
 #### 5.3 Collect User Objective
 
-Ask the user their objective:
+**Pre-Question Analysis (PQCP-lite):** Before presenting the goal options, synthesize your findings into a hypothesis:
+
+```
+□ Based on the analysis findings, form a hypothesis about what the user likely wants:
+  - If HIGH security findings dominate → hypothesis: "Fix specific problems (security-focused)"
+  - If architecture issues dominate → hypothesis: "Comprehensive refactoring"
+  - If dependencies are severely outdated → hypothesis: "Modernize"
+  - If code quality is generally good → hypothesis: "Add new features"
+□ Present your hypothesis alongside the options:
+  "Based on the analysis, I noticed {key findings}. I suspect your priority is {hypothesis}
+   because {reasoning}. But here are all the options:"
+```
+
+Use `AskUserQuestion` to ask the user their objective:
 
 ```
 What would you like to do with this project?
@@ -466,6 +479,12 @@ What would you like to do with this project?
 (E) Custom — 自定义目标
     Describe your own objective in detail.
 ```
+
+**If user chooses (E) Custom:** Do NOT accept the first description at face value. Probe deeper:
+- "Can you elaborate on WHY this is the priority? What triggered this need?"
+- "How does this relate to the issues found in the analysis?"
+- "What would success look like specifically?"
+This ensures custom goals are well-understood before proceeding to planning.
 
 Record the user's choice (and any elaboration for option E) to `analysis.user_objective` in state.json:
 
@@ -489,7 +508,7 @@ Record the user's choice (and any elaboration for option E) to `analysis.user_ob
 
 Execute BS-1 brainstorm (Reduced Mode — 3 steps):
 
-1. **Step 1 — Forced Research:** Run at least 2 web search queries about common pitfalls when performing the chosen objective type on this tech stack. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
+1. **Step 1 — Forced Research:** Run at least 2 WebSearch queries about common pitfalls when performing the chosen objective type on this tech stack. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
 2. **Step 4 — Multi-Perspective Evaluation:** From each of 6 roles (User/Dev/Architect/Security/Ops/Maintainer), evaluate: "Did the analysis miss anything critical for this objective?" Output the `🧠 Multi-Perspective Evaluation` block.
 3. **Step 5 — Self-Interrogation + Synthesis:**
    - "Is the detected architecture accurate, or could it be misleading?"
