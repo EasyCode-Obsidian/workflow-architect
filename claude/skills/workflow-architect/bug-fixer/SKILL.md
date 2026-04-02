@@ -1,5 +1,4 @@
 ---
-name: bug-fixer
 description: >-
   Systematic code review and bug fix skill with 7-dimension audit.
   Works standalone or integrates with workflow-architect Phase 4

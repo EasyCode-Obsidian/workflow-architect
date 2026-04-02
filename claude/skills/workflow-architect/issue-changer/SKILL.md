@@ -1,5 +1,4 @@
 ---
-name: issue-changer
 description: >-
   Change request handler for workflow-architect: manages scope changes,
   feature modifications, and new requirements during execution (Mode A)
