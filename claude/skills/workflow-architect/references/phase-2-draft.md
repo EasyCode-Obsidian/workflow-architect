@@ -20,6 +20,10 @@
    - Skip to the next incomplete section
 6. If returning from a previous rejection: read `draft.revision_count`, load prior feedback
 7. Initialize `.workflow/draft-cache.md` if it does not exist
+8. **Read Context Bus files:**
+   - Read `.workflow/context/domain-knowledge.md` for domain background and competitive landscape
+   - Read `.workflow/context/interview-transcript.md` for full Q&A history from Phase 1
+   - Read `.workflow/context/hypothesis-tracker.md` for confirmed/denied hypotheses
 
 ## Draft Content Structure
 
@@ -37,9 +41,9 @@ Content depth should scale with project complexity.
 
 **STOP. Do NOT produce ANY Section 2 content yet.**
 
-**Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1:
+**Default: Layer 1 (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1:
 
-1. **Research** — Run 2-3 WebSearch queries about architecture patterns for this project type. If candidate frameworks/libraries are known from Phase 1, additionally query DeepWiki to verify their architectural capabilities:
+1. **Research** — Read `.workflow/context/domain-knowledge.md` and `.workflow/context/hypothesis-tracker.md` to ground the research. Run 2-3 WebSearch queries about architecture patterns for this project type. If candidate frameworks/libraries are known (from Phase 0 pre-research in `.workflow/context/domain-knowledge.md` or Phase 1 answers), you MUST query DeepWiki to verify their architectural capabilities:
    `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What architecture patterns does <framework> best support? Any known limitations for <project type>?"`
    Output `🔍 Research Findings` block (include both WebSearch and DeepWiki results, label DeepWiki as `📚 DeepWiki`).
 2. **Multi-Perspective Self-Evaluation** — Review from 6 roles (User/Dev/Architect/Security/Ops/Maintainer). Each role: 1-2 sentences. Output `🧠 Multi-Perspective` block.
@@ -47,13 +51,13 @@ Content depth should scale with project complexity.
 
 **User-preference shortcut:** If user specified an architecture preference during Phase 1, use **validation focus** — research validates the choice, multi-perspective evaluates fit, self-interrogation challenges the choice. Flag concerns if found; do NOT generate alternatives.
 
-**Upgrade to Full Mode:** If the user requests deeper analysis (e.g., `/brainstorm`, "run full brainstorm"), execute Full Mode per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2 — all 7 steps including 3 independent Agents, Quality Gate, and Audit.
+**Upgrade to Layer 2:** If the user requests deeper analysis (e.g., `/brainstorm`, "run full brainstorm"), execute Layer 2 per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2 — all 7 steps including 3 independent Agents, Quality Gate, and Audit.
 
 **SELF-CHECK before writing Section 2 content:**
 - [ ] Research Findings block shown to user? If NO → STOP
 - [ ] Multi-Perspective evaluation block shown to user? If NO → STOP
 - [ ] Self-Interrogation + Decision block shown to user? If NO → STOP
-- [ ] (Full Mode only) Independent Proposals, Divergence Check, Audit blocks shown? If NO → STOP
+- [ ] (Layer 2 only) Independent Proposals, Divergence Check, Audit blocks shown? If NO → STOP
 
 **After ALL checks pass:** persist results to `.workflow/brainstorm/bs-2.md`, update `brainstorm.bs2` in state.json, THEN write Section 2 content.
 
@@ -73,12 +77,12 @@ Section 2 content (write ONLY after BS-2 completes):
 
 **STOP. Do NOT produce ANY Section 3 content yet.**
 
-**Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on tech stack decisions. For each candidate technology, include at least 1 DeepWiki `ask` query to verify actual API capabilities — WebSearch returns marketing pages, DeepWiki returns documentation:
+**Default: Layer 1 (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on tech stack decisions. Read Context Bus files first. Use Phase 0 tech ecosystem research (`.workflow/context/domain-knowledge.md`) as the starting point. For each candidate technology, include at least 1 DeepWiki `ask` query to verify actual API capabilities — WebSearch returns marketing pages, DeepWiki returns documentation:
    `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What are the main capabilities and limitations of <library> v<latest>?"`
 
 **User-preference shortcut:** For user-specified tech choices (language, framework, database, etc.), use **validation focus** — validate with research, do NOT generate alternatives. For unspecified choices, evaluate options through multi-perspective self-reflection.
 
-**Upgrade to Full Mode:** If the user requests deeper analysis, execute Full Mode per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2. A single BS-3 brainstorm may mix modes — e.g., validation focus for "React" (user chose it) + Full Mode for "state management library" (user didn't specify).
+**Upgrade to Layer 2:** If the user requests deeper analysis, execute Layer 2 per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2. A single BS-3 brainstorm may mix modes — e.g., validation focus for "React" (user chose it) + Layer 2 for "state management library" (user didn't specify).
 
 **SELF-CHECK:** Verify all required output blocks (Research, Multi-Perspective, Self-Interrogation, Decision) have been shown to the user before writing Section 3.
 
@@ -101,12 +105,12 @@ Section 3 content (write ONLY after BS-3 completes):
 
 **STOP. Do NOT produce ANY Section 4 content yet.**
 
-**Default: Lightweight Mode (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on algorithm choices and design patterns. If the algorithm or design strategy involves a specific library (e.g., search engine, ML framework, caching library), query DeepWiki for implementation-level details:
+**Default: Layer 1 (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on algorithm choices and design patterns. Read `.workflow/context/domain-knowledge.md` and `.workflow/context/hypothesis-tracker.md` to ground the research. If the algorithm or design strategy involves a specific library (e.g., search engine, ML framework, caching library), and the library is confirmed in domain-knowledge.md, you MUST query DeepWiki for implementation-level details:
    `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What algorithms/patterns does <library> provide for <use case>?"`
 
 **User-preference shortcut:** If user specified algorithm or design preferences, use **validation focus**.
 
-**Upgrade to Full Mode:** If the user requests deeper analysis, execute Full Mode per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2.
+**Upgrade to Layer 2:** If the user requests deeper analysis, execute Layer 2 per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2.
 
 **SELF-CHECK:** Verify all required output blocks (Research, Multi-Perspective, Self-Interrogation, Decision) have been shown to the user before writing Section 4.
 
@@ -153,11 +157,11 @@ Do NOT dump the entire draft at once. Present section by section.
 
 **Context management:** After each brainstorm completes and is persisted to disk, keep only a concise summary (decision + confidence + top 2 risks) in the conversation. See [brainstorm-protocol.md](brainstorm-protocol.md) "Context Management" section for full rules. Maintain the cumulative `📋 Brainstorm Progress` block after each brainstorm.
 
-1. **Execute BS-2 (Lightweight, auto)** → show brainstorm artifacts → persist to disk → write Section 2 content
-2. **Execute BS-3 (Lightweight, auto)** → show brainstorm artifacts → persist to disk → write Section 3 content
+1. **Execute BS-2 (Layer 1, auto)** → show brainstorm artifacts → persist to disk → write Section 2 content
+2. **Execute BS-3 (Layer 1, auto)** → show brainstorm artifacts → persist to disk → write Section 3 content
 3. Present Sections 1-3 together (Section 1 has no brainstorm)
 4. Ask: "Is this direction correct so far?" (到目前为止这个方向是否正确？)
-5. If user confirms: **Execute BS-4 (Lightweight, auto)** → show brainstorm artifacts → persist to disk → write Section 4 content
+5. If user confirms: **Execute BS-4 (Layer 1, auto)** → show brainstorm artifacts → persist to disk → write Section 4 content
 6. Present Sections 4-5
 7. Ask: "Any adjustments to design strategy or project structure?" (设计策略和项目结构有需要调整的吗？)
 8. If user confirms: present Sections 6-8
@@ -180,9 +184,9 @@ If user wants changes to specific sections:
 
 **STOP. Do NOT present approval options yet.**
 
-**Default: Lightweight Mode (automatic).** Execute BS-5 inline self-reflection on the **complete draft as a whole**:
+**Default: Layer 1 (automatic).** Execute BS-5 inline self-reflection on the **complete draft as a whole**:
 
-1. **Research** — Search for projects with similar architecture/tech stack combinations and their outcomes. If search returns 0 results, retry with broader keywords; if still 0, label as `⚠️ AI Inference`.
+1. **Research** — Read Context Bus files first for accumulated project context. Search for projects with similar architecture/tech stack combinations and their outcomes. If search returns 0 results, retry with broader keywords; if still 0, label as `⚠️ AI Inference`.
 2. **Multi-Perspective Self-Evaluation** — Review the **complete draft** from 6 roles. Focus on:
    - Contradictions between sections
    - Unnecessary complexity (could a simpler approach achieve the same goal?)

@@ -1,7 +1,7 @@
 # Phase 1: Requirements Collection — 需求收集
 
 > This phase exhaustively gathers user requirements through a structured deep interview.
-> Uses `AskUserQuestion` tool to ask one question at a time until coverage thresholds are met.
+> Asks the user one question at a time until coverage thresholds are met.
 
 <!-- 本阶段的目标是通过结构化的深度访谈，全面收集用户需求。 -->
 
@@ -14,6 +14,12 @@
    - If NO: create `.workflow/` directory and initialize state.json with `current_phase: "requirements"`
 2. If returning from rejection: load existing `requirements.answers`, identify coverage gaps, resume from gaps
 3. Initialize coverage_map with all 10 categories set to `"missing"`
+4. **Read Context Bus files:**
+   - Read `.workflow/context/domain-knowledge.md` — incorporate domain understanding into question formulation
+   - Read `.workflow/context/project-brief.md` — use as baseline context
+   - Read `.workflow/context/hypothesis-tracker.md` — use to inform hypothesis generation in PQCP
+   - These files were populated by Phase 0 pre-research and contain domain knowledge, competitive insights, and tech ecosystem data
+5. Initialize `.workflow/context/interview-transcript.md` if it does not exist
 
 ## Question Taxonomy
 
@@ -92,7 +98,7 @@
 
 ### Rules
 
-1. **One question at a time.** Use `AskUserQuestion` tool for each question. NEVER batch multiple questions.
+1. **One question at a time.** Ask the user one question at a time. NEVER batch multiple questions.
 
 2. **Smart question selection.** For each question:
    - Evaluate current coverage_map
@@ -106,6 +112,7 @@
    - Summarize all `requirements.answers` collected so far
    - Identify the emerging project shape (what kind of project is forming?)
    - Note which categories have clear interconnections (e.g., "user mentioned real-time sync in scope, which implies WebSocket in tech stack")
+   - Reference `.workflow/context/domain-knowledge.md` for domain background — do NOT re-derive domain knowledge that was already gathered in Phase 0
 
    **B. HYPOTHESIZE — Generate likely answers for the next topic:**
    - Based on the emerging project shape, predict 2-3 plausible answers
@@ -114,8 +121,8 @@
 
    **B.5. RESEARCH (conditional) — Validate hypotheses with external data:**
    - **TRIGGER when** the current question targets categories 5 (Tech Stack), 6 (Integration), or 7 (NFRs), OR when the domain is unfamiliar:
-     - Run 1 WebSearch query to validate your leading hypothesis: `"{technology/pattern} {specific concern} best practices {current year}"`
-     - If the project involves known libraries/frameworks: optionally run 1 DeepWiki `ask` query to verify capability assumptions:
+     - Run 1 web search query to validate your leading hypothesis: `"{technology/pattern} {specific concern} best practices {current year}"`
+     - If the project involves known libraries/frameworks: If candidate libraries were identified in Phase 0 (check `.workflow/context/domain-knowledge.md` Tech Ecosystem section), run 1 DeepWiki `ask` query to verify capability assumptions — this is REQUIRED when candidates are known:
        `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "Does <library> support <hypothesized capability>?"`
      - Integrate findings into hypothesis ranking. If research contradicts leading hypothesis, demote it.
    - **SKIP when** the question is purely about business logic, user preferences, or subjective choices (categories 1-4, 8-10 typically)
@@ -133,7 +140,7 @@
 
 4. **Provide recommended answer.** Every question SHOULD include:
    - A "Recommended" option with 1-2 sentence reasoning (if inferable from context)
-   - 2-4 concrete options when applicable (use AskUserQuestion's `options` field)
+   - 2-4 concrete options when applicable (present as choices for the user)
    - An open "Other" option is always available automatically
 
 5. **Coverage-driven depth.** Question count is NOT fixed — it is driven entirely by coverage sufficiency:
@@ -163,8 +170,8 @@
    - **HYPOTHESIS UPDATE:** Were any of your PQCP hypotheses wrong?
      If yes: note what you learned and adjust your mental model for subsequent questions.
    - **FACT-CHECK (conditional):** If the user's answer includes a specific technology claim or performance assertion:
-     - Run 1 WebSearch to verify: `"{claimed technology} {claimed capability} {current year}"`
-     - If the user named a specific library/framework not yet researched: optionally query DeepWiki:
+     - Run 1 web search to verify: `"{claimed technology} {claimed capability} {current year}"`
+     - If the user named a specific library/framework not yet researched: If the library was researched in Phase 0 or mentioned in domain-knowledge.md, query DeepWiki to verify:
        `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "Does <library> actually support <claimed feature>?"`
      - If fact-check contradicts the user's claim: flag it diplomatically:
        "I looked into {X} and found that {actual situation}. Would you like to reconsider, or do you have specific context I'm missing?"
@@ -183,6 +190,11 @@
    - Read existing project files (package.json, go.mod, Cargo.toml, etc.)
    - Pre-fill coverage_map categories that can be inferred
    - Mark inferred categories as "partial" and confirm with user
+
+10. **Context Bus updates.** After receiving each answer:
+   - Append the Q&A pair to `.workflow/context/interview-transcript.md` in format:
+     `### Q{N}: {question}\n**A:** {answer}\n**Category:** {category}\n**Timestamp:** {ISO-8601}\n---`
+   - If the answer confirms or denies a hypothesis: update `.workflow/context/hypothesis-tracker.md` — change the hypothesis Status from OPEN to CONFIRMED/DENIED and add evidence reference
 
 ### Question Discipline — 提问纪律
 
@@ -228,9 +240,9 @@ When coverage is sufficient OR user signals readiness:
 
 **STOP. Do NOT present the coverage summary or transition to Phase 2 yet.**
 
-You MUST first complete the brainstorm protocol BS-1 (Reduced Mode — 3 steps):
+You MUST first complete the brainstorm protocol BS-1 (Layer 1 (Reduced — 3 steps)):
 
-1. **Step 1 — Forced Research:** Run at least 2 WebSearch queries about common pitfalls and missed requirements in similar project types. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
+1. **Step 1 — Forced Research:** Run at least 2 web search queries about common pitfalls and missed requirements in similar project types. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
 2. **Step 4 — Multi-Perspective Evaluation:** From each of the 6 roles (User/Dev/Architect/Security/Ops/Maintainer), ask: "Are we missing critical requirements?" Output the `🧠 Multi-Perspective Evaluation` block. Each role MUST reference research findings.
 3. **Step 5 — Self-Interrogation + Synthesis:**
    - "If we proceed to Phase 2 now, what requirement is most likely to be missing?"

@@ -22,14 +22,15 @@
 **Test:**
 {{TEST_FILES}}
 
-## Dependencies
+## Dependencies (**REQUIRED** — Task Research Agent reads this table)
 
-<!-- 本任务涉及的外部库及其 GitHub 仓库映射，供 DeepWiki 查询使用 -->
+<!-- 本任务涉及的外部库及其 GitHub 仓库映射，供 DeepWiki / Task Research Agent 查询使用 -->
+<!-- 如果本任务不使用外部库，写 "None" 而不是删除本节 -->
 
-| Library | GitHub Repo | Usage in This Task |
-|---------|-------------|-------------------|
-| {{LIB_1}} | {{OWNER/REPO_1}} | {{USAGE_1}} |
-| {{LIB_2}} | {{OWNER/REPO_2}} | {{USAGE_2}} |
+| Library | GitHub Repo | APIs Used | Usage in This Task |
+|---------|-------------|-----------|-------------------|
+| {{LIB_1}} | {{OWNER/REPO_1}} | {{API_LIST_1}} | {{USAGE_1}} |
+| {{LIB_2}} | {{OWNER/REPO_2}} | {{API_LIST_2}} | {{USAGE_2}} |
 
 ## Steps
 

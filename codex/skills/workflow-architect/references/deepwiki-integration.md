@@ -1,6 +1,6 @@
 # DeepWiki Integration — API 研究协议
 
-> Cross-phase research protocol using DeepWiki to query GitHub repository documentation. Available in ALL phases with varying intensity: light research in Phases 1-3, full 3-tier protocol in Phase 4.
+> Cross-phase research protocol using DeepWiki to query GitHub repository documentation. Available in ALL phases: Phase 0 via dedicated Agent C, Phases 1-3 at decision points (REQUIRED when libraries are known), Phase 4 via Task Research Agent pattern.
 
 <!-- 跨阶段研究协议，通过 DeepWiki 查询 GitHub 仓库文档。所有阶段可用：Phase 1-3 轻量研究，Phase 4 完整三级协议。 -->
 
@@ -35,16 +35,17 @@ ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1   # Windows (PowerShell + Invoke
 
 | Phase | Usage Level | Typical Operations | Purpose |
 |-------|------------|-------------------|---------|
-| Phase 1 | Light | `structure`, targeted `ask` | Verify library capabilities when discussing tech choices during PQCP |
-| Phase 2 | Moderate | `ask` during BS-2/3/4 research | Validate tech stack decisions with actual API documentation |
-| Phase 3 | Light | `structure`, `ask` | Confirm dependency-to-repo mappings, verify API scope for task planning |
-| Phase 4 | Full (3-Tier) | Batch `structure` + `ask`, per-task `ask`, coding-time `ask` | Comprehensive API research before and during coding |
+| Phase 0 | Full (Agent C) | `structure`, `ask` | Dedicated agent researches candidate libraries via DeepWiki (MANDATORY) |
+| Phase 1 | Conditional | `structure`, targeted `ask` | REQUIRED when candidate libraries are known from Phase 0 domain-knowledge.md |
+| Phase 2 | Conditional | `ask` during BS-2/3/4 research | REQUIRED when BS-2/3/4 involves libraries identified in domain-knowledge.md |
+| Phase 3 | Light | `structure`, `ask` | Confirm dependency-to-repo mappings. Verify API scope for Dependencies table completeness |
+| Phase 4 | Full (Task Research Agent) | Agent-driven `ask` per task | Comprehensive API research before and during coding |
 
 **Phase 1-3 rules:**
 - Do NOT run batch Tier 1 queries outside Phase 4 — those are Phase 4 only
 - Each DeepWiki query MUST be tied to a specific decision point or planning need
+- DeepWiki calls are REQUIRED (not optional) when candidate libraries are known from Phase 0. The word 'optionally' MUST NOT be used to describe DeepWiki calls.
 - Max 2 DeepWiki queries per brainstorm trigger point (BS-2/3/4)
-- Max 1 DeepWiki query per PQCP cycle
 - Cache is NOT maintained for Phase 1-3 queries (they are one-off contextual lookups)
 
 **Auto-detect platform:** Use `.ps1` on Windows (`OS` = `Windows_NT`), `.sh` otherwise.
@@ -74,6 +75,22 @@ powershell -File <script-path> structure "expressjs/express"
 ```
 
 The script includes built-in retry with exponential backoff (10s → 30s → 60s) for 429 rate limiting.
+
+---
+
+## Phase 0: Pre-Research — Agent C
+
+During Phase 0, Agent C is a dedicated technology ecosystem researcher that MUST use DeepWiki.
+
+### Protocol
+1. Identify 3-5 candidate libraries from the project idea
+2. For EACH candidate: run `structure` + `ask` (MANDATORY)
+3. Results written to `.workflow/agent-outputs/agent-c-tech.md`
+4. Consolidated into `.workflow/context/domain-knowledge.md`
+
+See [pre-research-protocol.md](pre-research-protocol.md) for full Agent C specification.
+
+This provides the foundation library knowledge that all subsequent phases build on.
 
 ---
 
@@ -141,19 +158,21 @@ Cache: .workflow/deepwiki-cache/phase-N-research.md
 
 ---
 
-### Tier 2: Task-Level Focused Research — 任务级聚焦研究
+### Tier 2: Task Research Agent — 任务级聚焦研究
 
 <!-- 每个任务开始时，针对该任务涉及的具体 API 进行聚焦查询。 -->
 
-**When:** At the start of each task, AFTER reading the task plan, BEFORE executing steps.
+**When:** At the start of each task. A dedicated Research Agent is spawned to handle this — the main model does NOT do Tier 2 research inline.
+
+**Why an agent?** The main model tends to skip optional research during coding. A dedicated agent has only one job: query DeepWiki. It cannot skip.
 
 **Purpose:** Understand the specific APIs and patterns needed for this task.
 
 **Protocol:**
 
-1. **Identify task-specific APIs:** From the task plan's steps and file list, extract which specific APIs, methods, or patterns will be used.
+1. **The Research Agent reads the task plan's Dependencies table:** From the task plan's steps and file list, extract which specific APIs, methods, or patterns will be used.
 
-2. **Formulate focused questions:** Ask about the specific APIs, not general overviews:
+2. **For each library + API, the agent runs DeepWiki ask queries:** Ask about the specific APIs, not general overviews:
    - Good: `"How does Prisma's createMany handle duplicate keys and what are the error types?"`
    - Bad: `"Tell me about Prisma"` (too broad — that's Tier 1)
 
@@ -163,7 +182,9 @@ Cache: .workflow/deepwiki-cache/phase-N-research.md
      "How to handle Prisma transaction errors in Express error-handling middleware?"
    ```
 
-4. **Check Tier 1 cache first:** Before querying, check if the answer is already in the phase-level research cache. Only query DeepWiki if the cache doesn't cover the specific API.
+4. **Results are written to `.workflow/deepwiki-cache/task-NN-api-reference.md`:** The main model reads this file BEFORE writing code.
+
+5. **Check Tier 1 cache first:** Before querying, check if the answer is already in the phase-level research cache. Only query DeepWiki if the cache doesn't cover the specific API.
 
 **Question formulation rules:**
 - Start with the specific API name or pattern
@@ -187,7 +208,7 @@ Cache: .workflow/deepwiki-cache/phase-N-research.md
 - About to implement error handling for library-specific errors
 
 **MAY skip ONLY when ALL of the following are true:**
-- The exact same API call was already queried in Tier 2 for this task
+- The Task Research Agent already documented the exact same API in the task's api-reference.md file
 - AND the Tier 2 answer included the specific parameters, return type, and error behavior needed
 - AND no version or configuration difference exists between the Tier 2 context and current code context
 
@@ -342,10 +363,11 @@ On Phase 4 session resume, if `.workflow/deepwiki-cache/phase-N-research.md` exi
 
 ## Constraints — 约束条件
 
-- **DeepWiki is available in ALL phases.** Usage intensity differs by phase (see Cross-Phase Usage above). Phases 1-3 use targeted queries at decision points. Phase 4 uses the full 3-Tier protocol.
+- **DeepWiki is available in ALL phases.** Phase 0 and Phase 4 use dedicated agents (MANDATORY). Phases 1-3 use conditional calls (REQUIRED when libraries are known).
 - **DO NOT** run batch Tier 1 queries in Phases 1-3. Batch research is Phase 4 only.
 - **DO NOT** ask more than 5 questions per task at Tier 2. If you need more, your task granularity may be too coarse.
 - **DO NOT** ask vague questions. Every query should be specific and actionable.
+- **DO NOT** use the word 'optionally' when describing DeepWiki calls. The call is either REQUIRED (when conditions are met) or SKIPPED (when conditions are not met). It is never 'optional'.
 - **DO** check Tier 1 cache before making Tier 2/3 queries.
 - **DO** use cross-repo queries (`repoName` as array) when integrating multiple libraries — it produces better answers than separate queries.
 - **DO** include the script path relative to the Skill directory when instructing the AI to run it.

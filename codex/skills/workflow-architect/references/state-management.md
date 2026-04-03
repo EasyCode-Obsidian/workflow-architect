@@ -13,7 +13,7 @@
 <project-root>/.workflow/state.json
 ```
 
-The state file is created when Phase 1 begins and persists throughout the entire workflow lifecycle.
+The state file is created when Phase 0 (Pre-Research) begins and persists throughout the entire workflow lifecycle.
 
 ## JSON Schema
 
@@ -23,7 +23,7 @@ The state file is created when Phase 1 begins and persists throughout the entire
   "project_name": "string",
   "created_at": "ISO-8601",
   "updated_at": "ISO-8601",
-  "current_phase": "requirements | draft | planning | execution | completed",
+  "current_phase": "pre_research | requirements | draft | planning | execution | completed",
 
   "phase_history": [
     {
@@ -33,6 +33,25 @@ The state file is created when Phase 1 begins and persists throughout the entire
       "exit_reason": "approved | rejected_to_requirements | course_correction_planning | course_correction_draft"
     }
   ],
+
+  "pre_research": {
+    "status": "pending | in_progress | completed",
+    "agents": {
+      "domain_research": { "status": "pending | running | completed | failed", "output_file": ".workflow/agent-outputs/agent-a-domain.md | null" },
+      "competitive_analysis": { "status": "pending | running | completed | failed", "output_file": ".workflow/agent-outputs/agent-b-competitive.md | null" },
+      "tech_ecosystem": { "status": "pending | running | completed | failed", "output_file": ".workflow/agent-outputs/agent-c-tech.md | null", "deepwiki_called": false }
+    },
+    "consolidation_status": "pending | completed",
+    "completed_at": "ISO-8601 | null"
+  },
+
+  "context_bus": {
+    "project_brief": ".workflow/context/project-brief.md | null",
+    "domain_knowledge": ".workflow/context/domain-knowledge.md | null",
+    "interview_transcript": ".workflow/context/interview-transcript.md | null",
+    "hypothesis_tracker": ".workflow/context/hypothesis-tracker.md | null",
+    "last_updated": "ISO-8601 | null"
+  },
 
   "requirements": {
     "status": "in_progress | completed",
@@ -168,20 +187,21 @@ The state file is created when Phase 1 begins and persists throughout the entire
 ## State Transition Diagram
 
 ```
-                 +---- reject ----+
-                 v                 |
-  INIT --> REQUIREMENTS -----> DRAFT
-                 ^              |
-                 |           approve
-                 |              v
-                 +-- reject -- PLANNING --> EXECUTION --> COMPLETED
+                          +---- reject ----+
+                          v                 |
+  INIT --> PRE-RESEARCH --> REQUIREMENTS -----> DRAFT
+                               ^              |
+                               |           approve
+                               |              v
+                               +-- reject -- PLANNING --> EXECUTION --> COMPLETED
 ```
 
 ### Transition Rules
 
 | From           | To             | Condition                                        |
 |----------------|----------------|--------------------------------------------------|
-| (init)         | requirements   | Skill invoked; state.json created                |
+| (init)         | pre_research   | Skill invoked; state.json created                |
+| pre_research   | requirements   | All 3 research agents completed + consolidation done |
 | requirements   | draft          | Coverage sufficient + user confirms               |
 | draft          | planning       | User approves draft                               |
 | draft          | requirements   | User rejects draft                                |
@@ -195,7 +215,9 @@ The state file is created when Phase 1 begins and persists throughout the entire
 ## Persistence Rules
 
 1. **When to write state.json:**
-   - On Phase 1 start (initialize)
+   - On Phase 0 start (initialize)
+   - After each Phase 0 agent completes (update pre_research.agents)
+   - After Context Bus file updates (update context_bus.last_updated)
    - After each answered question (update coverage_map + answers)
    - On every phase transition
    - **After each brainstorm completion** (update brainstorm.bsN.status + completed_at + audit_score)
@@ -297,6 +319,55 @@ Mode: Full (7 steps) | Reduced (3 steps)
 3. Update `brainstorm.bsN.status` and `brainstorm.bsN.artifact` in state.json
 4. On session resume: read existing brainstorm artifacts to restore context
 5. BS-7 files use incrementing suffix: `bs-7-1.md`, `bs-7-2.md`, etc.
+
+## Context Bus — 上下文总线
+
+The Context Bus is a set of structured files in `.workflow/context/` that serve as the shared knowledge hub between the main model and sub-agents. Sub-agents start with zero context (only their prompt) — the Context Bus files bridge this gap.
+
+<!-- 上下文总线是 .workflow/context/ 中的一组结构化文件，作为主模型与子代理之间的共享知识中枢。 -->
+
+### Directory Structure
+
+```
+.workflow/
+├── context/
+│   ├── project-brief.md          # Project summary (updated after major events)
+│   ├── domain-knowledge.md       # Consolidated pre-research output
+│   ├── interview-transcript.md   # All Q&A records (append-only)
+│   └── hypothesis-tracker.md     # Hypothesis tracking (confirmed/denied/revised)
+├── agent-outputs/
+│   ├── agent-a-domain.md         # Agent A: Domain Research raw output
+│   ├── agent-b-competitive.md    # Agent B: Competitive Analysis raw output
+│   └── agent-c-tech.md           # Agent C: Tech Ecosystem + DeepWiki raw output
+```
+
+### Persistence Rules
+
+1. Create `.workflow/context/` and `.workflow/agent-outputs/` at Phase 0 start
+2. `project-brief.md` — written at Phase 0, updated after each phase transition
+3. `domain-knowledge.md` — written once at Phase 0 consolidation, may be appended during later phases
+4. `interview-transcript.md` — append-only; a new Q&A pair appended after each answered question in Phase 1
+5. `hypothesis-tracker.md` — updated after each brainstorm completion and after Phase 1 answers that confirm/deny hypotheses
+
+### Sub-Agent Context Loading
+
+All sub-agent prompts that need project context MUST include this instruction block:
+
+```
+Before starting your task, read these Context Bus files:
+1. .workflow/context/project-brief.md
+2. .workflow/context/domain-knowledge.md
+3. .workflow/context/hypothesis-tracker.md
+```
+
+For agents that need interview history, also include:
+```
+4. .workflow/context/interview-transcript.md
+```
+
+### Backward Compatibility
+
+A state.json from version `"1.0"` (without `pre_research` or `context_bus` fields) remains valid. These fields are initialized at Phase 0 start. If a workflow was started before this update, Phase 0 is skipped and the workflow proceeds directly to Phase 1 as before.
 
 ## Draft Cache Persistence — 草案缓存持久化
 

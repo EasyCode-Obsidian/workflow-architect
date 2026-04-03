@@ -21,6 +21,7 @@
    - **Windows:** `${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1` — verify it exists
    - **Auto-detect:** Check if running on Windows (presence of `COMSPEC` env var or `OS` = `Windows_NT`). Use `.ps1` on Windows, `.sh` otherwise.
    - If neither script is found, log a warning — DeepWiki research will fall back to WebSearch.
+5.5. **Read Context Bus:** Load `.workflow/context/domain-knowledge.md` and `.workflow/context/project-brief.md` for background context during execution.
 6. Create TaskCreate entries for ALL pending tasks across ALL phases
    - This provides real-time visibility to the user
    - Format: `[Phase N] Task NN: <name>`
@@ -42,9 +43,16 @@ FOR each phase P in project-plan (in order):
         Mark task as in_progress in state.json
         Mark corresponding TaskCreate entry as in_progress
 
-        === DEEPWIKI TIER 2: TASK RESEARCH ===
-        Run DeepWiki task-level focused research (see DeepWiki Integration below)
-        === END TIER 2 ===
+        === TASK RESEARCH AGENT ===
+        Spawn a Research Agent to query DeepWiki for all APIs in this task:
+        1. Read the task plan's Dependencies table (REQUIRED — must have owner/repo + APIs Used)
+        2. Agent runs DeepWiki for EACH library API listed:
+           bash <script> ask "owner/repo" "API reference for <API>: parameters, return types, error behavior"
+        3. Agent writes structured output to .workflow/deepwiki-cache/task-TT-api-reference.md
+        4. Main model reads the API reference file BEFORE writing any code
+        5. This step is MANDATORY — do NOT skip even if Tier 1 cache covers the library
+        See Task Research Agent section below for the full prompt template.
+        === END TASK RESEARCH AGENT ===
 
         FOR each step S in task T:
             Execute step EXACTLY as documented
@@ -61,7 +69,7 @@ FOR each phase P in project-plan (in order):
             Before implementing library-specific error handling:
               1. Run: bash <script> ask "owner/repo" "What errors can <API call> throw and how to handle them?"
             MAY skip ONLY when ALL of the following are true:
-              - The exact same API was already queried in Tier 2 for this task
+              - The Task Research Agent already documented the exact same API in .workflow/deepwiki-cache/task-TT-api-reference.md for this task
               - AND Tier 2 answer included specific parameters, return type, and error behavior
               - AND no version or configuration difference exists between Tier 2 context and current code
             === END TIER 3 ===
@@ -177,7 +185,7 @@ Triggered during step execution before writing code that interacts with external
 3. No caching — results feed directly into code
 
 **MAY skip ONLY when ALL of the following are true:**
-- The exact same API call was already queried in Tier 2 for this task
+- The exact same API call was already queried by the Task Research Agent and documented in `.workflow/deepwiki-cache/task-TT-api-reference.md` for this task
 - AND the Tier 2 answer included the specific parameters, return type, and error behavior needed
 - AND no version or configuration difference exists between the Tier 2 context and current code context
 
@@ -213,6 +221,80 @@ If DeepWiki is unavailable (sustained 429 after retries, network error):
 1. Use `read_wiki_contents` (not rate-limited) + analyze directly
 2. Fall back to WebSearch
 3. Fall back to model knowledge with `⚠️ Based on model knowledge` disclaimer
+
+### Task Research Agent — 任务研究代理
+
+Before each task in the execution loop, spawn a dedicated Research Agent. This agent's ONLY job is to query DeepWiki and produce a structured API reference file.
+
+**Why an agent instead of inline DeepWiki calls?** The main model tends to skip "optional" research steps during coding. A dedicated agent has no other task — it MUST do the research.
+
+<!-- 为什么用代理而不是内联调用？主模型在编码时倾向于跳过"可选"的研究步骤。专用代理没有其他任务，必须完成研究。 -->
+
+**Agent prompt template:**
+
+```
+You are a library API researcher. Your ONLY task is to query DeepWiki for API
+documentation and write a structured reference file.
+
+## Context Files (read first)
+- .workflow/context/domain-knowledge.md (for background)
+- .workflow/deepwiki-cache/phase-{N}-research.md (for phase-level context, if exists)
+
+## Task
+{task_name}: {task_objective}
+
+## Dependencies to Research
+{paste Dependencies table from task plan}
+
+## DeepWiki Script
+{platform-appropriate script command}
+
+## Instructions — MANDATORY, NO EXCEPTIONS
+
+For EACH library + API listed in the Dependencies table:
+
+1. Run: {script_command} ask "{owner/repo}" \
+     "API reference for {API}: exact parameters, return types, default values, error behavior, configuration options"
+
+2. If DeepWiki returns error/empty:
+   - Retry once with simpler question
+   - If still fails: WebSearch "{library} {API} documentation" as fallback
+   - Mark entry as "⚠️ WebSearch fallback"
+
+3. For cross-library integration points:
+   {script_command} ask '["repo1","repo2"]' "How to integrate {API1} with {API2}?"
+
+## Output
+Write to: .workflow/deepwiki-cache/task-{TT}-api-reference.md
+
+Format for each API:
+### {library}.{API_name}
+**Source:** DeepWiki ({owner/repo}) | WebSearch fallback
+**Signature:** `{function signature}`
+**Parameters:**
+- `param` (type, required/optional): description, default
+**Returns:** `{return type}` — description
+**Errors/Throws:**
+- `ErrorType`: when {condition}
+**Example:**
+  {minimal code example}
+**Gotchas:**
+- {common mistakes}
+
+Summary header:
+# API Reference — Task {TT}: {name}
+Generated: {timestamp}
+| API | Library | Source | Confidence |
+|-----|---------|--------|-----------|
+
+Return a one-paragraph summary.
+```
+
+**When Phase starts (first task only):** The Research Agent additionally runs Tier 1 batch research:
+- Read the phase plan, extract ALL libraries across ALL tasks
+- Run `structure` + broad `ask` for each library
+- Write to `.workflow/deepwiki-cache/phase-{N}-research.md`
+- Then proceed to task-specific research
 
 ---
 
@@ -350,8 +432,8 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 **Inline execution checklist:**
 
 1. **Step 1 — Forced Research:** Run at least 2 WebSearch queries about the specific error type and technology involved. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
-2. **Step 2 — Independent Agents:** Launch 3 parallel Agents to propose genuinely different fix approaches (not variations of the same fix). Each agent gets the full error context (phase, task, step, all 3 strike attempts, error messages). Output the `🏗️ Independent Proposals Generated` block.
-3. **Step 3 — Quality Gate:** Run the divergence check on the 3 proposals. Output the `🔬 Divergence Check` block. If FAIL, regenerate (max 5 rounds).
+2. **Step 2 — Independent Agents:** Launch 2 parallel Agents (Devil's Advocate + Lateral Thinker) to propose genuinely different fix approaches (not variations of the same fix). Each agent gets: the full error context (phase, task, step, all 3 strike attempts, error messages) + Context Bus files (.workflow/context/domain-knowledge.md, .workflow/context/hypothesis-tracker.md). Output the `🏗️ Independent Proposals Generated` block.
+3. **Step 3 — Quality Gate:** Run the divergence check on the 2 proposals. Output the `🔬 Divergence Check` block. If FAIL, regenerate (max 5 rounds).
 4. **Step 4 — Multi-Perspective:** Evaluate from Developer + Architect + Ops perspectives: "Why did this fail? Will this fix introduce new problems?" Output the `🧠 Multi-Perspective Evaluation` block.
 5. **Step 5 — Self-Interrogation:** Select the safest fix with highest success likelihood. Raise 3 sharp challenges. Output the `💭 Self-Interrogation` block.
 6. **Step 6 — Independent Audit:** Launch audit Agent, verify quality scores. Output the `🔍 Independent Audit` block. If FAIL, redo Steps 2-5 (max 5 rounds).

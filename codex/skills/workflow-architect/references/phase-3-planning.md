@@ -104,10 +104,11 @@ Use `assets/templates/task-plan.md` as the template. Fill in:
    - **Create:** exact file paths to create (e.g., `src/models/user.py`)
    - **Modify:** exact file paths to modify with line ranges if known
    - **Test:** test file paths
-4. **Dependencies section:** (**MUST** — this mapping drives DeepWiki research in all subsequent phases)
+4. **Dependencies section:** (**REQUIRED — Task Research Agent depends on this table**)
    - Map each external library/framework used in this task to its GitHub `owner/repo`
-   - Include a brief note on what the library is used for in this task
-   - This mapping is consumed by DeepWiki research during Phase 4 execution
+   - Include the "APIs Used" column listing specific API calls planned for this task
+   - If no external libraries: write "None" — do NOT omit the section
+   - This table is consumed by the Task Research Agent before each task in Phase 4
 5. **Steps** — numbered, atomic, imperative instructions:
    - Each step starts with an action verb (Create, Add, Configure, Run, etc.)
    - Include code snippets where they clarify intent
@@ -138,7 +139,7 @@ and Level 3 plans reference Level 2 task listings.
 
 **STOP. Do NOT write Level 3 plans yet.**
 
-After writing all Level 2 plans, you MUST execute brainstorm trigger BS-6 (Reduced Mode — 3 steps):
+After writing all Level 2 plans, you MUST execute brainstorm trigger BS-6 (Layer 1 (Reduced — 3 steps)):
 
 1. **Step 1 — Forced Research:** Search for task decomposition best practices for the project's tech stack. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
 2. **Step 4 — Multi-Perspective Evaluation:** Focus on Developer and Architect perspectives:
@@ -243,6 +244,17 @@ FOR each Level 3 task file:
     Check: step count is between 1-30?               IF NOT: WARN
 ```
 
+### Check 6: Dependencies Table Completeness
+
+```
+FOR each Level 3 task file:
+    Check: has a "Dependencies" section?                        IF NOT: FAIL
+    Check: Dependencies section has at least one row OR "None"? IF NOT: WARN
+    FOR each library in Dependencies:
+        Check: GitHub Repo column is not empty?                 IF NOT: WARN
+        Check: APIs Used column is not empty?                   IF NOT: WARN
+```
+
 ### Verification Output Format
 
 ```
@@ -254,6 +266,7 @@ Check 2 — File Path Consistency:  ✅ PASS | ⚠️ WARN (details)
 Check 3 — Dependency Validation:  ✅ PASS | ❌ FAIL (details)
 Check 4 — Feature Coverage:       ✅ PASS | ⚠️ WARN (details)
 Check 5 — Task Completeness:      ✅ PASS | ❌ FAIL (details)
+Check 6 — Dependencies Table:    ✅ PASS | ❌ FAIL (details)
 
 Overall: PASS ✅ / FAIL ❌
 ```
@@ -309,7 +322,7 @@ Level 3: Task Plans
 All plans written to: .workflow/
 ```
 
-Then offer three options to the user:
+Then offer three options by asking the user:
 
 ### Option A: Approve — 批准执行
 - "Plans ready, begin execution" (计划完备，开始执行)
