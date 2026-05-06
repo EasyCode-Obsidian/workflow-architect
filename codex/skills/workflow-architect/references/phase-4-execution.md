@@ -20,9 +20,9 @@
    - **Unix/macOS:** `${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh` — verify it exists and is executable
    - **Windows:** `${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1` — verify it exists
    - **Auto-detect:** Check if running on Windows (presence of `COMSPEC` env var or `OS` = `Windows_NT`). Use `.ps1` on Windows, `.sh` otherwise.
-   - If neither script is found, log a warning — DeepWiki research will fall back to web search.
+   - If neither script is found, log a warning — DeepWiki research will fall back to WebSearch.
 5.5. **Read Context Bus:** Load `.workflow/context/domain-knowledge.md` and `.workflow/context/project-brief.md` for background context during execution.
-6. Create task tracking entries for ALL pending tasks across ALL phases
+6. Create TaskCreate entries for ALL pending tasks across ALL phases
    - This provides real-time visibility to the user
    - Format: `[Phase N] Task NN: <name>`
 
@@ -41,7 +41,7 @@ FOR each phase P in project-plan (in order):
     FOR each task T in phase P (in order):
         Read .workflow/phases/phase-P/tasks/task-TT-<name>.md
         Mark task as in_progress in state.json
-        Mark corresponding task tracking entry as in_progress
+        Mark corresponding TaskCreate entry as in_progress
 
         === TASK RESEARCH AGENT ===
         Spawn a Research Agent to query DeepWiki for all APIs in this task:
@@ -77,7 +77,7 @@ FOR each phase P in project-plan (in order):
         Run verification checks from task plan
         If verification passes:
             Mark task completed in state.json
-            Mark task tracking entry as completed
+            Mark TaskCreate entry as completed
             Git commit with pre-written message from task plan
             Output progress: [Phase X/Y] [Task A/B] Completed: <name> | Overall: C/D (E%)
 
@@ -88,10 +88,11 @@ FOR each phase P in project-plan (in order):
     Output: "Phase P completed. Moving to Phase P+1."
 
     === MILESTONE CHECKPOINT ===
-    Present milestone review to user:
+    Present milestone review to user via AskUserQuestion:
     - Summary of what was built in this phase
     - Files created/modified count
     - Any errors encountered and how they were resolved
+    - Production readiness: are observability, security, and deployment concerns addressed in this phase's deliverables?
     - Options:
       (A) Continue to next phase
       (B) Review what was built (show key files)
@@ -126,6 +127,11 @@ Completed tasks: A/A
 Files created: <count>
 Files modified: <count>
 Errors encountered: <count> (all resolved)
+
+Production readiness:
+- Observability: ✅ / ⚠️ / ⬜
+- Security:     ✅ / ⚠️ / ⬜
+- Deployment:   ✅ / ⚠️ / ⬜
 
 Key deliverables:
 - <file 1>: <one-line description>
@@ -219,7 +225,7 @@ powershell -File ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1 structure "expr
 
 If DeepWiki is unavailable (sustained 429 after retries, network error):
 1. Use `read_wiki_contents` (not rate-limited) + analyze directly
-2. Fall back to web search
+2. Fall back to WebSearch
 3. Fall back to model knowledge with `⚠️ Based on model knowledge` disclaimer
 
 ### Task Research Agent — 任务研究代理
@@ -258,8 +264,8 @@ For EACH library + API listed in the Dependencies table:
 
 2. If DeepWiki returns error/empty:
    - Retry once with simpler question
-   - If still fails: web search "{library} {API} documentation" as fallback
-   - Mark entry as "⚠️ web search fallback"
+   - If still fails: WebSearch "{library} {API} documentation" as fallback
+   - Mark entry as "⚠️ WebSearch fallback"
 
 3. For cross-library integration points:
    {script_command} ask '["repo1","repo2"]' "How to integrate {API1} with {API2}?"
@@ -269,7 +275,7 @@ Write to: .workflow/deepwiki-cache/task-{TT}-api-reference.md
 
 Format for each API:
 ### {library}.{API_name}
-**Source:** DeepWiki ({owner/repo}) | web search fallback
+**Source:** DeepWiki ({owner/repo}) | WebSearch fallback
 **Signature:** `{function signature}`
 **Parameters:**
 - `param` (type, required/optional): description, default
@@ -339,7 +345,7 @@ When returning to Phase 4 after course correction:
 2. Identify which tasks are affected by the plan changes:
    - Tasks in modified phases: re-execute from the first modified task
    - Tasks in unmodified phases: keep as completed
-3. Re-create task tracking entries for remaining tasks
+3. Re-create TaskCreate entries for remaining tasks
 4. Display resume summary and continue
 
 ## Plan Following — 计划遵循
@@ -410,7 +416,7 @@ If all 3 strikes fail:
    - Which phase/task/step failed
    - All 3 attempted resolutions (one sentence each)
    - Root cause hypothesis
-3. Offer options to the user:
+3. Offer options via `AskUserQuestion`:
    - **(A) Run BS-7 deep analysis** — AI runs a full 7-step brainstorm to find a fix (takes longer but produces high-quality options)
    - **(B) Provide your own fix** — user provides guidance directly
    - **(C) Skip this task and continue** — mark task as error, move to next task
@@ -431,12 +437,12 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 
 **Inline execution checklist:**
 
-1. **Step 1 — Forced Research:** Run at least 2 web search queries about the specific error type and technology involved. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
-2. **Step 2 — Independent Sub-Agents:** Launch 2 parallel sub-agents (Devil's Advocate + Lateral Thinker) to propose genuinely different fix approaches (not variations of the same fix). Each sub-agent gets: the full error context (phase, task, step, all 3 strike attempts, error messages) + Context Bus files (.workflow/context/domain-knowledge.md, .workflow/context/hypothesis-tracker.md). Output the `🏗️ Independent Proposals Generated` block.
+1. **Step 1 — Forced Research:** Run at least 2 WebSearch queries about the specific error type and technology involved. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
+2. **Step 2 — Independent Agents:** Launch 2 parallel Agents (Devil's Advocate + Lateral Thinker) to propose genuinely different fix approaches (not variations of the same fix). Each agent gets: the full error context (phase, task, step, all 3 strike attempts, error messages) + Context Bus files (.workflow/context/domain-knowledge.md, .workflow/context/hypothesis-tracker.md). Output the `🏗️ Independent Proposals Generated` block.
 3. **Step 3 — Quality Gate:** Run the divergence check on the 2 proposals. Output the `🔬 Divergence Check` block. If FAIL, regenerate (max 5 rounds).
 4. **Step 4 — Multi-Perspective:** Evaluate from Developer + Architect + Ops perspectives: "Why did this fail? Will this fix introduce new problems?" Output the `🧠 Multi-Perspective Evaluation` block.
 5. **Step 5 — Self-Interrogation:** Select the safest fix with highest success likelihood. Raise 3 sharp challenges. Output the `💭 Self-Interrogation` block.
-6. **Step 6 — Independent Audit:** Launch audit sub-agent, verify quality scores. Output the `🔍 Independent Audit` block. If FAIL, redo Steps 2-5 (max 5 rounds).
+6. **Step 6 — Independent Audit:** Launch audit Agent, verify quality scores. Output the `🔍 Independent Audit` block. If FAIL, redo Steps 2-5 (max 5 rounds).
 7. **Step 7 — Synthesis:** Output the `✅ Decision` block with recommended fix and confidence level.
 
 **SELF-CHECK before applying fix:**
@@ -562,9 +568,9 @@ Tasks: A/A completed
 ═══════════════════════════════════
 ```
 
-### Task Tracking Integration
+### TaskCreate Integration
 
-- Create one task tracking entry per Level 3 task at execution start
+- Create one TaskCreate entry per Level 3 task at execution start
 - Use format: `[P<N>-T<NN>] <task name>`
 - Update to `in_progress` when starting each task
 - Update to `completed` when task passes verification
@@ -611,6 +617,13 @@ When all phases and tasks are completed:
    - Check all success criteria from Level 1 plan
    - Run full test suite if applicable
    - Verify project structure matches plan
+   - **Production readiness verification:**
+     - Security: Run dependency vulnerability scan (npm audit / pip audit / cargo audit / etc.)
+     - Performance: Verify key endpoints/libraries meet latency targets from Phase 1 Category 6
+     - Observability: Confirm health check endpoints, structured logging, and metrics exist
+     - Deployment: Verify IaC/configs produce a deployable artifact
+     - Documentation: Confirm runbooks and deployment docs exist
+   - Report any production gaps as actionable items
 
 2. Generate completion report (output in chat):
    ```
@@ -623,6 +636,13 @@ When all phases and tasks are completed:
    Tasks Completed: Y/Y
    Errors Encountered: Z (all resolved)
 
+   Production Readiness:
+   - Security Scan: ✅ PASS / ⚠️ <N> advisories
+   - Performance: ✅ targets met / ⚠️ <details>
+   - Observability: ✅ instrumented / ⚠️ gaps: <details>
+   - Deployment: ✅ deployable / ⚠️ <details>
+   - Documentation: ✅ complete / ⚠️ <details>
+
    Execution Timeline:
    - Started: <timestamp>
    - Completed: <timestamp>
@@ -630,8 +650,16 @@ When all phases and tasks are completed:
    Deliverables:
    - <list of key files/features created>
 
+   Pre-Launch Checklist:
+   - [ ] Security scan passes
+   - [ ] Performance benchmarks meet targets
+   - [ ] Observability dashboards configured
+   - [ ] Runbooks reviewed
+   - [ ] Deployment tested in staging
+   - [ ] Data backup/restore tested
+
    Next Steps:
-   - <suggested follow-up actions>
+   - <suggested follow-up actions before go-live>
    ══════════════════════════════════════
    ```
 
@@ -695,20 +723,20 @@ When context pressure is detected (conversation getting very long):
 3. **Inform the user:** "Context window is reaching capacity. Recommend starting a new session to continue. All progress is saved in state.json."
 4. The next session will resume cleanly via the Session Resume protocol
 
-### Strategy 4: Task Tracking Batching — 任务条目分批创建
+### Strategy 4: TaskCreate Batching — 任务条目分批创建
 
-For 50+ tasks, do NOT create all task tracking entries upfront:
+For 50+ tasks, do NOT create all TaskCreate entries upfront:
 
 1. Create entries only for the **current phase's tasks** at phase entry
 2. Mark completed tasks as done
-3. At next phase entry: create that phase's task tracking entries
+3. At next phase entry: create that phase's TaskCreate entries
 4. Show overall progress as: `Overall: C/D tasks (E%) — current phase: Phase N`
 
 ### Thresholds — 阈值
 
 | Metric | Threshold | Action |
 |--------|-----------|--------|
-| Total tasks | > 50 | Enable Strategy 4 (batched task tracking) |
+| Total tasks | > 50 | Enable Strategy 4 (batched TaskCreate) |
 | Phases | > 8 | Enable Strategy 1 (lazy loading) |
 | Tasks in single phase | > 15 | Consider splitting phase in Phase 3 |
 | Consecutive sessions | > 5 | Verify state.json integrity at resume |

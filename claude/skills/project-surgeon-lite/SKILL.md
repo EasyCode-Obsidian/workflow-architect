@@ -62,6 +62,7 @@ These rules are **NON-NEGOTIABLE**:
 3. **Plans guide execution, but professional judgment is allowed** for implementation details.
 4. **No skipping phases.** Must complete Understand before Execute.
 5. **Preserve working functionality.** Never break existing passing tests (Preservation Gate).
+6. **Production-grade improvements.** Target production-ready quality — include observability, security hardening, and error resilience in every improvement.
 
 ## Session Resume
 
@@ -73,7 +74,7 @@ On invocation, check for `.project-surgeon-lite/state.json`:
 
 ## Phase 1: Understand
 
-Auto-scan the project, run a 4-dimension code review, present findings, collect user goals.
+Auto-scan the project, run a 4-dimension code review + production readiness assessment, present findings, collect user goals.
 **Load** [understand-phase.md](references/understand-phase.md) and follow its protocol.
 
 Output: Findings summary + user goal confirmed. State updated to `execute`.

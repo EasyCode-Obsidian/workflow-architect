@@ -41,6 +41,7 @@ Rejection in Phase 2 or 3 returns to Phase 1 with existing analysis preserved.
 5. **Plans guide Phase 4, but professional judgment is allowed.** Execute the plans' intent faithfully. You MAY add type annotations, defensive checks, meaningful names, and idiomatic patterns. You MUST NOT add features, endpoints, or behaviors not in the plan.
 6. **NO skipping phases.** Even if the user says "just fix it", go through all 4 phases.
 7. **PRESERVE working functionality.** Never break existing passing tests or working features during execution. The Preservation Gate enforces this.
+8. **Production-grade improvements.** When improving existing code, target production-ready quality — not MVP patches. Security hardening, observability, error resilience, and operational readiness are part of every improvement, not optional extras.
 
 </HARD-GATE>
 
@@ -101,10 +102,12 @@ On skill invocation, FIRST check if `.project-surgeon/state.json` exists in the 
 5. **Priority Confirmation** — user selects which findings to address
 
 **Dimension priority by user goal:**
-- Comprehensive refactoring: all 7 equally
-- Fix problems: Logic → Error Handling → Security
-- Add features: Consistency → Logic → Performance
-- Modernize: Dependencies → Consistency → Performance
+- Comprehensive refactoring: all 7 equally + Production Readiness assessment
+- Fix problems: Logic → Error Handling → Security + Production gaps
+- Add features: Consistency → Logic → Performance + Observability
+- Modernize: Dependencies → Consistency → Performance + Production Readiness
+
+Production readiness assessment covers: observability (logging/metrics/health checks), security hardening, error resilience, deployment readiness, and operational documentation.
 
 **Approval gate options:**
 - (A) Approve → Phase 3
@@ -137,8 +140,9 @@ On skill invocation, FIRST check if `.project-surgeon/state.json` exists in the 
 1. Dependency updates + configuration fixes (low risk, high value)
 2. Critical bug fixes + security patches
 3. Refactoring + pattern improvements
-4. New features (if user goal includes)
-5. Documentation + cleanup + final verification
+4. Production hardening (observability, error resilience, security hardening, deployment readiness)
+5. New features (if user goal includes)
+6. Documentation + cleanup + final verification
 
 **Approval gate options:**
 - (A) Approve → Phase 4
@@ -215,6 +219,8 @@ All workflow state is persisted in `.project-surgeon/state.json`.
 - Run Preservation Gate (test baseline comparison) on every task in Phase 4
 - Write analysis report and review report to disk
 - Follow plan templates in `assets/templates/` for Phase 3
+- Assess production readiness (observability, security, error resilience, deployment) during Phase 2 review
+- Include production hardening phase in Phase 3 plans
 
 ### SHOULD
 - Infer project characteristics from existing files before asking questions
@@ -229,6 +235,8 @@ All workflow state is persisted in `.project-surgeon/state.json`.
 - Break existing passing tests (Preservation Gate enforces this)
 - Skip analysis or review phases even for "obvious" fixes
 - Delete or overwrite files without explicit plan authorization
+- Skip production readiness review — observability, security, and operations are part of every improvement
+- Hand off code without production verification
 
 ## Reference Files — 参考文件
 

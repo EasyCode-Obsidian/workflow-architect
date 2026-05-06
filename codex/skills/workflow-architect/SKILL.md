@@ -40,6 +40,8 @@ Rejection in Phase 2 or 3 returns to Phase 1 with existing answers preserved.
 6. **Plans (Phase 3) are ALWAYS written to disk.** All three levels must be persisted.
 7. **Mandatory Pre-Research.** Phase 0 (Pre-Research) MUST complete before Phase 1 begins. Three parallel research sub-agents MUST be launched. Agent C MUST invoke DeepWiki for candidate libraries — fallback to web search only after DeepWiki failure.
 8. **Context Bus.** Read Context Bus files (`.workflow/context/`) at the entry of every phase. Update Context Bus files after each major decision or phase transition.
+9. **Production-grade output.** All deliverables target production-ready, shippable quality — not MVP or demo. Performance targets, security hardening, observability, and operational readiness are designed in, not bolted on later.
+10. **NFRs are NOT optional.** Categories 6 (Performance & Scalability) and 7 (Security & Compliance) are MANDATORY and must reach "clear" before Phase 2. Production architecture MUST be designed in Phase 2 before advancing to Phase 3.
 
 </HARD-GATE>
 
@@ -63,6 +65,7 @@ Steps: Research → 2 challenger sub-agents (Devil's Advocate + Lateral Thinker)
 - **BS-5** (Phase 2→3): Draft integrity check
 - **BS-6** (Phase 3): Task decomposition review
 - **BS-7** (Phase 4): Error recovery — **user-opt-in only**
+- **BS-8** (Phase 2): Production readiness design — deployment, observability, security hardening, failure recovery
 
 **User-preference shortcut for BS-2/3/4:**
 When the user specified strong preferences during Phase 1 (e.g., "use React"), use **Confirmation Mode**: validate with research and multi-perspective evaluation, flag concerns if found, do NOT generate alternatives the user didn't ask for.
@@ -241,26 +244,28 @@ All workflow state is persisted in `.workflow/state.json`.
 | # | Category | Focus |
 |---|----------|-------|
 | 1 | Project Vision & Goals | Problem, solution, success criteria |
-| 2 | Functional Scope | Core features, MVP, non-goals |
+| 2 | Functional Scope | Core features, non-goals, priorities |
 | 3 | User Personas & Journeys | Roles, auth, primary flows |
 | 4 | Domain & Data Model | Entities, relationships, persistence |
 | 5 | Tech Stack & Architecture | Language, framework, deployment |
+| 6 | Performance & Scalability | Latency/throughput targets, scaling strategy, load profile |
+| 7 | Security & Compliance | Threat model, data protection, regulatory requirements |
 
-### Desirable (at least 3 must reach "partial")
+### Desirable (at least 4 must reach "partial")
 | # | Category | Focus |
 |---|----------|-------|
-| 6 | Integration & Dependencies | APIs, external systems |
-| 7 | Non-Functional Requirements | Performance, scalability, security |
-| 8 | UX & Interaction Design | Interface type, key screens |
-| 9 | Development Constraints | Team, CI/CD, testing |
-| 10 | Edge Cases & Risk | Tricky scenarios, compliance |
+| 8 | Integration & Dependencies | APIs, external systems, data formats |
+| 9 | Observability & Operations | Monitoring, logging, alerting, CI/CD, IaC, runbooks |
+| 10 | UX & Interaction Design | Interface type, key screens, accessibility |
+| 11 | Development & Quality | Team, testing strategy, code quality standards |
+| 12 | Edge Cases, Risk & Disaster Recovery | Tricky scenarios, backup/restore, failover, compliance |
 
 ## Behavioral Rules — 行为准则
 
 ### MUST
 - Ask one question at a time, presenting recommended options for the user to choose from
 - Provide recommended answers with reasoning
-- Execute Layer 1 brainstorm (self-reflection) at every designated trigger point (BS-1 through BS-6)
+- Execute Layer 1 brainstorm (self-reflection) at every designated trigger point (BS-1 through BS-8)
 - Execute Layer 2 brainstorm only when user explicitly requests it
 - Update state.json after every phase transition, task completion, and brainstorm completion
 - Present coverage/progress summaries at phase boundaries
@@ -270,6 +275,8 @@ All workflow state is persisted in `.workflow/state.json`.
 - Read Context Bus files (`.workflow/context/`) at the entry of each phase
 - Update Context Bus files after each major decision or phase transition
 - Include Context Bus reading instructions in ALL sub-agent prompts
+- Design production architecture (Section 5) before advancing from Phase 2 to Phase 3
+- Verify production readiness criteria at each milestone checkpoint in Phase 4
 
 ### SHOULD
 - Infer answers from existing project files when possible
@@ -285,6 +292,8 @@ All workflow state is persisted in `.workflow/state.json`.
 - Write draft content to disk (Phase 2)
 - Skip verification steps in Phase 4
 - Skip Lightweight brainstorm at trigger points, even under context pressure
+- Treat performance, security, or observability as "add later" concerns — design them into the architecture from Phase 2
+- Ship code without production verification (security scan, performance benchmark, deployment test)
 
 ## Reference Files — 参考文件
 
@@ -299,7 +308,7 @@ Load these on demand, not all at once:
 | [references/phase-3-planning.md](references/phase-3-planning.md) | Entering Phase 3 |
 | [references/phase-4-execution.md](references/phase-4-execution.md) | Entering Phase 4 |
 | [references/deepwiki-integration.md](references/deepwiki-integration.md) | All phases — research at decision points and before coding |
-| [references/brainstorm-protocol.md](references/brainstorm-protocol.md) | Every brainstorm trigger point (BS-1 through BS-7) |
+| [references/brainstorm-protocol.md](references/brainstorm-protocol.md) | Every brainstorm trigger point (BS-1 through BS-8) |
 | [references/index.md](references/index.md) | Overview of all references |
 | [bug-fixer/SKILL.md](../workflow-architect-bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review, standalone review |
 | [issue-changer/SKILL.md](../workflow-architect-issue-changer/SKILL.md) | Mid-execution change request, post-completion changes |

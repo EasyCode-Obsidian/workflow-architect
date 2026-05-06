@@ -27,7 +27,7 @@
 
 ## Draft Content Structure
 
-The draft MUST cover all of the following sections. Present them in this order.
+The draft MUST cover all 9 sections. Present them in this order.
 Content depth should scale with project complexity.
 
 ### Section 1: Project Overview — 项目概述
@@ -43,15 +43,15 @@ Content depth should scale with project complexity.
 
 **Default: Layer 1 (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1:
 
-1. **Research** — Read `.workflow/context/domain-knowledge.md` and `.workflow/context/hypothesis-tracker.md` to ground the research. Run 2-3 web search queries about architecture patterns for this project type. If candidate frameworks/libraries are known (from Phase 0 pre-research in `.workflow/context/domain-knowledge.md` or Phase 1 answers), you MUST query DeepWiki to verify their architectural capabilities:
+1. **Research** — Read `.workflow/context/domain-knowledge.md` and `.workflow/context/hypothesis-tracker.md` to ground the research. Run 2-3 WebSearch queries about architecture patterns for this project type. If candidate frameworks/libraries are known (from Phase 0 pre-research in `.workflow/context/domain-knowledge.md` or Phase 1 answers), you MUST query DeepWiki to verify their architectural capabilities:
    `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What architecture patterns does <framework> best support? Any known limitations for <project type>?"`
-   Output `🔍 Research Findings` block (include both web search and DeepWiki results, label DeepWiki as `📚 DeepWiki`).
+   Output `🔍 Research Findings` block (include both WebSearch and DeepWiki results, label DeepWiki as `📚 DeepWiki`).
 2. **Multi-Perspective Self-Evaluation** — Review from 6 roles (User/Dev/Architect/Security/Ops/Maintainer). Each role: 1-2 sentences. Output `🧠 Multi-Perspective` block.
 3. **Self-Interrogation + Synthesis** — Select recommendation, raise 3 sharp challenges, respond. Output `💭 Self-Interrogation` and `✅ Decision` blocks.
 
 **User-preference shortcut:** If user specified an architecture preference during Phase 1, use **validation focus** — research validates the choice, multi-perspective evaluates fit, self-interrogation challenges the choice. Flag concerns if found; do NOT generate alternatives.
 
-**Upgrade to Layer 2:** If the user requests deeper analysis (e.g., `/brainstorm`, "run full brainstorm"), execute Layer 2 per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2 — all 7 steps including 3 independent sub-agents, Quality Gate, and Audit.
+**Upgrade to Layer 2:** If the user requests deeper analysis (e.g., `/brainstorm`, "run full brainstorm"), execute Layer 2 per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 2 — all 7 steps including 3 independent Agents, Quality Gate, and Audit.
 
 **SELF-CHECK before writing Section 2 content:**
 - [ ] Research Findings block shown to user? If NO → STOP
@@ -77,7 +77,7 @@ Section 2 content (write ONLY after BS-2 completes):
 
 **STOP. Do NOT produce ANY Section 3 content yet.**
 
-**Default: Layer 1 (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on tech stack decisions. Read Context Bus files first. Use Phase 0 tech ecosystem research (`.workflow/context/domain-knowledge.md`) as the starting point. For each candidate technology, include at least 1 DeepWiki `ask` query to verify actual API capabilities — web search returns marketing pages, DeepWiki returns documentation:
+**Default: Layer 1 (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on tech stack decisions. Read Context Bus files first. Use Phase 0 tech ecosystem research (`.workflow/context/domain-knowledge.md`) as the starting point. For each candidate technology, include at least 1 DeepWiki `ask` query to verify actual API capabilities — WebSearch returns marketing pages, DeepWiki returns documentation:
    `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "What are the main capabilities and limitations of <library> v<latest>?"`
 
 **User-preference shortcut:** For user-specified tech choices (language, framework, database, etc.), use **validation focus** — validate with research, do NOT generate alternatives. For unspecified choices, evaluate options through multi-perspective self-reflection.
@@ -125,24 +125,65 @@ Section 4 content (write ONLY after BS-4 completes):
 - Concurrency/parallelism approach (if applicable)
 - Security design (authentication, authorization, encryption)
 
-### Section 5: Project Structure — 项目结构
-- Proposed directory layout (tree format)
-- Package/module organization rationale
-- Configuration management approach
-- Environment handling (dev/staging/prod)
+### Section 5: Production Architecture — 生产级架构设计
 
-### Section 6: Implementation Phases — 实施阶段划分
+<STOP-GATE id="BS-8">
+
+**STOP. Do NOT produce ANY Section 5 content yet.**
+
+**Default: Layer 1 (automatic).** Execute inline self-reflection per [brainstorm-protocol.md](brainstorm-protocol.md) Tier 1, focused on production readiness. Read Context Bus files first. If specific tools are referenced (monitoring, IaC, CI/CD), and they are known from Phase 0 pre-research, query DeepWiki:
+   `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "Production deployment best practices for <tool>?"`
+
+**Focus areas for this brainstorm:**
+1. **Research** — Read `.workflow/context/domain-knowledge.md` and `.workflow/context/hypothesis-tracker.md`. Run 2-3 WebSearch queries about production deployment patterns for the chosen tech stack. Query DeepWiki for production-specific capabilities of chosen frameworks.
+2. **Multi-Perspective Self-Evaluation** — Review from 6 roles, with emphasis on Ops/SRE and Security perspectives:
+   - "What fails at 3am? How do we detect and recover?"
+   - "What's the blast radius of each failure?"
+   - "Is observability designed in, or bolted on?"
+3. **Self-Interrogation + Synthesis:**
+   - "If traffic 10x's overnight, does this architecture handle it?"
+   - "If a critical third-party API is down for 30 minutes, what happens to users?"
+   - "Can a new team member deploy safely on day one?"
+
+**SELF-CHECK before writing Section 5 content:**
+- [ ] Research Findings block shown to user? If NO → STOP
+- [ ] Multi-Perspective evaluation block shown to user? If NO → STOP
+- [ ] Self-Interrogation + Decision block shown to user? If NO → STOP
+
+**After ALL checks pass:** persist results to `.workflow/brainstorm/bs-8.md`, update `brainstorm.bs8` in state.json, THEN write Section 5 content.
+
+</STOP-GATE>
+
+Section 5 content (write ONLY after BS-8 completes):
+- **Deployment Architecture** — containerization (Docker/OCI), orchestration (K8s/nomad/serverless), infrastructure diagram (ASCII art)
+- **Observability Design** — metrics (what to measure), logging (structured, levels, aggregation), distributed tracing, health checks (liveness/readiness), alerting rules and thresholds
+- **Security Hardening** — network segmentation, secrets management (vault/secrets-manager), TLS termination, CORS/CSP policies, dependency vulnerability scanning, container image scanning
+- **Data Protection** — backup strategy (frequency, retention, RPO/RTO), encryption at rest and in transit, database migration strategy (zero-downtime where applicable), PII handling and data retention policies
+- **Scaling & Resilience** — horizontal/vertical scaling strategy, auto-scaling triggers, rate limiting, circuit breakers, retry/backoff policies, graceful degradation paths, load shedding
+- **CI/CD Pipeline** — build → test → scan → deploy stages, environment promotion (dev→staging→prod), rollback strategy, canary/blue-green deployment approach
+- **Runbooks & Operations** — key operational procedures, incident response playbook, on-call expectations, SLI/SLO definitions
+- **Infrastructure as Code** — Terraform/Pulumi/CDK/CloudFormation approach, configuration management
+
+### Section 6: Project Structure — 项目结构
+- Proposed directory layout (tree format) — include production configs and IaC paths
+- Package/module organization rationale
+- Configuration management approach (environment variables, config files, feature flags)
+- Environment handling (dev/staging/prod) with clear separation
+
+### Section 7: Implementation Phases — 实施阶段划分
 - Divide the project into logical implementation phases
+- **MUST include at least one Production Hardening phase** — observability instrumentation, security hardening, load testing, deployment automation
 - Each phase: name, objective, estimated task count
 - Phase dependencies (which phases must complete before others)
 - This becomes the basis for Level 1 plan in Phase 3
 
-### Section 7: Risk Assessment — 风险评估
-- Top 3-5 technical risks
+### Section 8: Risk Assessment — 风险评估
+- Top 5-10 technical AND operational risks
 - Each risk: description, probability (High/Medium/Low), impact, mitigation strategy
+- Include production-specific risks: data loss, service outage, security breach, dependency failure, traffic spike
 - Known unknowns and how to resolve them
 
-### Section 8: Complexity Estimate — 复杂度评估
+### Section 9: Complexity Estimate — 复杂度评估
 - Overall complexity grade: Simple / Medium / Complex / Very Complex
 - Estimated total implementation phases
 - Estimated total tasks across all phases
@@ -162,16 +203,17 @@ Do NOT dump the entire draft at once. Present section by section.
 3. Present Sections 1-3 together (Section 1 has no brainstorm)
 4. Ask: "Is this direction correct so far?" (到目前为止这个方向是否正确？)
 5. If user confirms: **Execute BS-4 (Layer 1, auto)** → show brainstorm artifacts → persist to disk → write Section 4 content
-6. Present Sections 4-5
-7. Ask: "Any adjustments to design strategy or project structure?" (设计策略和项目结构有需要调整的吗？)
-8. If user confirms: present Sections 6-8
-9. Final confirmation gate (BS-5 + approval)
+6. **Execute BS-8 (Layer 1, auto)** → show brainstorm artifacts → persist to disk → write Section 5 content
+7. Present Sections 4-5
+8. Ask: "Any adjustments to design strategy or production architecture?" (设计策略和生产架构有需要调整的吗？)
+9. If user confirms: present Sections 6-9
+10. Final confirmation gate (BS-5 + approval)
 
 ### Section Revision — 局部修改
 
 If user wants changes to specific sections:
 - Revise ONLY the requested sections
-- If a revised section has a brainstorm trigger (2/3/4), re-run the brainstorm for that section
+- If a revised section has a brainstorm trigger (2/3/4/8), re-run the brainstorm for that section
 - Re-present the revised sections
 - Do NOT re-present unchanged sections
 - Continue from where the revision was requested
@@ -208,7 +250,7 @@ If no issues: proceed to approval options.
 
 </STOP-GATE>
 
-After BS-5 completes, offer three explicit options by asking the user:
+After BS-5 completes, offer three explicit options using AskUserQuestion:
 
 ### Option A: Approve — 批准
 - "Draft approved, proceed to detailed planning" (草案方向正确，进入详细计划阶段)
@@ -228,7 +270,7 @@ After BS-5 completes, offer three explicit options by asking the user:
 
 On approval:
 
-1. Verify brainstorm completion: check that `brainstorm.bs2`, `brainstorm.bs3`, `brainstorm.bs4`, `brainstorm.bs5` all have `status: "completed"` in state.json. If any are missing, **DO NOT proceed** — execute the missing brainstorm first.
+1. Verify brainstorm completion: check that `brainstorm.bs2`, `brainstorm.bs3`, `brainstorm.bs4`, `brainstorm.bs5`, `brainstorm.bs8` all have `status: "completed"` in state.json. If any are missing, **DO NOT proceed** — execute the missing brainstorm first.
 2. Update state.json:
    - `current_phase: "planning"`
    - `draft.status: "approved"`
@@ -254,8 +296,8 @@ On restart:
 
 - **Draft content is NOT a deliverable on disk.** The conversation is the primary presentation medium. However, a **session-resume cache** (`.workflow/draft-cache.md`) MUST be maintained incrementally.
 - **Cache after each section.** After completing each section, append it to `.workflow/draft-cache.md` and update `draft.completed_sections` in state.json.
-- **NEVER skip sections.** All 8 sections must be addressed (depth varies by complexity).
-- **NEVER produce Section 2/3/4 content without completed brainstorm.** The STOP-GATE is NON-NEGOTIABLE.
+- **NEVER skip sections.** All 9 sections must be addressed (depth varies by complexity).
+- **NEVER produce Section 2/3/4/5 content without completed brainstorm.** The STOP-GATE is NON-NEGOTIABLE.
 - **NEVER proceed to Phase 3 without explicit user approval.**
-- **NEVER proceed to Phase 3 without all brainstorms (BS-2/3/4/5) completed and persisted.**
+- **NEVER proceed to Phase 3 without all brainstorms (BS-2/3/4/5/8) completed and persisted.**
 - **Maintain consistency** between draft content and Phase 1 answers.

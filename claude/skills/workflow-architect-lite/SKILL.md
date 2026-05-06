@@ -51,6 +51,7 @@ These rules are **NON-NEGOTIABLE**:
 3. **Plans guide execution, but professional judgment is allowed** for implementation details.
 4. **No skipping phases.** Must complete Understand before Execute.
 5. **Plan MUST be written to disk** (`.workflow-lite/plan.md`) before any code is written.
+6. **Production-grade output.** Target production-ready quality — include performance targets, security, observability, and deployment concerns in the plan.
 
 ## Session Resume
 

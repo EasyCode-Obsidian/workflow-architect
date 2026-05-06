@@ -255,18 +255,31 @@ FOR each Level 3 task file:
         Check: APIs Used column is not empty?                   IF NOT: WARN
 ```
 
+### Check 7: Production Readiness Coverage
+
+```
+FOR the full task inventory across all phases:
+    Check: at least one phase is designated "Production Hardening"?     IF NOT: FAIL
+    Check: at least one task covers observability (metrics/logging/tracing/health checks)?  IF NOT: FAIL
+    Check: at least one task covers security hardening (secrets mgmt, TLS, vuln scanning)? IF NOT: FAIL
+    Check: at least one task covers deployment automation (CI/CD, IaC)? IF NOT: FAIL
+    Check: at least one task covers data protection (backup, encryption, migration)?        IF NOT: WARN
+    Check: at least one task covers load/performance testing?           IF NOT: WARN
+```
+
 ### Verification Output Format
 
 ```
 🔍 Plan Consistency Verification
-═══════════════════════════════════════
+═══════════════════════════════════
 
-Check 1 — Task Count Match:      ✅ PASS | ❌ FAIL (details)
-Check 2 — File Path Consistency:  ✅ PASS | ⚠️ WARN (details)
-Check 3 — Dependency Validation:  ✅ PASS | ❌ FAIL (details)
-Check 4 — Feature Coverage:       ✅ PASS | ⚠️ WARN (details)
-Check 5 — Task Completeness:      ✅ PASS | ❌ FAIL (details)
-Check 6 — Dependencies Table:    ✅ PASS | ❌ FAIL (details)
+Check 1 — Task Count Match:         ✅ PASS | ❌ FAIL (details)
+Check 2 — File Path Consistency:    ✅ PASS | ⚠️ WARN (details)
+Check 3 — Dependency Validation:    ✅ PASS | ❌ FAIL (details)
+Check 4 — Feature Coverage:         ✅ PASS | ⚠️ WARN (details)
+Check 5 — Task Completeness:        ✅ PASS | ❌ FAIL (details)
+Check 6 — Dependencies Table:       ✅ PASS | ❌ FAIL (details)
+Check 7 — Production Readiness:    ✅ PASS | ❌ FAIL (details)
 
 Overall: PASS ✅ / FAIL ❌
 ```

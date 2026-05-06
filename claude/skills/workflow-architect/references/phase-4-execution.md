@@ -92,6 +92,7 @@ FOR each phase P in project-plan (in order):
     - Summary of what was built in this phase
     - Files created/modified count
     - Any errors encountered and how they were resolved
+    - Production readiness: are observability, security, and deployment concerns addressed in this phase's deliverables?
     - Options:
       (A) Continue to next phase
       (B) Review what was built (show key files)
@@ -126,6 +127,11 @@ Completed tasks: A/A
 Files created: <count>
 Files modified: <count>
 Errors encountered: <count> (all resolved)
+
+Production readiness:
+- Observability: ✅ / ⚠️ / ⬜
+- Security:     ✅ / ⚠️ / ⬜
+- Deployment:   ✅ / ⚠️ / ⬜
 
 Key deliverables:
 - <file 1>: <one-line description>
@@ -611,6 +617,13 @@ When all phases and tasks are completed:
    - Check all success criteria from Level 1 plan
    - Run full test suite if applicable
    - Verify project structure matches plan
+   - **Production readiness verification:**
+     - Security: Run dependency vulnerability scan (npm audit / pip audit / cargo audit / etc.)
+     - Performance: Verify key endpoints/libraries meet latency targets from Phase 1 Category 6
+     - Observability: Confirm health check endpoints, structured logging, and metrics exist
+     - Deployment: Verify IaC/configs produce a deployable artifact
+     - Documentation: Confirm runbooks and deployment docs exist
+   - Report any production gaps as actionable items
 
 2. Generate completion report (output in chat):
    ```
@@ -623,6 +636,13 @@ When all phases and tasks are completed:
    Tasks Completed: Y/Y
    Errors Encountered: Z (all resolved)
 
+   Production Readiness:
+   - Security Scan: ✅ PASS / ⚠️ <N> advisories
+   - Performance: ✅ targets met / ⚠️ <details>
+   - Observability: ✅ instrumented / ⚠️ gaps: <details>
+   - Deployment: ✅ deployable / ⚠️ <details>
+   - Documentation: ✅ complete / ⚠️ <details>
+
    Execution Timeline:
    - Started: <timestamp>
    - Completed: <timestamp>
@@ -630,8 +650,16 @@ When all phases and tasks are completed:
    Deliverables:
    - <list of key files/features created>
 
+   Pre-Launch Checklist:
+   - [ ] Security scan passes
+   - [ ] Performance benchmarks meet targets
+   - [ ] Observability dashboards configured
+   - [ ] Runbooks reviewed
+   - [ ] Deployment tested in staging
+   - [ ] Data backup/restore tested
+
    Next Steps:
-   - <suggested follow-up actions>
+   - <suggested follow-up actions before go-live>
    ══════════════════════════════════════
    ```
 

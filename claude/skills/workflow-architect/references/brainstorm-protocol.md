@@ -56,6 +56,7 @@ Layer 2 adds Agent-based challenge, quality gate on top of the Layer 1 steps.
 | BS-2 | Phase 2 | Before producing architecture design (Section 2) | Layer 1 | ✅ On request |
 | BS-3 | Phase 2 | Before producing tech stack selection (Section 3) | Layer 1 | ✅ On request |
 | BS-4 | Phase 2 | Before producing algorithm & design strategy (Section 4) | Layer 1 | ✅ On request |
+| BS-8 | Phase 2 | Before producing production architecture (Section 5) | Layer 1 | ✅ On request |
 | BS-5 | Phase 2 → 3 | Draft approved, before writing plans to disk | Layer 1 | ✅ On request |
 | BS-6 | Phase 3 | When dividing implementation phases and tasks | Layer 1 | ✅ On request |
 | BS-7 | Phase 4 | During 3-Strike error recovery | — | ✅ User opt-in only |
@@ -90,7 +91,7 @@ Update `brainstorm.bsN` in state.json after writing the artifact file.
 
 ### Context Management — 上下文管理
 
-Phase 2 triggers up to 4 brainstorms in sequence (BS-2, BS-3, BS-4, BS-5). If any use Layer 2, context can grow substantially. Even Layer 1 benefits from these rules.
+Phase 2 triggers up to 5 brainstorms in sequence (BS-2, BS-3, BS-4, BS-8, BS-5). If any use Layer 2, context can grow substantially. Even Layer 1 benefits from these rules.
 
 <!-- Phase 2 最多连续触发 4 次头脑风暴。如果任何一个使用完整模式，上下文会显著增长。 -->
 
@@ -108,6 +109,7 @@ Phase 2 triggers up to 4 brainstorms in sequence (BS-2, BS-3, BS-4, BS-5). If an
    - BS-2 (Architecture): ✅ MVC + Repository pattern | Confidence: High | Mode: Layer 1
    - BS-3 (Tech Stack): ✅ React + Express + MySQL | Confidence: High | Mode: Layer 2
    - BS-4: ⏳ pending
+   - BS-8: ⏳ pending
    - BS-5: ⏳ pending
    ```
 
@@ -133,6 +135,7 @@ This step breaks the limitation of reasoning purely from training data, constrai
 - For BS-3 (Tech Stack): Search latest versions, known issues, community reviews, and benchmark comparisons for each candidate technology. Query DeepWiki for each candidate's actual API documentation to verify capabilities beyond marketing claims.
 - For BS-4 (Algorithm): Search real-world performance data and applicable scenario case studies for relevant algorithms. If a specific library implements the algorithm, query DeepWiki for implementation details.
 - For BS-7 (Error Recovery): Search the error message itself; look for known solutions
+- For BS-8 (Production Architecture): Search "<tech stack> production deployment best practices", "observability patterns for <architecture>", known production incidents for the chosen stack. Query DeepWiki for production-specific configuration of each framework/library.
 - For BS-1/5/6: Search common pitfalls and best practices in the project's domain
 
 **Output format:**
@@ -159,7 +162,7 @@ Search: "<query>"
 
 ### Step 2: Agent-Based Challenge — 挑战者代理
 
-**For trigger points requiring deep analysis (BS-2, BS-3, BS-4, BS-7), use the Agent tool to launch 2 challenger Agents that attack and expand on the main model's proposal.**
+**For trigger points requiring deep analysis (BS-2, BS-3, BS-4, BS-8, BS-7), use the Agent tool to launch 2 challenger Agents that attack and expand on the main model's proposal.**
 
 <!-- 对于需要深度分析的触发点，使用 Agent 工具启动 2 个挑战者代理来攻击和扩展主模型的方案。 -->
 
@@ -377,6 +380,7 @@ This section serves only as a quick-reference index.
 | BS-2 | Layer 1 (auto) | On request | [phase-2-draft.md](phase-2-draft.md) | `<STOP-GATE id="BS-2">` before Section 2 |
 | BS-3 | Layer 1 (auto) | On request | [phase-2-draft.md](phase-2-draft.md) | `<STOP-GATE id="BS-3">` before Section 3 |
 | BS-4 | Layer 1 (auto) | On request | [phase-2-draft.md](phase-2-draft.md) | `<STOP-GATE id="BS-4">` before Section 4 |
+| BS-8 | Layer 1 (auto) | On request | [phase-2-draft.md](phase-2-draft.md) | `<STOP-GATE id="BS-8">` before Section 5 |
 | BS-5 | Layer 1 (auto) | On request | [phase-2-draft.md](phase-2-draft.md) | `<STOP-GATE id="BS-5">` before approval gate |
 | BS-6 | Layer 1 (auto) | On request | [phase-3-planning.md](phase-3-planning.md) | `<STOP-GATE id="BS-6">` between Level 2 and Level 3 |
 | BS-7 | — (user opt-in only) | Always Layer 2 | [phase-4-execution.md](phase-4-execution.md) | `<STOP-GATE id="BS-7">` in error recovery section |
