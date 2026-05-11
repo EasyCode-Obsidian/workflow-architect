@@ -11,7 +11,7 @@
 
 Mode B is triggered when:
 
-1. `.project-surgeon/state.json` exists with `current_phase: "completed"`
+1. `.project-surgeon/<name>/state.json` exists with `current_phase: "completed"`
 2. User invokes `/project-surgeon-issue-changer` with a change description
 3. OR user sends a change-intent message and auto-detection triggers (see mid-workflow-protocol.md for patterns)
 
@@ -49,7 +49,7 @@ Verification & Completion
 
 <!-- 恢复已完成项目的上下文。 -->
 
-1. Read `.project-surgeon/state.json` for project overview
+1. Read `.project-surgeon/<name>/state.json` for project overview
 2. Read `.project-surgeon/project-plan.md` for architecture and tech stack decisions
 3. Read the completion report from the last execution session (if in phase_history)
 4. Scan the project directory to understand current file structure
@@ -231,5 +231,5 @@ Users may submit multiple change requests after completion. Each change:
 
 **Context management for sequential changes:**
 - Read previous change plans to understand cumulative modifications
-- Impact analysis must scan `.project-surgeon/changes/` in addition to `.project-surgeon/phases/`
+- Impact analysis must scan `.project-surgeon/<name>/changes/` in addition to `.project-surgeon/<name>/phases/`
 - If a new change conflicts with a previous change: flag to user before proceeding

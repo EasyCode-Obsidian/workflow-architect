@@ -10,9 +10,9 @@
 
 ## Entry Protocol
 
-1. Check if `.project-surgeon/state.json` exists
+1. Check if `.project-surgeon/<name>/state.json` exists
    - If YES: read state, check if resuming Phase 1 (may be returning from later phase rejection)
-   - If NO: create `.project-surgeon/` directory and initialize state.json with `current_phase: "analysis"`
+   - If NO: create `.project-surgeon/<name>/` directory and initialize state.json with `current_phase: "analysis"`
 2. Verify the current working directory is a non-empty project (at least 1 source file or manifest file)
    - If empty: inform user and abort — project-surgeon requires an existing project
 3. Initialize `analysis.steps_completed: []` in state.json
@@ -417,7 +417,7 @@ Objective: Synthesize all findings into a readable report, present it to the use
 
 #### 5.1 Report Generation
 
-Write `.project-surgeon/analysis-report.md` using the analysis-report template. The report must include:
+Write `.project-surgeon/<name>/analysis-report.md` using the analysis-report template. The report must include:
 
 1. **Project Overview** — Name, size, tech stack, architecture style
 2. **Architecture Summary** — Detected patterns, entry points, key abstractions
@@ -522,7 +522,7 @@ Execute BS-1 brainstorm (Reduced Mode — 3 steps):
 
 </STOP-GATE>
 
-Persist results to `.project-surgeon/brainstorm/bs-1.md`, update `brainstorm.bs1` in state.json.
+Persist results to `.project-surgeon/<name>/brainstorm/bs-1.md`, update `brainstorm.bs1` in state.json.
 
 Update `analysis.steps_completed` — append `"report_and_objective"`.
 
@@ -534,7 +534,7 @@ Update `analysis.steps_completed` — append `"report_and_objective"`.
 
 ALL of the following must be true to proceed to Phase 2:
 
-- [ ] Analysis report generated at `.project-surgeon/analysis-report.md`
+- [ ] Analysis report generated at `.project-surgeon/<name>/analysis-report.md`
 - [ ] All 5 steps completed (`analysis.steps_completed` contains all 5 step IDs)
 - [ ] User objective recorded in `analysis.user_objective`
 - [ ] BS-1 brainstorm completed and persisted

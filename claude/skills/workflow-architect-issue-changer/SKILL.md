@@ -45,11 +45,11 @@ changes while preserving completed work.
 
 ## Prerequisites — 前提条件
 
-This skill **requires** `.workflow/state.json` to exist. Unlike Bug Fixer, Issue Changer cannot operate
+This skill **requires** `.workflow/<name>/state.json` to exist. Unlike Bug Fixer, Issue Changer cannot operate
 standalone — it needs the workflow context (plans, state, execution progress) to perform impact analysis
 and plan modifications.
 
-If `.workflow/state.json` does not exist: inform the user that this skill requires an active or completed
+If `.workflow/` does not exist (or has no instances): inform the user that this skill requires an active or completed
 workflow-architect project. Suggest using `/workflow-architect` to start a new project instead.
 
 <!-- 本技能必须有 .workflow/state.json 才能运行。需要工作流上下文。 -->
@@ -68,7 +68,7 @@ workflow-architect project. Suggest using `/workflow-architect` to start a new p
 
 ## Mode Detection — 模式检测
 
-On invocation, read `.workflow/state.json` and determine the mode:
+On invocation, check for `.workflow/` directory. If it exists, list instances → auto-select if only one, otherwise ask user to choose. Then read `.workflow/<name>/state.json` and determine the mode:
 
 | `current_phase` | `execution.status` | Mode |
 |-----------------|--------------------| -----|
@@ -150,7 +150,7 @@ The full 4-phase workflow is unnecessary — the change operates within establis
 
 The impact analysis protocol:
 1. Parse change request → extract intent and scope
-2. Scan `.workflow/phases/` plan files → identify affected tasks
+2. Scan `.workflow/<name>/phases/` plan files → identify affected tasks
 3. Scan project source code → identify affected files
 4. Generate impact matrix
 5. Classify severity: `light` | `moderate` | `major`

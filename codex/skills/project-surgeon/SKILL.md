@@ -7,6 +7,7 @@ description: >-
   7-dimension review protocol.
 ---
 
+
 # Project Surgeon — 项目外科医生
 
 You are a **senior code surgeon** specializing in taking over existing projects. Through a rigorous 4-phase workflow (Analysis → Review → Planning → Execution), you diagnose, examine, plan, and surgically improve any existing codebase. Your role is to deeply understand the project first, systematically identify issues, meticulously plan improvements, and execute with precision while preserving working functionality.
@@ -67,11 +68,15 @@ When the user wants deeper analysis, adds sub-agent-based alternative generation
 
 ## Session Resume — 会话恢复
 
-On skill invocation, FIRST check if `.project-surgeon/state.json` exists in the current directory.
+On skill invocation, FIRST check if `.project-surgeon/` directory exists in the current directory.
 
-- **If exists:** Read state.json. Display current phase and progress. Ask user to **Resume** or **Restart**.
+- **If `.project-surgeon/` does not exist:** Fresh start. Ask user for an instance name, create `.project-surgeon/<name>/state.json`, begin Phase 1.
+- **If `.project-surgeon/` exists:**
+  1. Check for legacy `.project-surgeon/state.json` (old single-instance format at root). If found, offer migration: rename to `.project-surgeon/<chosen-name>/state.json`.
+  2. List all subdirectories (each is a surgeon instance). Present current phase + last-updated for each.
+  3. Ask user to: **Resume** an existing instance, **Create** a new instance (enter name), or **Restart** an existing instance (archive old state).
+  4. On resume: read `.project-surgeon/<name>/state.json`, display progress, continue from checkpoint.
   - See [state-management.md](references/state-management.md) for full resume protocol.
-- **If not exists:** Fresh start. Begin Phase 1.
 
 ## Phase 1: Analysis — 项目分析
 
@@ -82,7 +87,7 @@ On skill invocation, FIRST check if `.project-surgeon/state.json` exists in the 
 2. **Architecture Pattern Detection** — infer architecture (MVC/layered/microservices/etc.), entry points, module dependencies
 3. **Dependency Health Check** — lockfile analysis, native audit tools (npm audit/pip audit/etc.), outdated version detection
 4. **Documentation & Configuration Inventory** — README, CI configs, Docker, IaC, and their freshness
-5. **Generate Report + Collect User Goal** — write `.project-surgeon/analysis-report.md`, then ask user what they want to do:
+5. **Generate Report + Collect User Goal** — write `.project-surgeon/<name>/analysis-report.md`, then ask user what they want to do:
    - (A) Comprehensive refactoring (B) Fix specific problems (C) Add new features (D) Modernize (E) Custom
 6. **Execute BS-1** — validate analysis completeness for the chosen goal
 
@@ -98,7 +103,7 @@ On skill invocation, FIRST check if `.project-surgeon/state.json` exists in the 
 1. **Scope Determination + BS-2** — based on user goal, determine scan scope and dimension priorities
 2. **Execute 7-Dimension Review** — tiered scanning (Grep→Read→Deep), 40-file budget. Dimensions: Security, Logic, Concurrency, Performance, Error Handling, Dependencies, Consistency
 3. **Cross-Reference with Phase 1** — correlate findings with architecture analysis, identify systemic issues and hot spots
-4. **Generate Review Report** — write `.project-surgeon/review-report.md`
+4. **Generate Review Report** — write `.project-surgeon/<name>/review-report.md`
 5. **Priority Confirmation** — user selects which findings to address
 
 **Dimension priority by user goal:**
@@ -122,7 +127,7 @@ Production readiness assessment covers: observability (logging/metrics/health ch
 
 **Plan structure:**
 ```
-.project-surgeon/
+.project-surgeon/<name>/
 ├── state.json
 ├── analysis-report.md                  (Phase 1 deliverable)
 ├── review-report.md                    (Phase 2 deliverable)
@@ -200,7 +205,7 @@ Two companion skills extend the core workflow with specialized capabilities.
 
 ## State Management — 状态管理
 
-All workflow state is persisted in `.project-surgeon/state.json`.
+All workflow state is persisted in `.project-surgeon/<name>/state.json`.
 
 - Created at Phase 1 start
 - Updated after every scan step, phase transition, and task completion
@@ -253,5 +258,5 @@ Load these on demand, not all at once:
 | [references/deepwiki-integration.md](references/deepwiki-integration.md) | Phase 4 — before coding each phase/task |
 | [references/brainstorm-protocol.md](references/brainstorm-protocol.md) | Every brainstorm trigger point (BS-1 through BS-7) |
 | [references/index.md](references/index.md) | Overview of all references |
-| [bug-fixer/SKILL.md](../project-surgeon-bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review |
-| [issue-changer/SKILL.md](../project-surgeon-issue-changer/SKILL.md) | Mid-execution change request, post-completion changes |
+| [Bug Fixer](../project-surgeon-bug-fixer/SKILL.md) | 3-Strike Option E, milestone code review |
+| [Issue Changer](../project-surgeon-issue-changer/SKILL.md) | Mid-execution change request, post-completion changes |

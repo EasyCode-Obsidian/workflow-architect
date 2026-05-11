@@ -49,7 +49,7 @@ Implicit Dependencies: [<list of potentially affected areas>]
 <!-- 在 .workflow/phases/ 中搜索受影响的计划文件。 -->
 
 1. Read `.workflow/project-plan.md` for the overall structure
-2. Use `Grep` to search ALL plan files in `.workflow/phases/` for scope keywords
+2. Use `Grep` to search ALL plan files in `.workflow/<name>/phases/` for scope keywords
 3. For each match, determine the relationship:
    - **Direct impact**: The plan/task directly implements the feature being changed
    - **Indirect impact**: The plan/task depends on or interacts with the changed feature

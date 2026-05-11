@@ -22,7 +22,7 @@ Brainstorming is not template-filling — it is a mechanism that forces the mode
 
 **Steps (inline, no Agent calls):**
 
-1. **Context + Research** — First, read `.workflow/context/domain-knowledge.md` and `.workflow/context/hypothesis-tracker.md` to ground yourself in accumulated knowledge. Then run 1-2 WebSearch queries for relevant external facts.
+1. **Context + Research** — First, read `.workflow/<name>/context/domain-knowledge.md` and `.workflow/<name>/context/hypothesis-tracker.md` to ground yourself in accumulated knowledge. Then run 1-2 WebSearch queries for relevant external facts.
    **DeepWiki enhancement (BS-2/3/4 only):** If the decision involves specific library/framework capabilities identified in domain-knowledge.md, run 1 DeepWiki `ask` query to verify actual API support (REQUIRED when candidates are known, not optional):
    `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "<specific capability question>"`
    Output `🔍 Research Findings` block (label DeepWiki results as `📚 DeepWiki` to distinguish from WebSearch).
@@ -82,7 +82,7 @@ When the user specified strong preferences during Phase 1 (e.g., "use React"), L
 
 ### Disk Persistence — 磁盘持久化
 
-After completing brainstorm (either layer), persist results to `.workflow/brainstorm/bs-N.md`.
+After completing brainstorm (either layer), persist results to `.workflow/<name>/brainstorm/bs-N.md`.
 This serves two purposes:
 1. **Traceability** — the user and future sessions can verify brainstorm was executed
 2. **Context relief** — on session resume, results can be re-read instead of re-generated
@@ -97,11 +97,11 @@ Phase 2 triggers up to 5 brainstorms in sequence (BS-2, BS-3, BS-4, BS-8, BS-5).
 
 **Rules:**
 
-1. **Persist immediately, summarize in context.** After each brainstorm completes and is persisted to disk (`.workflow/brainstorm/bs-N.md`), keep only a **concise summary** (decision + confidence + top 2 risks) in the conversation. The full artifact is on disk for reference.
+1. **Persist immediately, summarize in context.** After each brainstorm completes and is persisted to disk (`.workflow/<name>/brainstorm/bs-N.md`), keep only a **concise summary** (decision + confidence + top 2 risks) in the conversation. The full artifact is on disk for reference.
 
 2. **Do NOT carry Agent proposals forward (Layer 2).** After Synthesis produces a decision, the 2 Agent challenges, divergence check details are no longer needed in conversation context. They are preserved in the disk artifact.
 
-3. **Reference by file, not by repetition.** When a later brainstorm needs to reference an earlier decision (e.g., BS-4 depends on BS-2's architecture choice), reference the disk artifact: "Per BS-2 decision (see `.workflow/brainstorm/bs-2.md`): chose MVC pattern." Do NOT re-paste the full BS-2 output.
+3. **Reference by file, not by repetition.** When a later brainstorm needs to reference an earlier decision (e.g., BS-4 depends on BS-2's architecture choice), reference the disk artifact: "Per BS-2 decision (see `.workflow/<name>/brainstorm/bs-2.md`): chose MVC pattern." Do NOT re-paste the full BS-2 output.
 
 4. **Cumulative summary block.** After each brainstorm, maintain a running summary block:
    ```
@@ -125,7 +125,7 @@ The following Steps 1-5 define the Layer 2 protocol. **These are ONLY executed w
 
 ### Step 1: Context + Forced Research — 强制信息检索
 
-**Before producing any proposal**, you MUST first read Context Bus files (`.workflow/context/domain-knowledge.md`, `.workflow/context/hypothesis-tracker.md`, `.workflow/context/project-brief.md`) and then use the `WebSearch` tool to obtain external facts.
+**Before producing any proposal**, you MUST first read Context Bus files (`.workflow/<name>/context/domain-knowledge.md`, `.workflow/<name>/context/hypothesis-tracker.md`, `.workflow/<name>/context/project-brief.md`) and then use the `WebSearch` tool to obtain external facts.
 This step breaks the limitation of reasoning purely from training data, constraining thinking with real-world up-to-date information.
 
 <!-- 在产出任何方案之前，必须先用 WebSearch 获取外部事实，打破模型仅靠训练数据推理的局限。 -->
@@ -176,10 +176,10 @@ This step prevents the main model from anchoring on its first intuition by intro
    Both agents MUST read Context Bus files first. Include this block in each agent prompt:
    ```
    Before starting, read these files for accumulated project context:
-   1. .workflow/context/project-brief.md
-   2. .workflow/context/domain-knowledge.md
-   3. .workflow/context/hypothesis-tracker.md
-   4. .workflow/context/interview-transcript.md (if it exists)
+   1. .workflow/<name>/context/project-brief.md
+   2. .workflow/<name>/context/domain-knowledge.md
+   3. .workflow/<name>/context/hypothesis-tracker.md
+   4. .workflow/<name>/context/interview-transcript.md (if it exists)
    ```
 
    **Agent 1 — Devil's Advocate (魔鬼辩护者):**
@@ -191,9 +191,9 @@ This step prevents the main model from anchoring on its first intuition by intro
    1. What evidence contradicts this choice? Run 1-2 WebSearch queries for counter-evidence.
    2. What scenarios would make this choice fail catastrophically?
    3. What has the main model assumed without evidence?
-   4. Check .workflow/agent-outputs/agent-b-competitive.md — did any competitor try this approach and fail?
+   4. Check .workflow/<name>/agent-outputs/agent-b-competitive.md — did any competitor try this approach and fail?
 
-   Write your challenge to .workflow/agent-outputs/brainstorm-{id}-challenge.md
+   Write your challenge to .workflow/<name>/agent-outputs/brainstorm-{id}-challenge.md
    Return a 150-word summary of your strongest objection.
    ```
 
@@ -205,9 +205,9 @@ This step prevents the main model from anchoring on its first intuition by intro
    1. Propose 2-3 alternative approaches that solve the same problem differently.
    2. For each, explain WHY it might be better. Run 1-2 WebSearch queries for unconventional solutions.
    3. Identify an analogous problem in another domain — how was it solved there?
-   4. Check .workflow/agent-outputs/agent-c-tech.md — are there libraries that enable a different paradigm?
+   4. Check .workflow/<name>/agent-outputs/agent-c-tech.md — are there libraries that enable a different paradigm?
 
-   Write your alternatives to .workflow/agent-outputs/brainstorm-{id}-alternatives.md
+   Write your alternatives to .workflow/<name>/agent-outputs/brainstorm-{id}-alternatives.md
    Return a 150-word summary of your best alternative.
    ```
 

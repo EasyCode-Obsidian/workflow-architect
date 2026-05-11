@@ -9,17 +9,17 @@
 
 ## Entry Protocol
 
-1. Check if `.workflow/state.json` exists
+1. Check if `.workflow/<name>/state.json` exists
    - If YES: read state, check if resuming Phase 1 (may be returning from Phase 2/3 rejection)
    - If NO: create `.workflow/` directory and initialize state.json with `current_phase: "requirements"`
 2. If returning from rejection: load existing `requirements.answers`, identify coverage gaps, resume from gaps
 3. Initialize coverage_map with all 10 categories set to `"missing"`
 4. **Read Context Bus files:**
-   - Read `.workflow/context/domain-knowledge.md` — incorporate domain understanding into question formulation
-   - Read `.workflow/context/project-brief.md` — use as baseline context
-   - Read `.workflow/context/hypothesis-tracker.md` — use to inform hypothesis generation in PQCP
+   - Read `.workflow/<name>/context/domain-knowledge.md` — incorporate domain understanding into question formulation
+   - Read `.workflow/<name>/context/project-brief.md` — use as baseline context
+   - Read `.workflow/<name>/context/hypothesis-tracker.md` — use to inform hypothesis generation in PQCP
    - These files were populated by Phase 0 pre-research and contain domain knowledge, competitive insights, and tech ecosystem data
-5. Initialize `.workflow/context/interview-transcript.md` if it does not exist
+5. Initialize `.workflow/<name>/context/interview-transcript.md` if it does not exist
 
 ## Question Taxonomy
 
@@ -143,7 +143,7 @@
    - Summarize all `requirements.answers` collected so far
    - Identify the emerging project shape (what kind of project is forming?)
    - Note which categories have clear interconnections (e.g., "user mentioned real-time sync in scope, which implies WebSocket in tech stack")
-   - Reference `.workflow/context/domain-knowledge.md` for domain background — do NOT re-derive domain knowledge that was already gathered in Phase 0
+   - Reference `.workflow/<name>/context/domain-knowledge.md` for domain background — do NOT re-derive domain knowledge that was already gathered in Phase 0
 
    **B. HYPOTHESIZE — Generate likely answers for the next topic:**
    - Based on the emerging project shape, predict 2-3 plausible answers
@@ -153,7 +153,7 @@
    **B.5. RESEARCH (conditional) — Validate hypotheses with external data:**
    - **TRIGGER when** the current question targets categories 5 (Tech Stack), 6 (Performance), 7 (Security), 8 (Integration), or 9 (Observability), OR when the domain is unfamiliar:
      - Run 1 WebSearch query to validate your leading hypothesis: `"{technology/pattern} {specific concern} best practices {current year}"`
-     - If the project involves known libraries/frameworks: If candidate libraries were identified in Phase 0 (check `.workflow/context/domain-knowledge.md` Tech Ecosystem section), run 1 DeepWiki `ask` query to verify capability assumptions — this is REQUIRED when candidates are known:
+     - If the project involves known libraries/frameworks: If candidate libraries were identified in Phase 0 (check `.workflow/<name>/context/domain-knowledge.md` Tech Ecosystem section), run 1 DeepWiki `ask` query to verify capability assumptions — this is REQUIRED when candidates are known:
        `bash ${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.sh ask "owner/repo" "Does <library> support <hypothesized capability>?"`
      - Integrate findings into hypothesis ranking. If research contradicts leading hypothesis, demote it.
    - **SKIP when** the question is purely about business logic, user preferences, or subjective choices (categories 1-4, 10-12 typically)
@@ -223,9 +223,9 @@
    - Mark inferred categories as "partial" and confirm with user
 
 10. **Context Bus updates.** After receiving each answer:
-   - Append the Q&A pair to `.workflow/context/interview-transcript.md` in format:
+   - Append the Q&A pair to `.workflow/<name>/context/interview-transcript.md` in format:
      `### Q{N}: {question}\n**A:** {answer}\n**Category:** {category}\n**Timestamp:** {ISO-8601}\n---`
-   - If the answer confirms or denies a hypothesis: update `.workflow/context/hypothesis-tracker.md` — change the hypothesis Status from OPEN to CONFIRMED/DENIED and add evidence reference
+   - If the answer confirms or denies a hypothesis: update `.workflow/<name>/context/hypothesis-tracker.md` — change the hypothesis Status from OPEN to CONFIRMED/DENIED and add evidence reference
 
 ### Question Discipline — 提问纪律
 
@@ -286,7 +286,7 @@ You MUST first complete the brainstorm protocol BS-1 (Layer 1 (Reduced — 3 ste
 - [ ] Multi-Perspective Evaluation block shown to user?
 - [ ] Self-Interrogation + Decision block shown to user?
 
-**After ALL checks pass:** persist results to `.workflow/brainstorm/bs-1.md`, update `brainstorm.bs1` in state.json.
+**After ALL checks pass:** persist results to `.workflow/<name>/brainstorm/bs-1.md`, update `brainstorm.bs1` in state.json.
 
 **Gap handling:**
 - If any role or self-interrogation identifies a significant gap: **DO NOT present the coverage summary**. Generate follow-up questions for the identified gaps and continue Phase 1 questioning.

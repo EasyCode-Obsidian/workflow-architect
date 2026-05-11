@@ -185,7 +185,7 @@ Verification: All tests passing ✅ | Tests failing ⚠️
 
 When running in Integrated Mode (within project-surgeon):
 
-1. After fix summary, update `.project-surgeon/state.json`:
+1. After fix summary, update `.project-surgeon/<name>/state.json`:
    - Initialize `bug_fixer.reviews` array if not present
    - Append review entry with all counts and report file path
 2. Persist full review report to `.project-surgeon/bug-fixer/review-<id>.md`

@@ -14,7 +14,7 @@
 
 1. Read state.json, verify `current_phase` is `"execution"`
 2. Update state: `execution.status: "in_progress"`
-3. Read `.project-surgeon/project-plan.md` to understand overall structure
+3. Read `.project-surgeon/<name>/project-plan.md` to understand overall structure
 4. Determine starting point:
    - Fresh start: begin from Phase 1, Task 1
    - Session resume: find last completed task in state.json, continue from next
@@ -136,7 +136,7 @@ At the very start of Phase 4 execution (before any tasks):
 
 ```
 FOR each phase P in project-plan (in order):
-    Read .project-surgeon/phases/phase-P/phase-plan.md
+    Read .project-surgeon/<name>/phases/phase-P/phase-plan.md
     Verify prerequisites are met
     Mark phase as in_progress in state.json
 
@@ -145,7 +145,7 @@ FOR each phase P in project-plan (in order):
     === END TIER 1 ===
 
     FOR each task T in phase P (in order):
-        Read .project-surgeon/phases/phase-P/tasks/task-TT-<name>.md
+        Read .project-surgeon/<name>/phases/phase-P/tasks/task-TT-<name>.md
         Mark task as in_progress in state.json
         Mark corresponding TaskCreate entry as in_progress
 
@@ -282,7 +282,7 @@ Triggered at the start of each execution phase, before any tasks.
 3. Run `bash <script> structure "owner/repo"` for each repo
 4. Run `bash <script> ask "owner/repo" "Core APIs and best practices for <lib> relevant to <phase objective>"` for each repo
 5. If multiple libs interact: run ONE cross-repo query with `repoName` as JSON array
-6. Cache results to `.project-surgeon/deepwiki-cache/phase-N-research.md`
+6. Cache results to `.project-surgeon/<name>/deepwiki-cache/phase-N-research.md`
 
 ### Tier 2: Task Entry (focused)
 
@@ -363,7 +363,7 @@ For issues like: task ordering wrong, missing tasks, task details need adjustmen
 2. Log transition to `phase_history`: `exit_reason: "course_correction_planning"`
 3. Set `current_phase: "planning"`
 4. Ask user which plans need modification
-5. Edit the specific plan files in `.project-surgeon/phases/`
+5. Edit the specific plan files in `.project-surgeon/<name>/phases/`
 6. Re-run Phase 3 consistency verification on modified plans
 7. Return to Phase 4, resume from the first modified task
 8. Previously completed tasks are NOT re-executed
@@ -375,7 +375,7 @@ For issues like: wrong findings prioritized, missed a critical dimension, need t
 1. Mark `execution.status: "paused"` in state.json
 2. Log transition to `phase_history`: `exit_reason: "course_correction_review"`
 3. Set `current_phase: "review"`
-4. Read `.project-surgeon/review-report.md` to restore review context
+4. Read `.project-surgeon/<name>/review-report.md` to restore review context
 5. Ask user which priorities or dimensions need revision
 6. After review revision approved: regenerate affected plans (Phase 3)
 7. Return to Phase 4, resume from the first affected task
@@ -503,7 +503,7 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 - [ ] Audit block shown to user? If NO → STOP, go back to Step 6
 - [ ] Decision block shown to user? If NO → STOP, go back to Step 7
 
-**After ALL checks pass:** persist results to `.project-surgeon/brainstorm/bs-7-<N>.md` (N = occurrence count), update `brainstorm.bs7_count` in state.json, THEN apply the recommended fix and continue execution.
+**After ALL checks pass:** persist results to `.project-surgeon/<name>/brainstorm/bs-7-<N>.md` (N = occurrence count), update `brainstorm.bs7_count` in state.json, THEN apply the recommended fix and continue execution.
 
 </STOP-GATE>
 
@@ -757,7 +757,7 @@ Phase N Summary:
 - Findings addressed: [D1-03, D2-07, ...]
 - Regressions caught: [count]
 - Errors resolved: [count]
-- Artifacts available: .project-surgeon/phases/phase-N/
+- Artifacts available: .project-surgeon/<name>/phases/phase-N/
 ```
 
 This summary replaces the full phase context for downstream reference.

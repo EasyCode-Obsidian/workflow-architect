@@ -54,7 +54,12 @@ You operate in two modes depending on context.
 
 ## Mode Detection — 模式检测
 
-On invocation, check for `.project-surgeon/state.json` in the current directory:
+On invocation, check for `.project-surgeon/` directory in the current directory.
+
+- **If `.project-surgeon/` exists:** List subdirectories (instances). If only one instance exists, auto-select it. If multiple, ask user to choose. Then read `.project-surgeon/<name>/state.json`.
+- **If `.project-surgeon/` does not exist:** No active project-surgeon session. Enter Standalone Mode.
+
+On resolving the instance, check `current_phase` in state.json:
 
 - **If exists AND `current_phase` is `"execution"`:** Enter **Integrated Mode** — you have full workflow context (plans, error_log, task details). Tailor your review to the current execution state.
 - **If exists AND `current_phase` is `"completed"`:** Enter **Integrated Mode** with post-completion context — review the finished project's code.
@@ -153,12 +158,12 @@ After presenting the report:
 
 ### Entry Protocol
 
-1. Read `.project-surgeon/state.json`
+1. Read `.project-surgeon/<name>/state.json`
 2. Determine trigger source:
    - **3-Strike escalation:** Read `execution.error_log` for the latest failure chain. Focus review on the failing task's files and related code.
    - **Milestone checkpoint:** Read the completed phase's plan and deliverables. Review all files created/modified in that phase.
    - **User request during execution:** Parse user's description, cross-reference with current task context.
-3. Read the relevant task plan from `.project-surgeon/phases/` to understand intended behavior
+3. Read the relevant task plan from `.project-surgeon/<name>/phases/` to understand intended behavior
 4. Create TaskCreate entry: `[Bug Fixer] <trigger>: <target>`
 
 ### Contextual Review

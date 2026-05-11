@@ -111,7 +111,7 @@ Execute BS-2 brainstorm (Reduced Mode — 3 steps):
 
 </STOP-GATE>
 
-Persist to `.project-surgeon/brainstorm/bs-2.md`, update `brainstorm.bs2` in state.json.
+Persist to `.project-surgeon/<name>/brainstorm/bs-2.md`, update `brainstorm.bs2` in state.json.
 
 Update `review.dimensions_completed` — this step does not complete a dimension, but record `"scope_determined"` in `review.steps_completed`.
 
@@ -249,7 +249,7 @@ Objective: Produce a comprehensive, structured review report.
 
 #### 4.1 Write Report
 
-Write `.project-surgeon/review-report.md` with the following structure:
+Write `.project-surgeon/<name>/review-report.md` with the following structure:
 
 ```markdown
 # Code Review Report — 代码审查报告

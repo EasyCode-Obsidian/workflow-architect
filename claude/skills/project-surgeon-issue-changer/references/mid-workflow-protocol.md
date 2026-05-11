@@ -113,7 +113,7 @@ Based on impact analysis severity:
 1. Identify the specific Level 3 task plans to modify
 2. Present proposed changes to user
 3. After approval:
-   - Edit the task plan files in `.project-surgeon/phases/` using `Edit` tool
+   - Edit the task plan files in `.project-surgeon/<name>/phases/` using `Edit` tool
    - If the current in-progress task is affected: mark it as `pending` (restart it)
    - If only future tasks are affected: plans are updated, continue from current position
 4. Update `change_requests[N]`:

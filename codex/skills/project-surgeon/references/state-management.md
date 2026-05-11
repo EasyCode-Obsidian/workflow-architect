@@ -10,10 +10,12 @@
 ## State File Location
 
 ```
-<project-root>/.project-surgeon/state.json
+<project-root>/.project-surgeon/<instance-name>/state.json
 ```
 
 The state file is created when Phase 1 (Analysis) begins and persists throughout the entire workflow lifecycle.
+
+Multiple surgeon instances can coexist under `.project-surgeon/`, each in its own named subdirectory. The instance name is chosen by the user at workflow creation time.
 
 ## JSON Schema
 
@@ -76,7 +78,7 @@ The state file is created when Phase 1 (Analysis) begins and persists throughout
       "has_iac": false,
       "ci_platform": null
     },
-    "report_file": ".project-surgeon/analysis-report.md",
+    "report_file": ".project-surgeon/<name>/analysis-report.md",
     "user_objective": {
       "type": null,
       "description": "",
@@ -111,7 +113,7 @@ The state file is created when Phase 1 (Analysis) begins and persists throughout
     },
     "hot_spots": [],
     "systemic_issues": [],
-    "report_file": ".project-surgeon/review-report.md",
+    "report_file": ".project-surgeon/<name>/review-report.md",
     "user_priorities": {
       "mode": null,
       "selected_findings": [],
@@ -168,7 +170,7 @@ The state file is created when Phase 1 (Analysis) begins and persists throughout
     },
     "deepwiki_cache": {
       "phases_researched": [],
-      "cache_dir": ".project-surgeon/deepwiki-cache/"
+      "cache_dir": ".project-surgeon/<name>/deepwiki-cache/"
     },
     "error_log": [
       {
@@ -366,7 +368,7 @@ Each brainstorm entry follows this structure:
 | `status` | enum | `"pending"`, `"completed"`, `"skipped"`. |
 | `completed_at` | ISO-8601\|null | When the brainstorm finished. |
 | `audit_score` | number\|null | Quality audit score (Full mode only, for bs2). |
-| `artifact` | string\|null | Path to the persisted brainstorm artifact file, e.g., `".project-surgeon/brainstorm/bs-1.md"`. |
+| `artifact` | string\|null | Path to the persisted brainstorm artifact file, e.g., `".project-surgeon/<name>/brainstorm/bs-1.md"`. |
 
 ### planning — 计划阶段
 
@@ -411,7 +413,7 @@ This sub-block is unique to project-surgeon. It stores the test suite baseline c
 | Field | Type | Description |
 |-------|------|-------------|
 | `phases_researched` | number[] | Indices of phases for which Tier 1 research has been completed. |
-| `cache_dir` | string | Directory where DeepWiki research results are cached: `".project-surgeon/deepwiki-cache/"`. |
+| `cache_dir` | string | Directory where DeepWiki research results are cached: `".project-surgeon/<name>/deepwiki-cache/"`. |
 
 #### execution.error_log — 错误日志
 
@@ -441,11 +443,11 @@ Added by the `project-surgeon-bug-fixer` add-on skill. Initialized on first Bug 
 | `reviews[].findings_count` | number | Total findings from the review. |
 | `reviews[].fixed_count` | number | How many findings were fixed. |
 | `reviews[].skipped_count` | number | How many findings were skipped. |
-| `reviews[].report_file` | string\|null | Path to the review report, e.g., `".project-surgeon/bug-fixer/review-1.md"`. |
+| `reviews[].report_file` | string\|null | Path to the review report, e.g., `".project-surgeon/<name>/bug-fixer/review-1.md"`. |
 
 **Directory structure:**
 ```
-.project-surgeon/
+.project-surgeon/<name>/
 ├── bug-fixer/
 │   ├── review-1.md
 │   ├── review-2.md
@@ -469,7 +471,7 @@ Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first 
 | `impact.affected_files` | string[] | File paths affected by the change. |
 | `impact.new_tasks_count` | number | Number of new tasks created by the change. |
 | `resolution.approach` | enum | `"modify-tasks"`, `"modify-plans"`, `"rethink-review"`. Note: `"rethink-review"` replaces workflow-architect's `"rethink-design"`. |
-| `resolution.plan_dir` | string\|null | Directory for change-specific plans, e.g., `".project-surgeon/changes/change-1/"`. |
+| `resolution.plan_dir` | string\|null | Directory for change-specific plans, e.g., `".project-surgeon/<name>/changes/change-1/"`. |
 | `resolution.completed_at` | ISO-8601\|null | When the change was fully applied. |
 
 **Severity classification:**
@@ -482,7 +484,7 @@ Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first 
 
 **Directory structure:**
 ```
-.project-surgeon/
+.project-surgeon/<name>/
 ├── changes/
 │   ├── change-1/
 │   │   ├── change-plan.md
@@ -538,19 +540,18 @@ Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first 
 
 ## Session Resume Protocol
 
-When the skill is invoked and `.project-surgeon/state.json` already exists:
+When the skill is invoked and `.project-surgeon/` directory exists:
 
-1. Read state.json
-2. Verify `skill` field is `"project-surgeon"` (not a workflow-architect state file)
-3. Display progress summary:
+1. Check for legacy `.project-surgeon/state.json` (old single-instance format at root). If found, offer to migrate it into a named instance: move to `.project-surgeon/<chosen-name>/state.json`.
+2. List all subdirectories under `.project-surgeon/` — each is a surgeon instance. Read each instance's `state.json`, verify `skill` field is `"project-surgeon"`, and display:
+   - Instance name
    - Current phase
-   - If in analysis: steps completed / total steps
-   - If in review: dimensions completed / total dimensions
    - If in execution: completed tasks / total tasks with percentage
    - Last activity timestamp
-4. Ask user: **Resume** (continue from current state) or **Restart** (begin from Phase 1, archive old state)
-5. On resume: enter the current phase and continue from where it left off
-6. On restart: rename `.project-surgeon/` to `.project-surgeon.bak.<timestamp>/`, create fresh `.project-surgeon/state.json`
+3. Ask user to choose an existing instance to **Resume**, or **Create** a new instance (enter a name).
+4. On resume: read `.project-surgeon/<name>/state.json`, enter the current phase, continue from checkpoint.
+5. On restart of an existing instance: rename `.project-surgeon/<name>/` to `.project-surgeon/<name>.bak.<timestamp>/`, create fresh `.project-surgeon/<name>/state.json`.
+6. On create: ask for instance name, create `.project-surgeon/<name>/state.json`, begin Phase 1.
 
 ## Rejection Back-Flow
 
@@ -567,9 +568,9 @@ When user rejects in Phase 2 (Review) or Phase 3 (Planning):
 
 If state.json is corrupted or missing mid-workflow:
 
-1. Check for `.project-surgeon.bak.*` directories (archived by restart)
+1. Check for `.project-surgeon/<name>.bak.*` directories (instance archived by restart)
 2. If backup exists: restore from latest backup's `state.json`
-3. If no backup but plan files exist: reconstruct state from plan file structure
+3. If no backup but plan files exist: reconstruct state from `.project-surgeon/<name>/` plan file structure
 4. If nothing recoverable: inform user and offer to restart
 
 ## Brainstorm Artifact Persistence — 头脑风暴产物持久化
@@ -581,7 +582,7 @@ Brainstorm intermediate results are persisted to disk for traceability and conte
 ### Directory Structure
 
 ```
-.project-surgeon/
+.project-surgeon/<name>/
 ├── brainstorm/
 │   ├── bs-1.md        # Analysis completeness check results
 │   ├── bs-2.md        # Review methodology brainstorm results
@@ -624,7 +625,7 @@ Mode: Full (7 steps) | Reduced (3 steps)
 
 ### Persistence Rules
 
-1. Create `.project-surgeon/brainstorm/` directory when the first brainstorm is triggered
+1. Create `.project-surgeon/<name>/brainstorm/` directory when the first brainstorm is triggered
 2. Write the artifact file **after** all steps complete (not incrementally)
 3. Update `brainstorm.bsN.status` and `brainstorm.bsN.artifact` in state.json
 4. On session resume: read existing brainstorm artifacts to restore context
@@ -639,7 +640,7 @@ Phase 2 review findings are persisted to disk as the primary deliverable of the 
 ### Report File Location
 
 ```
-.project-surgeon/review-report.md
+.project-surgeon/<name>/review-report.md
 ```
 
 ### Purpose
@@ -648,7 +649,7 @@ Unlike workflow-architect's draft cache (which is a resume artifact), the review
 
 ### Persistence Rules
 
-1. Create `.project-surgeon/review-report.md` when Phase 2 produces findings
+1. Create `.project-surgeon/<name>/review-report.md` when Phase 2 produces findings
 2. **Update incrementally** as each dimension is reviewed
 3. Update `review.dimensions_completed` array in state.json
 4. On Phase 2 completion: finalize the report with summary statistics
@@ -668,7 +669,7 @@ Added by the `project-surgeon-bug-fixer` add-on skill. Initialized on first Bug 
 2. Append a new review entry when a review session starts
 3. Update `findings_count`, `fixed_count`, `skipped_count` as findings are processed
 4. Set `completed_at` and `report_file` when the review session finishes
-5. Review reports are persisted to `.project-surgeon/bug-fixer/review-N.md` (N = review id)
+5. Review reports are persisted to `.project-surgeon/<name>/bug-fixer/review-N.md` (N = review id)
 
 ### Backward Compatibility
 
@@ -688,7 +689,7 @@ Added by the `project-surgeon-issue-changer` add-on skill. Initialized on first 
 3. Update `status` through the lifecycle: `analyzing` → `approved` → `in_progress` → `completed`
 4. Update `impact` fields after impact analysis completes
 5. Update `resolution` fields when the approach is determined and executed
-6. For Mode B (post-completion): set `resolution.plan_dir` to `.project-surgeon/changes/change-N/`
+6. For Mode B (post-completion): set `resolution.plan_dir` to `.project-surgeon/<name>/changes/change-N/`
 
 ### Backward Compatibility
 
@@ -697,7 +698,7 @@ A state.json from version `"1.0"` (without `change_requests` field) remains vali
 ## Complete Directory Structure — 完整目录结构
 
 ```
-.project-surgeon/
+.project-surgeon/<name>/
 ├── state.json                              # Workflow state (this document's schema)
 ├── analysis-report.md                      # Phase 1 output: project analysis report
 ├── review-report.md                        # Phase 2 output: code review findings

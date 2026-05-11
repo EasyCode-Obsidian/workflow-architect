@@ -185,7 +185,7 @@ Verification: All tests passing ✅ | Tests failing ⚠️
 
 When running in Integrated Mode (within workflow-architect):
 
-1. After fix summary, update `.workflow/state.json`:
+1. After fix summary, update `.workflow/<name>/state.json`:
    - Initialize `bug_fixer.reviews` array if not present
    - Append review entry with all counts and report file path
 2. Persist full review report to `.workflow/bug-fixer/review-<id>.md`
