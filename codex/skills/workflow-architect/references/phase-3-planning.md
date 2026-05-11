@@ -16,10 +16,10 @@
 
 ## Directory Creation
 
-Create the full `.workflow/` directory tree before writing any plans:
+Create the full `.workflow/<name>/` directory tree before writing any plans:
 
 ```
-.workflow/
+.workflow/<name>/
 ├── state.json                              (already exists)
 ├── project-plan.md                         (Level 1)
 └── phases/
@@ -61,7 +61,7 @@ Use `assets/templates/project-plan.md` as the template. Fill in:
 6. **Success Criteria** derived from Phase 1 answers
 7. **Risk Register** from Phase 2 Section 7
 
-Write to: `.workflow/project-plan.md`
+Write to: `.workflow/<name>/project-plan.md`
 
 After writing: present a summary of Level 1 to the user.
 
@@ -88,7 +88,7 @@ Use `assets/templates/phase-plan.md` as the template. Fill in:
 7. **Verification checklist** — how to confirm this phase is complete
 8. **Phase-specific risks** — if any
 
-Write to: `.workflow/phases/phase-N/phase-plan.md`
+Write to: `.workflow/<name>/phases/phase-N/phase-plan.md`
 
 After writing ALL Level 2 plans: present a summary showing all phases and their task counts.
 
@@ -121,7 +121,7 @@ Use `assets/templates/task-plan.md` as the template. Fill in:
    - Manual checks if needed
 7. **Commit message** — pre-written commit message for this task
 
-Write to: `.workflow/phases/phase-N/tasks/task-NN-<name>.md`
+Write to: `.workflow/<name>/phases/phase-N/tasks/task-NN-<name>.md`
 
 ### Writing Order — 写入顺序
 
@@ -159,7 +159,7 @@ After writing all Level 2 plans, you MUST execute brainstorm trigger BS-6 (Layer
 - [ ] Multi-Perspective Evaluation block shown to user?
 - [ ] Self-Interrogation + Decision block shown to user?
 
-**After ALL checks pass:** persist results to `.workflow/brainstorm/bs-6.md`, update `brainstorm.bs6` in state.json.
+**After ALL checks pass:** persist results to `.workflow/<name>/brainstorm/bs-6.md`, update `brainstorm.bs6` in state.json.
 
 **Then:** Adjust the task breakdown based on brainstorm findings BEFORE writing Level 3 plans.
 
@@ -199,7 +199,7 @@ These checks are mandatory — do NOT present the approval gate if any check fai
 ```
 FOR each phase P in project-plan.md:
     expected_count = task count listed in Level 1 phase table
-    actual_count = number of task-*.md files in .workflow/phases/phase-P/tasks/
+    actual_count = number of task-*.md files in .workflow/<name>/phases/phase-P/tasks/
     IF expected_count != actual_count:
         FAIL: "Phase P: Level 1 says {expected} tasks, but {actual} task files exist"
 ```
@@ -332,7 +332,7 @@ Level 2: Phase Plans
 Level 3: Task Plans
   Total task files written: M
 
-All plans written to: .workflow/
+All plans written to: .workflow/<name>/
 ```
 
 Then offer three options via AskUserQuestion:
@@ -349,7 +349,7 @@ Then offer three options via AskUserQuestion:
 ### Option C: Restart — 重新开始
 - "Unsatisfied with plans, restart from requirements" (计划不满意，重新收集需求)
 - Action: return to Phase 1
-- Archive existing `.workflow/` by renaming to `.workflow.bak.<timestamp>/`
+- Archive existing `.workflow/<name>/` by renaming to `.workflow/<name>.bak.<timestamp>/`
 
 ## Transition to Phase 4
 
@@ -365,8 +365,8 @@ On approval:
 
 On restart:
 
-1. Rename `.workflow/` to `.workflow.bak.<timestamp>/`
-2. Update state.json (in new `.workflow/`):
+1. Rename `.workflow/<name>/` to `.workflow/<name>.bak.<timestamp>/`
+2. Update state.json (in new `.workflow/<name>/`):
    - `current_phase: "requirements"`
    - `planning.status: "rejected"`
 3. Log transition in `phase_history`

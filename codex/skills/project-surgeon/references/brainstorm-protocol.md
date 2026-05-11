@@ -22,7 +22,7 @@ Brainstorming is not template-filling — it is a mechanism that forces the mode
 
 **Steps (inline, no Agent calls):**
 
-1. **Research** — Run 1-2 web searches for relevant external facts. Output `🔍 Research Findings` block.
+1. **Research** — Run 1-2 WebSearch queries for relevant external facts. Output `🔍 Research Findings` block.
    - If searches return 0 results: retry with broader keywords; if still 0, label as `⚠️ AI Inference`
 2. **Multi-Perspective Self-Evaluation** — Review from 6 role perspectives (User/Dev/Architect/Security/Ops/Maintainer) inline. Each role produces 1-2 sentences. Output `🧠 Multi-Perspective` block.
 3. **Self-Interrogation + Synthesis** — Select recommendation, raise 3 sharp challenges against it, respond. If a challenge reveals a genuine problem, change the recommendation. Output `💭 Self-Interrogation` and `✅ Decision` blocks.
@@ -78,7 +78,7 @@ When the user specified strong preferences during Phase 1 (e.g., "use React"), L
 
 ### Disk Persistence — 磁盘持久化
 
-After completing brainstorm (either tier), persist results to `.project-surgeon/brainstorm/bs-N.md`.
+After completing brainstorm (either tier), persist results to `.project-surgeon/<name>/brainstorm/bs-N.md`.
 This serves two purposes:
 1. **Traceability** — the user and future sessions can verify brainstorm was executed
 2. **Context relief** — on session resume, results can be re-read instead of re-generated
@@ -93,11 +93,11 @@ Phase 2 triggers up to 4 brainstorms in sequence (BS-2, BS-3, BS-4, BS-5). If an
 
 **Rules:**
 
-1. **Persist immediately, summarize in context.** After each brainstorm completes and is persisted to disk (`.project-surgeon/brainstorm/bs-N.md`), keep only a **concise summary** (decision + confidence + top 2 risks) in the conversation. The full artifact is on disk for reference.
+1. **Persist immediately, summarize in context.** After each brainstorm completes and is persisted to disk (`.project-surgeon/<name>/brainstorm/bs-N.md`), keep only a **concise summary** (decision + confidence + top 2 risks) in the conversation. The full artifact is on disk for reference.
 
 2. **Do NOT carry Agent proposals forward (Full Mode).** After Synthesis produces a decision, the 3 Agent proposals, divergence check details, and audit scores are no longer needed in conversation context. They are preserved in the disk artifact.
 
-3. **Reference by file, not by repetition.** When a later brainstorm needs to reference an earlier decision (e.g., BS-4 depends on BS-2's architecture choice), reference the disk artifact: "Per BS-2 decision (see `.project-surgeon/brainstorm/bs-2.md`): chose MVC pattern." Do NOT re-paste the full BS-2 output.
+3. **Reference by file, not by repetition.** When a later brainstorm needs to reference an earlier decision (e.g., BS-4 depends on BS-2's architecture choice), reference the disk artifact: "Per BS-2 decision (see `.project-surgeon/<name>/brainstorm/bs-2.md`): chose MVC pattern." Do NOT re-paste the full BS-2 output.
 
 4. **Cumulative summary block.** After each brainstorm, maintain a running summary block:
    ```
@@ -120,10 +120,10 @@ The following Steps 1-7 define the Full Mode protocol. **These are ONLY executed
 
 ### Step 1: Forced Research — 强制信息检索
 
-**Before producing any proposal**, you MUST search the web to obtain external facts.
+**Before producing any proposal**, you MUST use the `WebSearch` tool to obtain external facts.
 This step breaks the limitation of reasoning purely from training data, constraining thinking with real-world up-to-date information.
 
-<!-- 在产出任何方案之前，必须先用 web search 获取外部事实，打破模型仅靠训练数据推理的局限。 -->
+<!-- 在产出任何方案之前，必须先用 WebSearch 获取外部事实，打破模型仅靠训练数据推理的局限。 -->
 
 **Rules:**
 - For BS-2 (Architecture): Search "<project type> architecture best practices <current year>", known architecture anti-patterns
@@ -147,7 +147,7 @@ Search: "<query>"
 
 **Constraints:**
 - Execute at least 2 searches, extracting at least 2 relevant facts per search
-- **Search result validation:** After each web search call, check if actual results were returned (result count > 0). If a search returns 0 results:
+- **Search result validation:** After each WebSearch call, check if actual results were returned (result count > 0). If a search returns 0 results:
   - Retry with a rephrased, broader query (e.g., drop year, simplify keywords)
   - If the retry also returns 0 results: label findings from that search as `⚠️ AI Inference (search unavailable)` instead of `🔍 Research Findings`. Do NOT present model-internal knowledge as if it came from search results
   - At least 1 of the 2+ searches MUST return real results. If ALL searches fail, add a prominent warning: `⚠️ All searches failed — findings below are AI inference only, not externally validated`
@@ -503,7 +503,7 @@ This section serves only as a quick-reference index.
 
 ### Mode Quick Reference
 
-- **Lightweight (3 steps, inline):** Research (1-2 web searches) → Multi-Perspective self-evaluation (6 roles) → Self-Interrogation (3 challenges) + Synthesis. No Agent calls. ~2-3K tokens.
+- **Lightweight (3 steps, inline):** Research (1-2 WebSearch) → Multi-Perspective self-evaluation (6 roles) → Self-Interrogation (3 challenges) + Synthesis. No Agent calls. ~2-3K tokens.
 - **Full (7 steps, with Agents):** Research → Independent Agents (3 parallel, mixed models, mutual exclusion) → Quality Gate → Multi-Perspective → Self-Interrogation → Independent Audit → Synthesis. ~30-40K tokens.
 
 ### Execution Rule
@@ -557,11 +557,11 @@ When a STOP-GATE is reached during execution:
   If React is a good fit, confirm it with evidence. If it has significant issues for this project,
   flag the concern and let the user decide — do not override their preference silently.
 
-- **Research-washing:** Running a web search but not incorporating the results into the analysis.
+- **Research-washing:** Running a WebSearch but not incorporating the results into the analysis.
   Every research finding must appear in at least one subsequent step — otherwise it wasn't useful
   and should be replaced with a more relevant search.
 
-- **Search fabrication:** Presenting model-internal knowledge as "Research Findings" when web search
+- **Search fabrication:** Presenting model-internal knowledge as "Research Findings" when WebSearch
   returned 0 results. If search fails, the output MUST be labeled `⚠️ AI Inference (search unavailable)`.
   Never disguise inference as externally validated research.
 

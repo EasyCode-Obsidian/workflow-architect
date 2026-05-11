@@ -85,8 +85,8 @@ During Phase 0, Agent C is a dedicated technology ecosystem researcher that MUST
 ### Protocol
 1. Identify 3-5 candidate libraries from the project idea
 2. For EACH candidate: run `structure` + `ask` (MANDATORY)
-3. Results written to `.workflow/agent-outputs/agent-c-tech.md`
-4. Consolidated into `.workflow/context/domain-knowledge.md`
+3. Results written to `.workflow/<name>/agent-outputs/agent-c-tech.md`
+4. Consolidated into `.workflow/<name>/context/domain-knowledge.md`
 
 See [pre-research-protocol.md](pre-research-protocol.md) for full Agent C specification.
 
@@ -143,7 +143,7 @@ Each tier narrows the query scope, building on knowledge acquired from the previ
      "What are the integration patterns and common pitfalls when using these together?"
    ```
 
-6. **Persist results:** Save research output to `.workflow/deepwiki-cache/phase-N-research.md` for reference during task execution.
+6. **Persist results:** Save research output to `.workflow/<name>/deepwiki-cache/phase-N-research.md` for reference during task execution.
 
 **Output:** Present a brief research summary to the user:
 ```
@@ -153,7 +153,7 @@ Key findings:
 - <finding 1>
 - <finding 2>
 - <cross-repo insight>
-Cache: .workflow/deepwiki-cache/phase-N-research.md
+Cache: .workflow/<name>/deepwiki-cache/phase-N-research.md
 ```
 
 ---
@@ -182,7 +182,7 @@ Cache: .workflow/deepwiki-cache/phase-N-research.md
      "How to handle Prisma transaction errors in Express error-handling middleware?"
    ```
 
-4. **Results are written to `.workflow/deepwiki-cache/task-NN-api-reference.md`:** The main model reads this file BEFORE writing code.
+4. **Results are written to `.workflow/<name>/deepwiki-cache/task-NN-api-reference.md`:** The main model reads this file BEFORE writing code.
 
 5. **Check Tier 1 cache first:** Before querying, check if the answer is already in the phase-level research cache. Only query DeepWiki if the cache doesn't cover the specific API.
 
@@ -282,7 +282,7 @@ Then map each package name to its GitHub repo using `npm info <pkg> repository.u
 
 ## Error Handling & Fallback — 错误处理与降级
 
-<!-- 429 限流时重试，彻底失败时降级到 web search。 -->
+<!-- 429 限流时重试，彻底失败时降级到 WebSearch。 -->
 
 ### Retry Strategy (built into script)
 
@@ -303,7 +303,7 @@ ask_question call:
 When DeepWiki is unavailable (network error, sustained 429, or service down):
 
 1. **Fallback to `read_wiki_contents`:** Use the non-rate-limited `contents` command to get full documentation, then analyze it directly.
-2. **Fallback to web search:** Search for `"<library> <API> best practices site:github.com OR site:stackoverflow.com"`.
+2. **Fallback to WebSearch:** Search for `"<library> <API> best practices site:github.com OR site:stackoverflow.com"`.
 3. **Fallback to model knowledge:** Use existing knowledge with a clear disclaimer: `"⚠️ Based on model knowledge (DeepWiki unavailable)"`.
 
 **Important:** Log all fallbacks in the execution output so the user knows which research sources were used.
@@ -318,7 +318,7 @@ When DeepWiki is unavailable (network error, sustained 429, or service down):
 
 | Tier | Cache? | Location | Reason |
 |------|--------|----------|--------|
-| Tier 1 (Phase) | Yes | `.workflow/deepwiki-cache/phase-N-research.md` | Expensive batch query; session may restart mid-phase |
+| Tier 1 (Phase) | Yes | `.workflow/<name>/deepwiki-cache/phase-N-research.md` | Expensive batch query; session may restart mid-phase |
 | Tier 2 (Task) | No | — | Task-specific; re-query is cheap |
 | Tier 3 (Coding) | No | — | One-off; context-specific |
 
@@ -355,7 +355,7 @@ When DeepWiki is unavailable (network error, sustained 429, or service down):
 
 ### Session Resume
 
-On Phase 4 session resume, if `.workflow/deepwiki-cache/phase-N-research.md` exists for the current phase:
+On Phase 4 session resume, if `.workflow/<name>/deepwiki-cache/phase-N-research.md` exists for the current phase:
 - Skip Tier 1 research for that phase
 - Use cached results as context for Tier 2/3 queries
 
