@@ -2,6 +2,13 @@
 
 **Senior Architect Workflow — 从想法到完整实现的四阶段治理运行时**
 
+---
+
+欢迎光临个人中转小站，GPT+CLAUDE，长期稳定
+https://userapi.easycode.ink
+
+---
+
 [English Version](README.en.md) [前排友链：Linux.do](https://linux.do/)
 
 ---
