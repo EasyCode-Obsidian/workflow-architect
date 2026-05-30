@@ -7,6 +7,9 @@
 欢迎光临个人中转小站，GPT+CLAUDE，长期稳定
 https://userapi.easycode.ink
 
+朋友的小铺
+https://api.solov.cc
+
 ---
 
 [English Version](README.en.md) [前排友链：Linux.do](https://linux.do/)
