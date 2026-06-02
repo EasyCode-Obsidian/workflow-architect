@@ -10,10 +10,12 @@
 ## State File Location
 
 ```
-<project-root>/.workflow/state.json
+<project-root>/.workflow/<instance-name>/state.json
 ```
 
 The state file is created when Phase 0 (Pre-Research) begins and persists throughout the entire workflow lifecycle.
+
+Multiple workflow instances can coexist under `.workflow/`, each in its own named subdirectory. The instance name is chosen by the user at workflow creation time.
 
 ## JSON Schema
 
@@ -37,19 +39,19 @@ The state file is created when Phase 0 (Pre-Research) begins and persists throug
   "pre_research": {
     "status": "pending | in_progress | completed",
     "agents": {
-      "domain_research": { "status": "pending | running | completed | failed", "output_file": ".workflow/agent-outputs/agent-a-domain.md | null" },
-      "competitive_analysis": { "status": "pending | running | completed | failed", "output_file": ".workflow/agent-outputs/agent-b-competitive.md | null" },
-      "tech_ecosystem": { "status": "pending | running | completed | failed", "output_file": ".workflow/agent-outputs/agent-c-tech.md | null", "deepwiki_called": false }
+      "domain_research": { "status": "pending | running | completed | failed", "output_file": ".workflow/<name>/agent-outputs/agent-a-domain.md | null" },
+      "competitive_analysis": { "status": "pending | running | completed | failed", "output_file": ".workflow/<name>/agent-outputs/agent-b-competitive.md | null" },
+      "tech_ecosystem": { "status": "pending | running | completed | failed", "output_file": ".workflow/<name>/agent-outputs/agent-c-tech.md | null", "deepwiki_called": false }
     },
     "consolidation_status": "pending | completed",
     "completed_at": "ISO-8601 | null"
   },
 
   "context_bus": {
-    "project_brief": ".workflow/context/project-brief.md | null",
-    "domain_knowledge": ".workflow/context/domain-knowledge.md | null",
-    "interview_transcript": ".workflow/context/interview-transcript.md | null",
-    "hypothesis_tracker": ".workflow/context/hypothesis-tracker.md | null",
+    "project_brief": ".workflow/<name>/context/project-brief.md | null",
+    "domain_knowledge": ".workflow/<name>/context/domain-knowledge.md | null",
+    "interview_transcript": ".workflow/<name>/context/interview-transcript.md | null",
+    "hypothesis_tracker": ".workflow/<name>/context/hypothesis-tracker.md | null",
     "last_updated": "ISO-8601 | null"
   },
 
@@ -83,16 +85,16 @@ The state file is created when Phase 0 (Pre-Research) begins and persists throug
     "revision_count": 0,
     "approved_at": "ISO-8601 | null",
     "completed_sections": [],
-    "cache_file": ".workflow/draft-cache.md | null"
+    "cache_file": ".workflow/<name>/draft-cache.md | null"
   },
 
   "brainstorm": {
-    "bs1": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "artifact": ".workflow/brainstorm/bs-1.md | null" },
-    "bs2": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "audit_score": "null | number", "artifact": ".workflow/brainstorm/bs-2.md | null" },
-    "bs3": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "audit_score": "null | number", "artifact": ".workflow/brainstorm/bs-3.md | null" },
-    "bs4": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "audit_score": "null | number", "artifact": ".workflow/brainstorm/bs-4.md | null" },
-    "bs5": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "artifact": ".workflow/brainstorm/bs-5.md | null" },
-    "bs6": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "artifact": ".workflow/brainstorm/bs-6.md | null" },
+    "bs1": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "artifact": ".workflow/<name>/brainstorm/bs-1.md | null" },
+    "bs2": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "audit_score": "null | number", "artifact": ".workflow/<name>/brainstorm/bs-2.md | null" },
+    "bs3": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "audit_score": "null | number", "artifact": ".workflow/<name>/brainstorm/bs-3.md | null" },
+    "bs4": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "audit_score": "null | number", "artifact": ".workflow/<name>/brainstorm/bs-4.md | null" },
+    "bs5": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "artifact": ".workflow/<name>/brainstorm/bs-5.md | null" },
+    "bs6": { "status": "pending | completed | skipped", "completed_at": "ISO-8601 | null", "artifact": ".workflow/<name>/brainstorm/bs-6.md | null" },
     "bs7_count": 0
   },
 
@@ -130,7 +132,7 @@ The state file is created when Phase 0 (Pre-Research) begins and persists throug
     },
     "deepwiki_cache": {
       "phases_researched": [],
-      "cache_dir": ".workflow/deepwiki-cache/"
+      "cache_dir": ".workflow/<name>/deepwiki-cache/"
     },
     "error_log": [
       {
@@ -155,7 +157,7 @@ The state file is created when Phase 0 (Pre-Research) begins and persists throug
         "findings_count": 0,
         "fixed_count": 0,
         "skipped_count": 0,
-        "report_file": ".workflow/bug-fixer/review-N.md | null"
+        "report_file": ".workflow/<name>/bug-fixer/review-N.md | null"
       }
     ]
   },
@@ -176,7 +178,7 @@ The state file is created when Phase 0 (Pre-Research) begins and persists throug
       },
       "resolution": {
         "approach": "modify-tasks | modify-plans | rethink-design",
-        "plan_dir": ".workflow/changes/change-N/ | null",
+        "plan_dir": ".workflow/<name>/changes/change-N/ | null",
         "completed_at": "ISO-8601 | null"
       }
     }
@@ -230,16 +232,18 @@ The state file is created when Phase 0 (Pre-Research) begins and persists throug
 
 ## Session Resume Protocol
 
-When the skill is invoked and `.workflow/state.json` already exists:
+When the skill is invoked and `.workflow/` directory exists:
 
-1. Read state.json
-2. Display progress summary:
+1. Check for legacy `.workflow/state.json` (old single-instance format at root). If found, offer to migrate it into a named instance: move to `.workflow/<chosen-name>/state.json`.
+2. List all subdirectories under `.workflow/` — each is a workflow instance. Read each instance's `state.json` and display:
+   - Instance name
    - Current phase
    - If in execution: completed tasks / total tasks with percentage
    - Last activity timestamp
-3. Ask user: **Resume** (continue from current state) or **Restart** (begin from Phase 1, archive old state)
-4. On resume: enter the current phase and continue from where it left off
-5. On restart: rename `.workflow/` to `.workflow.bak.<timestamp>/`, create fresh `.workflow/state.json`
+3. Ask user to choose an existing instance to **Resume**, or **Create** a new instance (enter a name).
+4. On resume: read `.workflow/<name>/state.json`, enter the current phase, continue from checkpoint.
+5. On restart of an existing instance: rename `.workflow/<name>/` to `.workflow/<name>.bak.<timestamp>/`, create fresh `.workflow/<name>/state.json`.
+6. On create: ask for instance name, create `.workflow/<name>/state.json`, begin Phase 1.
 
 ## Rejection Back-Flow
 
@@ -256,9 +260,9 @@ When user rejects in Phase 2 (Draft) or Phase 3 (Planning):
 
 If state.json is corrupted or missing mid-workflow:
 
-1. Check for `.workflow.bak.*` directories (archived by restart)
+1. Check for `.workflow/<name>.bak.*` directories (instance archived by restart)
 2. If backup exists: restore from latest backup's `state.json`
-3. If no backup but plan files exist: reconstruct state from plan file structure
+3. If no backup but plan files exist: reconstruct state from `.workflow/<name>/` plan file structure
 4. If nothing recoverable: inform user and offer to restart
 
 ## Brainstorm Artifact Persistence — 头脑风暴产物持久化
@@ -270,7 +274,7 @@ Brainstorm intermediate results are persisted to disk for traceability and conte
 ### Directory Structure
 
 ```
-.workflow/
+.workflow/<name>/
 ├── brainstorm/
 │   ├── bs-1.md        # Requirements completeness check results
 │   ├── bs-2.md        # Architecture brainstorm results
@@ -314,7 +318,7 @@ Mode: Full (7 steps) | Reduced (3 steps)
 
 ### Persistence Rules
 
-1. Create `.workflow/brainstorm/` directory when the first brainstorm is triggered
+1. Create `.workflow/<name>/brainstorm/` directory when the first brainstorm is triggered
 2. Write the artifact file **after** all steps complete (not incrementally)
 3. Update `brainstorm.bsN.status` and `brainstorm.bsN.artifact` in state.json
 4. On session resume: read existing brainstorm artifacts to restore context
@@ -322,14 +326,14 @@ Mode: Full (7 steps) | Reduced (3 steps)
 
 ## Context Bus — 上下文总线
 
-The Context Bus is a set of structured files in `.workflow/context/` that serve as the shared knowledge hub between the main model and sub-agents. Sub-agents start with zero context (only their prompt) — the Context Bus files bridge this gap.
+The Context Bus is a set of structured files in `.workflow/<name>/context/` that serve as the shared knowledge hub between the main model and sub-agents. Sub-agents start with zero context (only their prompt) — the Context Bus files bridge this gap.
 
-<!-- 上下文总线是 .workflow/context/ 中的一组结构化文件，作为主模型与子代理之间的共享知识中枢。 -->
+<!-- 上下文总线是 .workflow/<name>/context/ 中的一组结构化文件，作为主模型与子代理之间的共享知识中枢。 -->
 
 ### Directory Structure
 
 ```
-.workflow/
+.workflow/<name>/
 ├── context/
 │   ├── project-brief.md          # Project summary (updated after major events)
 │   ├── domain-knowledge.md       # Consolidated pre-research output
@@ -343,7 +347,7 @@ The Context Bus is a set of structured files in `.workflow/context/` that serve 
 
 ### Persistence Rules
 
-1. Create `.workflow/context/` and `.workflow/agent-outputs/` at Phase 0 start
+1. Create `.workflow/<name>/context/` and `.workflow/<name>/agent-outputs/` at Phase 0 start
 2. `project-brief.md` — written at Phase 0, updated after each phase transition
 3. `domain-knowledge.md` — written once at Phase 0 consolidation, may be appended during later phases
 4. `interview-transcript.md` — append-only; a new Q&A pair appended after each answered question in Phase 1
@@ -355,14 +359,14 @@ All sub-agent prompts that need project context MUST include this instruction bl
 
 ```
 Before starting your task, read these Context Bus files:
-1. .workflow/context/project-brief.md
-2. .workflow/context/domain-knowledge.md
-3. .workflow/context/hypothesis-tracker.md
+1. .workflow/<name>/context/project-brief.md
+2. .workflow/<name>/context/domain-knowledge.md
+3. .workflow/<name>/context/hypothesis-tracker.md
 ```
 
 For agents that need interview history, also include:
 ```
-4. .workflow/context/interview-transcript.md
+4. .workflow/<name>/context/interview-transcript.md
 ```
 
 ### Backward Compatibility
@@ -384,7 +388,7 @@ The cache file allows resuming Phase 2 from the last completed section.
 ### Cache File Location
 
 ```
-.workflow/draft-cache.md
+.workflow/<name>/draft-cache.md
 ```
 
 ### Cache File Format
@@ -425,7 +429,7 @@ BS-4 Decision: <summary>
 
 ### Persistence Rules
 
-1. Create `.workflow/draft-cache.md` when Phase 2 begins
+1. Create `.workflow/<name>/draft-cache.md` when Phase 2 begins
 2. **Append each section** to the cache as it is completed (not all at once at the end)
 3. Update `draft.completed_sections` array in state.json (e.g., `[1, 2, 3]`)
 4. Update `draft.cache_file` in state.json
@@ -447,11 +451,11 @@ Added by the `workflow-architect-bug-fixer` add-on skill. Initialized on first B
 2. Append a new review entry when a review session starts
 3. Update `findings_count`, `fixed_count`, `skipped_count` as findings are processed
 4. Set `completed_at` and `report_file` when the review session finishes
-5. Review reports are persisted to `.workflow/bug-fixer/review-N.md` (N = review id)
+5. Review reports are persisted to `.workflow/<name>/bug-fixer/review-N.md` (N = review id)
 
 **Directory structure:**
 ```
-.workflow/
+.workflow/<name>/
 ├── bug-fixer/
 │   ├── review-1.md        # Review session report
 │   ├── review-2.md
@@ -476,11 +480,11 @@ Added by the `workflow-architect-issue-changer` add-on skill. Initialized on fir
 3. Update `status` through the lifecycle: `analyzing` → `approved` → `in_progress` → `completed`
 4. Update `impact` fields after impact analysis completes
 5. Update `resolution` fields when the approach is determined and executed
-6. For Mode B (post-completion): set `resolution.plan_dir` to `.workflow/changes/change-N/`
+6. For Mode B (post-completion): set `resolution.plan_dir` to `.workflow/<name>/changes/change-N/`
 
 **Directory structure:**
 ```
-.workflow/
+.workflow/<name>/
 ├── changes/
 │   ├── change-1/
 │   │   ├── change-plan.md           # Change-specific execution plan

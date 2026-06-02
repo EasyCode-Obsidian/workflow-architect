@@ -63,10 +63,10 @@ Rejection in Phase 2 or 3 returns to Phase 1 with existing answers preserved.
 2. **NO phase advancement without explicit user approval.** Each phase gate requires user confirmation.
 3. **Plans guide Phase 4, but professional judgment is allowed.** Execute the plans' intent faithfully. You MAY add type annotations, defensive checks, meaningful names, and idiomatic patterns that the plan did not explicitly specify — these are professional standards, not deviations. You MUST NOT add features, endpoints, or behaviors not in the plan.
 4. **NO skipping phases.** Even if the user says "just build it", go through all 5 phases.
-5. **Draft (Phase 2) is NEVER written to disk as a deliverable.** It exists in the conversation. However, a **session-resume cache** (`.workflow/draft-cache.md`) is maintained incrementally to allow recovery from interrupted sessions. The cache is not a deliverable — it is an internal artifact.
+5. **Draft (Phase 2) is NEVER written to disk as a deliverable.** It exists in the conversation. However, a **session-resume cache** (`.workflow/<name>/draft-cache.md`) is maintained incrementally to allow recovery from interrupted sessions. The cache is not a deliverable — it is an internal artifact.
 6. **Plans (Phase 3) are ALWAYS written to disk.** All three levels must be persisted.
 7. **Mandatory Pre-Research.** Phase 0 (Pre-Research) MUST complete before Phase 1 begins. Three parallel research Agents MUST be launched. Agent C MUST invoke DeepWiki for candidate libraries — fallback to WebSearch only after DeepWiki failure.
-8. **Context Bus.** Read Context Bus files (`.workflow/context/`) at the entry of every phase. Update Context Bus files after each major decision or phase transition.
+8. **Context Bus.** Read Context Bus files (`.workflow/<name>/context/`) at the entry of every phase. Update Context Bus files after each major decision or phase transition.
 9. **Production-grade output.** All deliverables target production-ready, shippable quality — not MVP or demo. Performance targets, security hardening, observability, and operational readiness are designed in, not bolted on later.
 10. **NFRs are NOT optional.** Categories 6 (Performance & Scalability) and 7 (Security & Compliance) are MANDATORY and must reach "clear" before Phase 2. Production architecture MUST be designed in Phase 2 before advancing to Phase 3.
 
@@ -100,18 +100,22 @@ When the user specified strong preferences during Phase 1 (e.g., "use React"), u
 **Rules:**
 - Lightweight Mode runs automatically at each trigger point. No skipping.
 - Full Mode runs ONLY when user explicitly requests it
-- Results MUST be persisted to `.workflow/brainstorm/bs-N.md`
+- Results MUST be persisted to `.workflow/<name>/brainstorm/bs-N.md`
 - Update `brainstorm` field in state.json after each brainstorm completes
 
 **Details:** See [brainstorm-protocol.md](references/brainstorm-protocol.md)
 
 ## Session Resume — 会话恢复
 
-On skill invocation, FIRST check if `.workflow/state.json` exists in the current directory.
+On skill invocation, FIRST check if `.workflow/` directory exists in the current directory.
 
-- **If exists:** Read state.json. Display current phase and progress. Ask user to **Resume** or **Restart**.
+- **If `.workflow/` does not exist:** Fresh start. Ask user for an instance name, create `.workflow/<name>/state.json`, begin Phase 1.
+- **If `.workflow/` exists:**
+  1. Check for legacy `.workflow/state.json` (old single-instance format at root). If found, offer migration: rename to `.workflow/<chosen-name>/state.json`.
+  2. List all subdirectories (each is a workflow instance). Present current phase + last-updated for each.
+  3. Ask user to: **Resume** an existing instance, **Create** a new instance (enter name), or **Restart** an existing instance (archive old state).
+  4. On resume: read `.workflow/<name>/state.json`, display progress, continue from checkpoint.
   - See [state-management.md](references/state-management.md) for full resume protocol.
-- **If not exists:** Fresh start. Begin Phase 1.
 
 ## Phase 0: Pre-Research — 预研究
 
@@ -120,14 +124,14 @@ On skill invocation, FIRST check if `.workflow/state.json` exists in the current
 <!-- 通过并行研究代理在访谈前建立领域知识。 -->
 
 **Protocol:**
-1. Parse the user's initial idea/description, write to `.workflow/context/project-brief.md`
+1. Parse the user's initial idea/description, write to `.workflow/<name>/context/project-brief.md`
 2. Launch 3 parallel Agents:
    - **Agent A:** Domain Research — common patterns, pitfalls, terminology (WebSearch-based)
    - **Agent B:** Competitive Analysis — existing solutions, gaps, user expectations (WebSearch-based)
    - **Agent C:** Tech Ecosystem + DeepWiki — candidate libraries verified via DeepWiki (MUST call DeepWiki)
-3. Collect outputs to `.workflow/agent-outputs/`
-4. Consolidate into `.workflow/context/domain-knowledge.md`
-5. Initialize hypothesis tracker at `.workflow/context/hypothesis-tracker.md`
+3. Collect outputs to `.workflow/<name>/agent-outputs/`
+4. Consolidate into `.workflow/<name>/context/domain-knowledge.md`
+5. Initialize hypothesis tracker at `.workflow/<name>/context/hypothesis-tracker.md`
 
 **Exit condition:** All 3 agents complete + consolidation done → proceed to Phase 1.
 
@@ -174,7 +178,7 @@ On skill invocation, FIRST check if `.workflow/state.json` exists in the current
 
 **Plan structure:**
 ```
-.workflow/
+.workflow/<name>/
 ├── state.json
 ├── project-plan.md                     (Level 1: 项目总体计划)
 └── phases/
@@ -191,7 +195,7 @@ On skill invocation, FIRST check if `.workflow/state.json` exists in the current
 ```
 
 **Protocol:**
-1. Create `.workflow/` directory structure
+1. Create `.workflow/<name>/` directory structure
 2. Write Level 1 (project plan) → present summary
 3. Write Level 2 (all phase plans) → present summary
 4. Write Level 3 (all task details) → present summary
@@ -258,7 +262,7 @@ They can be invoked standalone or are automatically suggested at specific workfl
 
 ## State Management — 状态管理
 
-All workflow state is persisted in `.workflow/state.json`.
+All workflow state is persisted in `.workflow/<name>/state.json`.
 
 - Created at Phase 1 start
 - Updated after every question, phase transition, and task completion
@@ -299,7 +303,7 @@ All workflow state is persisted in `.workflow/state.json`.
 - Commit after every completed task in Phase 4
 - Follow plan templates in `assets/templates/` for Phase 3
 - □ Launch 3 parallel research Agents in Phase 0 before starting Phase 1
-- □ Read Context Bus files (`.workflow/context/`) at the entry of each phase
+- □ Read Context Bus files (`.workflow/<name>/context/`) at the entry of each phase
 - □ Update Context Bus files after each major decision or phase transition
 - □ Include Context Bus reading instructions in ALL sub-agent prompts
 - □ Design production architecture (Section 5) before advancing from Phase 2 to Phase 3

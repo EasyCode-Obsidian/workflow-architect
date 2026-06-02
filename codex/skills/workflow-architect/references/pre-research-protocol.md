@@ -23,9 +23,9 @@ Without pre-research, the model enters the interview with near-zero domain knowl
 ## Entry Protocol
 
 1. Parse the user's initial idea/description
-2. Create directories: `.workflow/context/`, `.workflow/agent-outputs/`
+2. Create directories: `.workflow/<name>/context/`, `.workflow/<name>/agent-outputs/`
 3. Initialize state.json: `pre_research.status: "in_progress"`
-4. Write `.workflow/context/project-brief.md` with the user's raw input and initial parsing
+4. Write `.workflow/<name>/context/project-brief.md` with the user's raw input and initial parsing
 5. Launch 3 Agents in parallel (see below)
 
 ---
@@ -45,7 +45,7 @@ for a project and write a structured report.
 
 ## Your Task — MANDATORY
 
-1. Run 3-5 web search queries:
+1. Run 3-5 WebSearch queries:
    - "{domain} common architecture patterns {current_year}"
    - "{domain} typical challenges and pitfalls"
    - "{domain} successful projects and case studies"
@@ -58,7 +58,7 @@ for a project and write a structured report.
    but a non-domain-expert would likely miss.
 
 ## Output
-Write to: .workflow/agent-outputs/agent-a-domain.md
+Write to: .workflow/<name>/agent-outputs/agent-a-domain.md
 
 Use this format:
 # Domain Research — {domain}
@@ -85,7 +85,7 @@ Generated: {timestamp}
 Return a 200-word summary of your top findings.
 ```
 
-**Output file:** `.workflow/agent-outputs/agent-a-domain.md`
+**Output file:** `.workflow/<name>/agent-outputs/agent-a-domain.md`
 
 ---
 
@@ -104,7 +104,7 @@ solutions similar to a project idea and write a structured report.
 
 ## Your Task — MANDATORY
 
-1. Run 3-5 web search queries:
+1. Run 3-5 WebSearch queries:
    - "{project type} alternatives comparison {current_year}"
    - "{project type} open source projects"
    - "{project type} best tools/products"
@@ -119,7 +119,7 @@ solutions similar to a project idea and write a structured report.
 3. Identify feature gaps — what do users want that no existing solution provides well?
 
 ## Output
-Write to: .workflow/agent-outputs/agent-b-competitive.md
+Write to: .workflow/<name>/agent-outputs/agent-b-competitive.md
 
 Use this format:
 # Competitive Analysis — {project type}
@@ -150,7 +150,7 @@ Generated: {timestamp}
 Return a 200-word summary of key competitive insights.
 ```
 
-**Output file:** `.workflow/agent-outputs/agent-b-competitive.md`
+**Output file:** `.workflow/<name>/agent-outputs/agent-b-competitive.md`
 
 ---
 
@@ -174,7 +174,7 @@ Script path: {CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.{ps1|sh}
 ## Your Task — MANDATORY, NO EXCEPTIONS
 
 1. Based on the project idea, identify 3-5 candidate libraries/frameworks
-   that would be central to the implementation. Run 1-2 web search queries
+   that would be central to the implementation. Run 1-2 WebSearch queries
    to discover options: "{project type} best libraries/frameworks {current_year}"
 
 2. For EACH candidate library, you MUST run DeepWiki:
@@ -188,16 +188,16 @@ Script path: {CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.{ps1|sh}
    Do NOT skip DeepWiki. Do NOT claim you ran it without actually running it.
    If DeepWiki returns an error or empty response:
    - Retry once with a simpler question
-   - If still fails: run web search "{library} API documentation overview" as fallback
-   - Mark the entry as "⚠️ web search fallback — verify manually"
+   - If still fails: run WebSearch "{library} API documentation overview" as fallback
+   - Mark the entry as "⚠️ WebSearch fallback — verify manually"
 
 3. If multiple candidates serve the same purpose, run a comparison query:
    {script_command} ask '["owner/repo1","owner/repo2"]' "Compare {lib1} vs {lib2} for {use case}: API ergonomics, performance, ecosystem"
 
-4. Run 1-2 web search queries for ecosystem health: "{library} npm downloads" or "{library} github stars maintenance status"
+4. Run 1-2 WebSearch queries for ecosystem health: "{library} npm downloads" or "{library} github stars maintenance status"
 
 ## Output
-Write to: .workflow/agent-outputs/agent-c-tech.md
+Write to: .workflow/<name>/agent-outputs/agent-c-tech.md
 
 Use this format:
 # Tech Ecosystem Research — {project type}
@@ -236,7 +236,7 @@ DeepWiki fallbacks: {count}
 Return a 200-word summary: libraries researched, DeepWiki results, preliminary recommendation.
 ```
 
-**Output file:** `.workflow/agent-outputs/agent-c-tech.md`
+**Output file:** `.workflow/<name>/agent-outputs/agent-c-tech.md`
 
 ---
 
@@ -245,11 +245,11 @@ Return a 200-word summary: libraries researched, DeepWiki results, preliminary r
 After all 3 agents complete, the main model MUST:
 
 1. **Read all 3 output files:**
-   - `.workflow/agent-outputs/agent-a-domain.md`
-   - `.workflow/agent-outputs/agent-b-competitive.md`
-   - `.workflow/agent-outputs/agent-c-tech.md`
+   - `.workflow/<name>/agent-outputs/agent-a-domain.md`
+   - `.workflow/<name>/agent-outputs/agent-b-competitive.md`
+   - `.workflow/<name>/agent-outputs/agent-c-tech.md`
 
-2. **Synthesize into `.workflow/context/domain-knowledge.md`:**
+2. **Synthesize into `.workflow/<name>/context/domain-knowledge.md`:**
    ```markdown
    # Domain Knowledge — Consolidated Pre-Research
    <!-- Auto-generated from Phase 0 agents. Updated: {timestamp} -->
@@ -270,9 +270,9 @@ After all 3 agents complete, the main model MUST:
    {topics identified by Agent A that the interview MUST cover}
    ```
 
-3. **Update `.workflow/context/project-brief.md`** with domain context summary.
+3. **Update `.workflow/<name>/context/project-brief.md`** with domain context summary.
 
-4. **Initialize `.workflow/context/hypothesis-tracker.md`:**
+4. **Initialize `.workflow/<name>/context/hypothesis-tracker.md`:**
    ```markdown
    # Hypothesis Tracker
    <!-- Updated after each brainstorm and interview answer -->
@@ -287,9 +287,9 @@ After all 3 agents complete, the main model MUST:
    - `pre_research.status: "completed"`
    - `pre_research.consolidation_status: "completed"`
    - `pre_research.completed_at: {timestamp}`
-   - `context_bus.domain_knowledge: ".workflow/context/domain-knowledge.md"`
-   - `context_bus.project_brief: ".workflow/context/project-brief.md"`
-   - `context_bus.hypothesis_tracker: ".workflow/context/hypothesis-tracker.md"`
+   - `context_bus.domain_knowledge: ".workflow/<name>/context/domain-knowledge.md"`
+   - `context_bus.project_brief: ".workflow/<name>/context/project-brief.md"`
+   - `context_bus.hypothesis_tracker: ".workflow/<name>/context/hypothesis-tracker.md"`
 
 6. **Present summary to user:**
    ```
@@ -301,7 +301,7 @@ After all 3 agents complete, the main model MUST:
    Key risks identified: {count}
    Interview priority topics: {count}
 
-   Consolidated knowledge: .workflow/context/domain-knowledge.md
+   Consolidated knowledge: .workflow/<name>/context/domain-knowledge.md
    Proceeding to requirements collection...
    ════════════════════════════
    ```
@@ -314,11 +314,11 @@ After all 3 agents complete, the main model MUST:
 |----------|--------|
 | Agent A fails | Retry once. If still fails, proceed without domain research — log warning. |
 | Agent B fails | Retry once. If still fails, proceed without competitive analysis — log warning. |
-| Agent C fails | Retry once. If still fails, fall back to web search-only tech research — log warning. |
-| Agent C DeepWiki fails (429) | Built-in retry in script (3 attempts). If all fail, web search fallback. |
+| Agent C fails | Retry once. If still fails, fall back to WebSearch-only tech research — log warning. |
+| Agent C DeepWiki fails (429) | Built-in retry in script (3 attempts). If all fail, WebSearch fallback. |
 | All 3 agents fail | Inform user. Offer: (A) Retry all, (B) Skip pre-research and go to Phase 1 directly. |
 
-**Critical:** Agent C's DeepWiki failure does NOT block the workflow. The fallback chain (retry → web search → proceed with warning) ensures progress. But the failure MUST be logged in state.json (`pre_research.agents.tech_ecosystem.deepwiki_called: false`).
+**Critical:** Agent C's DeepWiki failure does NOT block the workflow. The fallback chain (retry → WebSearch → proceed with warning) ensures progress. But the failure MUST be logged in state.json (`pre_research.agents.tech_ecosystem.deepwiki_called: false`).
 
 ---
 
@@ -338,7 +338,7 @@ On skill invocation, if `pre_research` exists in state.json:
 
 - Phase 0 MUST complete before Phase 1 begins. This is NON-NEGOTIABLE.
 - All 3 agents launch in parallel to minimize wall-clock time.
-- Agent C MUST attempt DeepWiki for every candidate library. Fallback to web search is acceptable only after DeepWiki failure.
+- Agent C MUST attempt DeepWiki for every candidate library. Fallback to WebSearch is acceptable only after DeepWiki failure.
 - The user's initial description is passed verbatim to all 3 agents — do NOT summarize or filter it.
 - Total agent execution should target under 60 seconds. If an agent appears stuck, allow 2 minutes before timeout.
 - Agent outputs are raw research. The consolidation step (done by the main model) is where quality filtering and synthesis happens.

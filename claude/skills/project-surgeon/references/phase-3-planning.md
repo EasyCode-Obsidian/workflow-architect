@@ -17,10 +17,10 @@
 
 ## Directory Creation
 
-Create the full `.project-surgeon/` directory tree before writing any plans:
+Create the full `.project-surgeon/<name>/` directory tree before writing any plans:
 
 ```
-.project-surgeon/
+.project-surgeon/<name>/
 ├── state.json                              (already exists)
 ├── project-plan.md                         (Level 1)
 └── phases/
@@ -96,7 +96,7 @@ Use `assets/templates/project-plan.md` as the template. Fill in:
 6. **Success Criteria** derived from user objectives and review findings
 7. **Risk Register** identified during review (systemic issues, hot spots)
 
-Write to: `.project-surgeon/project-plan.md`
+Write to: `.project-surgeon/<name>/project-plan.md`
 
 After writing: present a summary of Level 1 to the user.
 
@@ -125,7 +125,7 @@ Use `assets/templates/phase-plan.md` as the template. Fill in:
 8. **Verification checklist** — how to confirm this phase is complete
 9. **Phase-specific risks** — if any
 
-Write to: `.project-surgeon/phases/phase-N/phase-plan.md`
+Write to: `.project-surgeon/<name>/phases/phase-N/phase-plan.md`
 
 After writing ALL Level 2 plans: present a summary showing all phases and their task counts.
 
@@ -157,7 +157,7 @@ After writing all Level 2 plans, you MUST execute brainstorm trigger BS-3 (Reduc
 - [ ] Multi-Perspective Evaluation block shown to user?
 - [ ] Self-Interrogation + Decision block shown to user?
 
-**After ALL checks pass:** persist results to `.project-surgeon/brainstorm/bs-3.md`, update `brainstorm.bs3` in state.json.
+**After ALL checks pass:** persist results to `.project-surgeon/<name>/brainstorm/bs-3.md`, update `brainstorm.bs3` in state.json.
 
 **Then:** Adjust the task breakdown based on brainstorm findings BEFORE writing Level 3 plans.
 
@@ -196,7 +196,7 @@ Use `assets/templates/task-plan.md` as the template. Fill in:
 8. **Rollback plan** — how to undo this task if it causes regressions (important for refactoring)
 9. **Commit message** — pre-written commit message for this task
 
-Write to: `.project-surgeon/phases/phase-N/tasks/task-NN-<name>.md`
+Write to: `.project-surgeon/<name>/phases/phase-N/tasks/task-NN-<name>.md`
 
 ### Writing Order — 写入顺序
 
@@ -245,7 +245,7 @@ These checks are mandatory — do NOT present the approval gate if any check fai
 ```
 FOR each phase P in project-plan.md:
     expected_count = task count listed in Level 1 phase table
-    actual_count = number of task-*.md files in .project-surgeon/phases/phase-P/tasks/
+    actual_count = number of task-*.md files in .project-surgeon/<name>/phases/phase-P/tasks/
     IF expected_count != actual_count:
         FAIL: "Phase P: Level 1 says {expected} tasks, but {actual} task files exist"
 ```
@@ -369,7 +369,7 @@ Level 2: Phase Plans
 Level 3: Task Plans
   Total task files written: M
 
-All plans written to: .project-surgeon/
+All plans written to: .project-surgeon/<name>/
 ```
 
 Then offer three options via AskUserQuestion:
@@ -402,8 +402,8 @@ On approval:
 
 On restart:
 
-1. Rename `.project-surgeon/` to `.project-surgeon.bak.<timestamp>/`
-2. Update state.json (in new `.project-surgeon/`):
+1. Rename `.project-surgeon/<name>/` to `.project-surgeon/<name>.bak.<timestamp>/`
+2. Update state.json (in new `.project-surgeon/<name>/`):
    - `current_phase: "analysis"`
    - `planning.status: "rejected"`
 3. Log transition in `phase_history`

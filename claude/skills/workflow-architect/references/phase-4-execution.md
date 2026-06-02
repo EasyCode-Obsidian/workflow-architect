@@ -12,7 +12,7 @@
 
 1. Read state.json, verify `current_phase` is `"execution"`
 2. Update state: `execution.status: "in_progress"`
-3. Read `.workflow/project-plan.md` to understand overall structure
+3. Read `.workflow/<name>/project-plan.md` to understand overall structure
 4. Determine starting point:
    - Fresh start: begin from Phase 1, Task 1
    - Session resume: find last completed task in state.json, continue from next
@@ -21,7 +21,7 @@
    - **Windows:** `${CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.ps1` — verify it exists
    - **Auto-detect:** Check if running on Windows (presence of `COMSPEC` env var or `OS` = `Windows_NT`). Use `.ps1` on Windows, `.sh` otherwise.
    - If neither script is found, log a warning — DeepWiki research will fall back to WebSearch.
-5.5. **Read Context Bus:** Load `.workflow/context/domain-knowledge.md` and `.workflow/context/project-brief.md` for background context during execution.
+5.5. **Read Context Bus:** Load `.workflow/<name>/context/domain-knowledge.md` and `.workflow/<name>/context/project-brief.md` for background context during execution.
 6. Create TaskCreate entries for ALL pending tasks across ALL phases
    - This provides real-time visibility to the user
    - Format: `[Phase N] Task NN: <name>`
@@ -30,7 +30,7 @@
 
 ```
 FOR each phase P in project-plan (in order):
-    Read .workflow/phases/phase-P/phase-plan.md
+    Read .workflow/<name>/phases/phase-P/phase-plan.md
     Verify prerequisites are met
     Mark phase as in_progress in state.json
 
@@ -39,7 +39,7 @@ FOR each phase P in project-plan (in order):
     === END TIER 1 ===
 
     FOR each task T in phase P (in order):
-        Read .workflow/phases/phase-P/tasks/task-TT-<name>.md
+        Read .workflow/<name>/phases/phase-P/tasks/task-TT-<name>.md
         Mark task as in_progress in state.json
         Mark corresponding TaskCreate entry as in_progress
 
@@ -48,7 +48,7 @@ FOR each phase P in project-plan (in order):
         1. Read the task plan's Dependencies table (REQUIRED — must have owner/repo + APIs Used)
         2. Agent runs DeepWiki for EACH library API listed:
            bash <script> ask "owner/repo" "API reference for <API>: parameters, return types, error behavior"
-        3. Agent writes structured output to .workflow/deepwiki-cache/task-TT-api-reference.md
+        3. Agent writes structured output to .workflow/<name>/deepwiki-cache/task-TT-api-reference.md
         4. Main model reads the API reference file BEFORE writing any code
         5. This step is MANDATORY — do NOT skip even if Tier 1 cache covers the library
         See Task Research Agent section below for the full prompt template.
@@ -69,7 +69,7 @@ FOR each phase P in project-plan (in order):
             Before implementing library-specific error handling:
               1. Run: bash <script> ask "owner/repo" "What errors can <API call> throw and how to handle them?"
             MAY skip ONLY when ALL of the following are true:
-              - The Task Research Agent already documented the exact same API in .workflow/deepwiki-cache/task-TT-api-reference.md for this task
+              - The Task Research Agent already documented the exact same API in .workflow/<name>/deepwiki-cache/task-TT-api-reference.md for this task
               - AND Tier 2 answer included specific parameters, return type, and error behavior
               - AND no version or configuration difference exists between Tier 2 context and current code
             === END TIER 3 ===
@@ -163,7 +163,7 @@ Triggered at the start of each execution phase, before any tasks.
 3. Run `bash <script> structure "owner/repo"` for each repo
 4. Run `bash <script> ask "owner/repo" "Core APIs and best practices for <lib> relevant to <phase objective>"` for each repo
 5. If multiple libs interact: run ONE cross-repo query with `repoName` as JSON array
-6. Cache results to `.workflow/deepwiki-cache/phase-N-research.md`
+6. Cache results to `.workflow/<name>/deepwiki-cache/phase-N-research.md`
 
 ### Tier 2: Task Entry (focused)
 
@@ -191,7 +191,7 @@ Triggered during step execution before writing code that interacts with external
 3. No caching — results feed directly into code
 
 **MAY skip ONLY when ALL of the following are true:**
-- The exact same API call was already queried by the Task Research Agent and documented in `.workflow/deepwiki-cache/task-TT-api-reference.md` for this task
+- The exact same API call was already queried by the Task Research Agent and documented in `.workflow/<name>/deepwiki-cache/task-TT-api-reference.md` for this task
 - AND the Tier 2 answer included the specific parameters, return type, and error behavior needed
 - AND no version or configuration difference exists between the Tier 2 context and current code context
 
@@ -243,8 +243,8 @@ You are a library API researcher. Your ONLY task is to query DeepWiki for API
 documentation and write a structured reference file.
 
 ## Context Files (read first)
-- .workflow/context/domain-knowledge.md (for background)
-- .workflow/deepwiki-cache/phase-{N}-research.md (for phase-level context, if exists)
+- .workflow/<name>/context/domain-knowledge.md (for background)
+- .workflow/<name>/deepwiki-cache/phase-{N}-research.md (for phase-level context, if exists)
 
 ## Task
 {task_name}: {task_objective}
@@ -271,7 +271,7 @@ For EACH library + API listed in the Dependencies table:
    {script_command} ask '["repo1","repo2"]' "How to integrate {API1} with {API2}?"
 
 ## Output
-Write to: .workflow/deepwiki-cache/task-{TT}-api-reference.md
+Write to: .workflow/<name>/deepwiki-cache/task-{TT}-api-reference.md
 
 Format for each API:
 ### {library}.{API_name}
@@ -299,7 +299,7 @@ Return a one-paragraph summary.
 **When Phase starts (first task only):** The Research Agent additionally runs Tier 1 batch research:
 - Read the phase plan, extract ALL libraries across ALL tasks
 - Run `structure` + broad `ask` for each library
-- Write to `.workflow/deepwiki-cache/phase-{N}-research.md`
+- Write to `.workflow/<name>/deepwiki-cache/phase-{N}-research.md`
 - Then proceed to task-specific research
 
 ---
@@ -318,7 +318,7 @@ For issues like: task ordering wrong, missing tasks, task details need adjustmen
 2. Log transition to `phase_history`: `exit_reason: "course_correction_planning"`
 3. Set `current_phase: "planning"`
 4. Ask user which plans need modification
-5. Edit the specific plan files in `.workflow/phases/`
+5. Edit the specific plan files in `.workflow/<name>/phases/`
 6. Re-run Phase 3 consistency verification on modified plans
 7. Return to Phase 4, resume from the first modified task
 8. Previously completed tasks are NOT re-executed
@@ -330,7 +330,7 @@ For issues like: architecture decision was wrong, tech stack needs changing, fun
 1. Mark `execution.status: "paused"` in state.json
 2. Log transition to `phase_history`: `exit_reason: "course_correction_draft"`
 3. Set `current_phase: "draft"`
-4. Read `.workflow/draft-cache.md` to restore draft context
+4. Read `.workflow/<name>/draft-cache.md` to restore draft context
 5. Ask user which sections need revision
 6. Re-run brainstorm for affected sections (BS-2/3/4)
 7. After draft revision approved: regenerate affected plans (Phase 3)
@@ -438,7 +438,7 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 **Inline execution checklist:**
 
 1. **Step 1 — Forced Research:** Run at least 2 WebSearch queries about the specific error type and technology involved. Output the `🔍 Research Findings` block. **If a search returns 0 results:** retry with broader keywords; if still 0, label output as `⚠️ AI Inference (search unavailable)` — do NOT present model knowledge as search findings.
-2. **Step 2 — Independent Agents:** Launch 2 parallel Agents (Devil's Advocate + Lateral Thinker) to propose genuinely different fix approaches (not variations of the same fix). Each agent gets: the full error context (phase, task, step, all 3 strike attempts, error messages) + Context Bus files (.workflow/context/domain-knowledge.md, .workflow/context/hypothesis-tracker.md). Output the `🏗️ Independent Proposals Generated` block.
+2. **Step 2 — Independent Agents:** Launch 2 parallel Agents (Devil's Advocate + Lateral Thinker) to propose genuinely different fix approaches (not variations of the same fix). Each agent gets: the full error context (phase, task, step, all 3 strike attempts, error messages) + Context Bus files (.workflow/<name>/context/domain-knowledge.md, .workflow/<name>/context/hypothesis-tracker.md). Output the `🏗️ Independent Proposals Generated` block.
 3. **Step 3 — Quality Gate:** Run the divergence check on the 2 proposals. Output the `🔬 Divergence Check` block. If FAIL, regenerate (max 5 rounds).
 4. **Step 4 — Multi-Perspective:** Evaluate from Developer + Architect + Ops perspectives: "Why did this fail? Will this fix introduce new problems?" Output the `🧠 Multi-Perspective Evaluation` block.
 5. **Step 5 — Self-Interrogation:** Select the safest fix with highest success likelihood. Raise 3 sharp challenges. Output the `💭 Self-Interrogation` block.
@@ -454,7 +454,7 @@ Read [brainstorm-protocol.md](brainstorm-protocol.md) and execute ALL steps belo
 - [ ] Audit block shown to user? If NO → STOP, go back to Step 6
 - [ ] Decision block shown to user? If NO → STOP, go back to Step 7
 
-**After ALL checks pass:** persist results to `.workflow/brainstorm/bs-7-<N>.md` (N = occurrence count), update `brainstorm.bs7_count` in state.json, THEN apply the recommended fix and continue execution.
+**After ALL checks pass:** persist results to `.workflow/<name>/brainstorm/bs-7-<N>.md` (N = occurrence count), update `brainstorm.bs7_count` in state.json, THEN apply the recommended fix and continue execution.
 
 </STOP-GATE>
 
@@ -709,7 +709,7 @@ Phase N Summary:
 - Key files created: [list]
 - Key decisions made: [list]
 - Errors resolved: [count]
-- Artifacts available: .workflow/phases/phase-N/
+- Artifacts available: .workflow/<name>/phases/phase-N/
 ```
 
 This summary replaces the full phase context for downstream reference.

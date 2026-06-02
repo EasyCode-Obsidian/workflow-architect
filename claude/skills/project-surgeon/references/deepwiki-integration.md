@@ -126,7 +126,7 @@ Each tier narrows the query scope, building on knowledge acquired from the previ
      "What are the integration patterns and common pitfalls when using these together?"
    ```
 
-6. **Persist results:** Save research output to `.project-surgeon/deepwiki-cache/phase-N-research.md` for reference during task execution.
+6. **Persist results:** Save research output to `.project-surgeon/<name>/deepwiki-cache/phase-N-research.md` for reference during task execution.
 
 **Output:** Present a brief research summary to the user:
 ```
@@ -136,7 +136,7 @@ Key findings:
 - <finding 1>
 - <finding 2>
 - <cross-repo insight>
-Cache: .project-surgeon/deepwiki-cache/phase-N-research.md
+Cache: .project-surgeon/<name>/deepwiki-cache/phase-N-research.md
 ```
 
 ---
@@ -298,7 +298,7 @@ When DeepWiki is unavailable (network error, sustained 429, or service down):
 
 | Tier | Cache? | Location | Reason |
 |------|--------|----------|--------|
-| Tier 1 (Phase) | Yes | `.project-surgeon/deepwiki-cache/phase-N-research.md` | Expensive batch query; session may restart mid-phase |
+| Tier 1 (Phase) | Yes | `.project-surgeon/<name>/deepwiki-cache/phase-N-research.md` | Expensive batch query; session may restart mid-phase |
 | Tier 2 (Task) | No | — | Task-specific; re-query is cheap |
 | Tier 3 (Coding) | No | — | One-off; context-specific |
 
@@ -335,7 +335,7 @@ When DeepWiki is unavailable (network error, sustained 429, or service down):
 
 ### Session Resume
 
-On Phase 4 session resume, if `.project-surgeon/deepwiki-cache/phase-N-research.md` exists for the current phase:
+On Phase 4 session resume, if `.project-surgeon/<name>/deepwiki-cache/phase-N-research.md` exists for the current phase:
 - Skip Tier 1 research for that phase
 - Use cached results as context for Tier 2/3 queries
 

@@ -78,7 +78,7 @@ When the user specified strong preferences during Phase 1 (e.g., "use React"), L
 
 ### Disk Persistence — 磁盘持久化
 
-After completing brainstorm (either tier), persist results to `.project-surgeon/brainstorm/bs-N.md`.
+After completing brainstorm (either tier), persist results to `.project-surgeon/<name>/brainstorm/bs-N.md`.
 This serves two purposes:
 1. **Traceability** — the user and future sessions can verify brainstorm was executed
 2. **Context relief** — on session resume, results can be re-read instead of re-generated
@@ -93,11 +93,11 @@ Phase 2 triggers up to 4 brainstorms in sequence (BS-2, BS-3, BS-4, BS-5). If an
 
 **Rules:**
 
-1. **Persist immediately, summarize in context.** After each brainstorm completes and is persisted to disk (`.project-surgeon/brainstorm/bs-N.md`), keep only a **concise summary** (decision + confidence + top 2 risks) in the conversation. The full artifact is on disk for reference.
+1. **Persist immediately, summarize in context.** After each brainstorm completes and is persisted to disk (`.project-surgeon/<name>/brainstorm/bs-N.md`), keep only a **concise summary** (decision + confidence + top 2 risks) in the conversation. The full artifact is on disk for reference.
 
 2. **Do NOT carry Agent proposals forward (Full Mode).** After Synthesis produces a decision, the 3 Agent proposals, divergence check details, and audit scores are no longer needed in conversation context. They are preserved in the disk artifact.
 
-3. **Reference by file, not by repetition.** When a later brainstorm needs to reference an earlier decision (e.g., BS-4 depends on BS-2's architecture choice), reference the disk artifact: "Per BS-2 decision (see `.project-surgeon/brainstorm/bs-2.md`): chose MVC pattern." Do NOT re-paste the full BS-2 output.
+3. **Reference by file, not by repetition.** When a later brainstorm needs to reference an earlier decision (e.g., BS-4 depends on BS-2's architecture choice), reference the disk artifact: "Per BS-2 decision (see `.project-surgeon/<name>/brainstorm/bs-2.md`): chose MVC pattern." Do NOT re-paste the full BS-2 output.
 
 4. **Cumulative summary block.** After each brainstorm, maintain a running summary block:
    ```

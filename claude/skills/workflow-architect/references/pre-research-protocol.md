@@ -23,9 +23,9 @@ Without pre-research, the model enters the interview with near-zero domain knowl
 ## Entry Protocol
 
 1. Parse the user's initial idea/description
-2. Create directories: `.workflow/context/`, `.workflow/agent-outputs/`
+2. Create directories: `.workflow/<name>/context/`, `.workflow/<name>/agent-outputs/`
 3. Initialize state.json: `pre_research.status: "in_progress"`
-4. Write `.workflow/context/project-brief.md` with the user's raw input and initial parsing
+4. Write `.workflow/<name>/context/project-brief.md` with the user's raw input and initial parsing
 5. Launch 3 Agents in parallel (see below)
 
 ---
@@ -58,7 +58,7 @@ for a project and write a structured report.
    but a non-domain-expert would likely miss.
 
 ## Output
-Write to: .workflow/agent-outputs/agent-a-domain.md
+Write to: .workflow/<name>/agent-outputs/agent-a-domain.md
 
 Use this format:
 # Domain Research — {domain}
@@ -85,7 +85,7 @@ Generated: {timestamp}
 Return a 200-word summary of your top findings.
 ```
 
-**Output file:** `.workflow/agent-outputs/agent-a-domain.md`
+**Output file:** `.workflow/<name>/agent-outputs/agent-a-domain.md`
 
 ---
 
@@ -119,7 +119,7 @@ solutions similar to a project idea and write a structured report.
 3. Identify feature gaps — what do users want that no existing solution provides well?
 
 ## Output
-Write to: .workflow/agent-outputs/agent-b-competitive.md
+Write to: .workflow/<name>/agent-outputs/agent-b-competitive.md
 
 Use this format:
 # Competitive Analysis — {project type}
@@ -150,7 +150,7 @@ Generated: {timestamp}
 Return a 200-word summary of key competitive insights.
 ```
 
-**Output file:** `.workflow/agent-outputs/agent-b-competitive.md`
+**Output file:** `.workflow/<name>/agent-outputs/agent-b-competitive.md`
 
 ---
 
@@ -197,7 +197,7 @@ Script path: {CLAUDE_SKILL_DIR}/assets/scripts/deepwiki.{ps1|sh}
 4. Run 1-2 WebSearch queries for ecosystem health: "{library} npm downloads" or "{library} github stars maintenance status"
 
 ## Output
-Write to: .workflow/agent-outputs/agent-c-tech.md
+Write to: .workflow/<name>/agent-outputs/agent-c-tech.md
 
 Use this format:
 # Tech Ecosystem Research — {project type}
@@ -236,7 +236,7 @@ DeepWiki fallbacks: {count}
 Return a 200-word summary: libraries researched, DeepWiki results, preliminary recommendation.
 ```
 
-**Output file:** `.workflow/agent-outputs/agent-c-tech.md`
+**Output file:** `.workflow/<name>/agent-outputs/agent-c-tech.md`
 
 ---
 
@@ -245,11 +245,11 @@ Return a 200-word summary: libraries researched, DeepWiki results, preliminary r
 After all 3 agents complete, the main model MUST:
 
 1. **Read all 3 output files:**
-   - `.workflow/agent-outputs/agent-a-domain.md`
-   - `.workflow/agent-outputs/agent-b-competitive.md`
-   - `.workflow/agent-outputs/agent-c-tech.md`
+   - `.workflow/<name>/agent-outputs/agent-a-domain.md`
+   - `.workflow/<name>/agent-outputs/agent-b-competitive.md`
+   - `.workflow/<name>/agent-outputs/agent-c-tech.md`
 
-2. **Synthesize into `.workflow/context/domain-knowledge.md`:**
+2. **Synthesize into `.workflow/<name>/context/domain-knowledge.md`:**
    ```markdown
    # Domain Knowledge — Consolidated Pre-Research
    <!-- Auto-generated from Phase 0 agents. Updated: {timestamp} -->
@@ -270,9 +270,9 @@ After all 3 agents complete, the main model MUST:
    {topics identified by Agent A that the interview MUST cover}
    ```
 
-3. **Update `.workflow/context/project-brief.md`** with domain context summary.
+3. **Update `.workflow/<name>/context/project-brief.md`** with domain context summary.
 
-4. **Initialize `.workflow/context/hypothesis-tracker.md`:**
+4. **Initialize `.workflow/<name>/context/hypothesis-tracker.md`:**
    ```markdown
    # Hypothesis Tracker
    <!-- Updated after each brainstorm and interview answer -->
@@ -287,9 +287,9 @@ After all 3 agents complete, the main model MUST:
    - `pre_research.status: "completed"`
    - `pre_research.consolidation_status: "completed"`
    - `pre_research.completed_at: {timestamp}`
-   - `context_bus.domain_knowledge: ".workflow/context/domain-knowledge.md"`
-   - `context_bus.project_brief: ".workflow/context/project-brief.md"`
-   - `context_bus.hypothesis_tracker: ".workflow/context/hypothesis-tracker.md"`
+   - `context_bus.domain_knowledge: ".workflow/<name>/context/domain-knowledge.md"`
+   - `context_bus.project_brief: ".workflow/<name>/context/project-brief.md"`
+   - `context_bus.hypothesis_tracker: ".workflow/<name>/context/hypothesis-tracker.md"`
 
 6. **Present summary to user:**
    ```
@@ -301,7 +301,7 @@ After all 3 agents complete, the main model MUST:
    Key risks identified: {count}
    Interview priority topics: {count}
 
-   Consolidated knowledge: .workflow/context/domain-knowledge.md
+   Consolidated knowledge: .workflow/<name>/context/domain-knowledge.md
    Proceeding to requirements collection...
    ════════════════════════════
    ```
